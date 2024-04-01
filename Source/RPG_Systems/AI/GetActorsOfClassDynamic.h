@@ -10,7 +10,7 @@
 
 
 UCLASS()
-class RPG_SYSTEMS_API UGetActorsOfClassDynamic : public UEnvQueryGenerator_BlueprintBase
+class RPG_SYSTEMS_API UGetActorsOfClassDynamic : public UEnvQueryGenerator
 {
 public:
 	GENERATED_UCLASS_BODY()
@@ -32,5 +32,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category=Generator, meta=(AllowAbstract))
 	TSubclassOf<AActor> SearchedActorClass;
+
 
 };
