@@ -24,13 +24,13 @@ public:
 	FDataTableRowHandle Item_DT;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Slots = 5;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<FSTR_RPG_ItemSlot> Items;
 	UPROPERTY(BlueprintAssignable)
 		FOnInventorySlotChange OnInventorySlotChange;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<ARPG_PlayerController*> Players;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		ARPG_BaseCharacter* OwnerCharacter;
 protected:
 	// Called when the game starts
@@ -40,6 +40,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	
 	virtual void InitContainer();
 	UFUNCTION(BlueprintCallable)
 	bool TryAddItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
@@ -58,8 +59,16 @@ public:
 		void AddPlayer(ARPG_PlayerController* PlayerController);
 	UFUNCTION(BlueprintCallable)
 		void RemovePlayer(ARPG_PlayerController* PlayerController);
-
-	 void TransferItem(int SlotIndex, URPG_InventoryComponent* Container1 ,int Amount,int TargetSlotIndex, URPG_InventoryComponent* Container2);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+		bool HasItem(FString ItemID);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+		bool HasItemCount(FString ItemID,int Count = 1);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		bool isInventoryFullOfItems();
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		int GetItemCount(FString ItemID);
+	UFUNCTION(BlueprintCallable)
+		void TransferItem(int SlotIndex, URPG_InventoryComponent* Container1 ,int Amount,int TargetSlotIndex, URPG_InventoryComponent* Container2);
 	 UFUNCTION(BlueprintCallable)
 		 void TryUseItem(int SlotIndex);
 	 

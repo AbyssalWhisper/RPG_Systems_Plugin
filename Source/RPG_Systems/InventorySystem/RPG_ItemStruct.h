@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
+#include "ItemTypes/RPG_BaseItemType.h"
 #include "RPG_ItemStruct.generated.h"
 
 class UGameplayAbility;
@@ -46,6 +47,8 @@ public:
 		TSubclassOf<UGameplayAbility> Ability;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FSTR_RPG_Effects_Data> Effects;
+	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties, DisplayPriority = 0))
+		TObjectPtr<URPG_BaseItemType> ItemType;
 	FSTR_RPG_ItemData() {
 		ItemName = FText::GetEmpty();
 		ItemID = "";

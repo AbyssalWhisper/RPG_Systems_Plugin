@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RPG_Systems : ModuleRules
+public class BetterUtilities : ModuleRules
 {
-	public RPG_Systems(ReadOnlyTargetRules Target) : base(Target)
+	public BetterUtilities(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -25,19 +25,30 @@ public class RPG_Systems : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-                "NavigationSystem","AIModule","Core","GameplayTags", "GameplayAbilities","AIModule" , "GameplayTasks", "Niagara" ,"PhysicsCore"
+				"Core",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
 			
-		
+	if (Target.Type == TargetType.Editor)
+		{
+			PublicDependencyModuleNames.Add("UnrealEd"); 
+			PublicDependencyModuleNames.Add("GraphEditor"); 
+			PublicDependencyModuleNames.Add("BlueprintGraph"); 
+			PublicDependencyModuleNames.Add("KismetCompiler"); 
+			// Adiciona o módulo UnrealEd apenas para builds de Editor
+		}
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+				
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"UMG",
+				"GameplayAbilities",
+				"GameplayTags",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -106,5 +106,8 @@ public:
 		static void SetAttributeValue(UAbilitySystemComponent* AbilitySystemComp, FGameplayAttribute Attribute, EGameplayModOp::Type Modifier, float Value);
 	UFUNCTION(BlueprintPure, Category = "Snap")
 		static FVector SnapPosition(FVector ReferenceLocation,FQuat CamRotation, float SnapSize, FVector InitialPositio, FVector& SnapLocation);
- 
+#if WITH_EDITOR
+	UFUNCTION(BlueprintCallable)
+	static class URPG_ItemData* CreateNewItemAsset(FString Name,FString FolderPath);
+#endif
 };

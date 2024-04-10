@@ -2,9 +2,14 @@
 
 
 #include "RPG_Systems/BlueprintLibrary/RPG_BP_Library_Utilities.h"
+
 #include "RPG_Systems/Character/RPG_CharacterDataAsset.h"
 #include "RPG_Systems/GameplayAbility/RPG_BaseAttributeSet.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RPG_Systems/InventorySystem/RPG_ItemData.h"
+
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "UObject/SavePackage.h"
 
 FSTR_RPG_ItemData URPG_BP_Library_Utilities::GetItemDataFromSlot(FSTR_RPG_ItemSlot Item) {
 
@@ -246,26 +251,51 @@ void URPG_BP_Library_Utilities::SetAttributeValue(UAbilitySystemComponent* Abili
 
 FVector URPG_BP_Library_Utilities::SnapPosition(FVector ReferenceLocation,FQuat CamRotation, float SnapSize, FVector InitialPosition, FVector& SnapLocation)
 {
-	// Assumindo que vocÍ est· chamando esta funÁ„o em um membro da classe AMyGridObject
+	// Assumindo que voc√™ est√° chamando esta fun√ß√£o em um membro da classe AMyGridObject
 
-	// Transformar a posiÁ„o inicial com base na rotaÁ„o da c‚mera
+	// Transformar a posi√ß√£o inicial com base na rota√ß√£o da c√¢mera
 	FVector UnrotatedPosition = CamRotation.Inverse() * (ReferenceLocation - InitialPosition);
 
-	// Aplicar o snap ‡ posiÁ„o n„o rotacionada
+	// Aplicar o snap √† posi√ß√£o n√£o rotacionada
 	FVector SnappedPosition = UKismetMathLibrary::Vector_SnappedToGrid(UnrotatedPosition, SnapSize);
 
-	// N„o aplicar snap na coordenada z para evitar flicker nas sombras
+	// N√£o aplicar snap na coordenada z para evitar flicker nas sombras
 	SnappedPosition.X = UnrotatedPosition.X;
 
-	// Calcular a diferenÁa entre a posiÁ„o n„o rotacionada e a posiÁ„o snap
+	// Calcular a diferen√ßa entre a posi√ß√£o n√£o rotacionada e a posi√ß√£o snap
 	FVector SnapDiff = UnrotatedPosition - SnappedPosition;
 
-	// Rotacionar o vetor snap e adicion·-lo ‡ posiÁ„o inicial
+	// Rotacionar o vetor snap e adicion√°-lo √† posi√ß√£o inicial
 	FVector RotatedVector = CamRotation.RotateVector(SnappedPosition) + InitialPosition;
 
-	// Definir a posiÁ„o do objeto com base no vetor rotacionado
+	// Definir a posi√ß√£o do objeto com base no vetor rotacionado
 	SnapLocation = (RotatedVector);
 
-	// Retornar a diferenÁa de snap
+	// Retornar a diferen√ßa de snap
 	return SnapDiff;
 }
+#if WITH_EDITOR
+URPG_ItemData* URPG_BP_Library_Utilities::CreateNewItemAsset(FString AssetName, FString FolderPath)
+{
+	FString PackagePath = FolderPath + AssetName;
+	UPackage* Package = CreatePackage(*PackagePath);
+	URPG_ItemData* MyDataAsset = NewObject<URPG_ItemData>(
+		Package, URPG_ItemData::StaticClass(), *AssetName, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
+
+	FAssetRegistryModule::AssetCreated(MyDataAsset);
+	MyDataAsset->MarkPackageDirty();
+
+	FString FilePath = FPackageName::LongPackageNameToFilename(PackagePath, FPackageName::GetAssetPackageExtension());
+	FSavePackageArgs SaveArgs;
+	// This is specified just for example
+	{
+		SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+		SaveArgs.SaveFlags = SAVE_NoError;
+	}
+
+	UPackage::Save(Package, MyDataAsset, *FilePath, SaveArgs);
+
+	return MyDataAsset;
+}
+
+#endif

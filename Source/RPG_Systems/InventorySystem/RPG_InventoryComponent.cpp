@@ -84,15 +84,18 @@ void URPG_InventoryComponent::RemoveItem(FName ItemID, int Count)
 	{
 		if (Items[i].ItemID == ItemID)
 		{
-			if (Items[i].Count - Count < 1)
+			int SlotCount = Items[i].Count;
+			if (Items[i].Count <= Count)
 			{
 				Items[i] = FSTR_RPG_ItemSlot();
+				Count -= SlotCount;
 			}
 			else
 			{
 				Items[i].Count -= Count;
 			}
-			break;
+			UpdatePlayersSlot(i);
+			if (Count <= 0)break;
 		}
 	}
 	
@@ -163,6 +166,7 @@ void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_
 				Items[i].Count = FMath::Max(ItemData->MaxCount, 1);
 				 
 				RemainingItems = Item;
+				 
 				UpdatePlayersSlot(i);
 				
 			}
@@ -237,14 +241,14 @@ void URPG_InventoryComponent::UpdatePlayersSlot(int SlotIndex)
 			
 		}
 	}
-
+	OnInventorySlotChange.Broadcast(Items[SlotIndex], SlotIndex);		
 }
 
 void URPG_InventoryComponent::SetItemSlot(FSTR_RPG_ItemSlot Item, int SlotIndex)
 {
  
-		Items[SlotIndex] = Item;
-		OnInventorySlotChange.Broadcast(Items[SlotIndex], SlotIndex);		
+	Items[SlotIndex] = Item;
+	UpdatePlayersSlot(SlotIndex);
  
 }
 
@@ -267,6 +271,62 @@ void URPG_InventoryComponent::RemovePlayer(ARPG_PlayerController* PlayerControll
 		}
 		
 	}
+}
+
+bool URPG_InventoryComponent::HasItem(FString ItemID){
+
+	int InventorySize = Items.Num();
+	for (int i = 0; i < InventorySize; i++)
+	{
+		if (Items[i].ItemID == ItemID)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool URPG_InventoryComponent::HasItemCount(FString ItemID, int Count)
+{
+	int InventorySize = Items.Num();
+	Count = Count < 1 ? 1 : Count;
+	int FoundCount = 0;
+	for (int i = 0; i < InventorySize; i++)
+	{
+		if (Items[i].ItemID == ItemID)
+		{
+			FoundCount += Items[i].Count;
+			if (FoundCount >= Count)return true;
+		}
+	}
+	return false;
+}
+
+bool URPG_InventoryComponent::isInventoryFullOfItems()
+{
+	int InventorySize = Items.Num();
+	for (int i = 0; i < InventorySize; i++)
+	{
+		if (Items[i].ItemID == "")
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int URPG_InventoryComponent::GetItemCount(FString ItemID)
+{
+	int InventorySize = Items.Num();
+	int FoundCount = 0;
+	for (int i = 0; i < InventorySize; i++)
+	{
+		if (Items[i].ItemID == ItemID)
+		{
+			FoundCount += Items[i].Count;
+		}
+	}
+	return FoundCount;
 }
 
 

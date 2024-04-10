@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "RPG_Systems/Character/RPG_CharacterLibrary.h"
 #include "GameplayTagContainer.h"
+#include "RPG_Systems/InventorySystem/ItemTypes/RPG_BaseItemType.h"
 #include "RPG_CharacterDataAsset.generated.h"
 
 UENUM(BlueprintType)
@@ -30,7 +31,8 @@ public:
 		FGameplayTag Breed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TEnumAsByte<E_Diet> Diet;
-
+	UPROPERTY(EditDefaultsOnly,Instanced, BlueprintReadOnly, meta = (ShowOnlyInnerProperties, DisplayPriority = 0))
+	TObjectPtr<URPG_BaseItemType> ItemType;
 #pragma region Attributes
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|Health")
