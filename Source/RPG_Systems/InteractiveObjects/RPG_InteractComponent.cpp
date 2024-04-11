@@ -157,7 +157,7 @@ void URPG_InteractComponent::TryPickupItemOnServer_Implementation(ARPG_MasterIte
 		{
 			FSTR_RPG_ItemSlot RemainingItem;
 
-			if (!PlayerCharacter->Inventory->TryAddItem(ItemActor->Item, RemainingItem))return;
+			if (!PlayerCharacter->Inventory->TryAddItem(ItemActor->Item.Item,ItemActor->Item.Count, RemainingItem))return;
 
 			if (RemainingItem.Count>0)
 			{

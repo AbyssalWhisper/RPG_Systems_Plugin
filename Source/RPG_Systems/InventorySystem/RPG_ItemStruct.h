@@ -10,6 +10,7 @@
 
 class UGameplayAbility;
 class UGameplayEffect;
+class URPG_ItemData;
 USTRUCT(BlueprintType)
 struct  FSTR_RPG_Effects_Data : public FTableRowBase
 {
@@ -65,17 +66,17 @@ struct  FSTR_RPG_ItemSlot : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName ItemID;
+		URPG_ItemData* Item;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int Count = 0;
 
 	FSTR_RPG_ItemSlot() {
-		ItemID = "";
+		Item = nullptr;
 		Count = 0;
 	}
 
-	FSTR_RPG_ItemSlot(FName ItemID_, int Count_) {
-		ItemID = ItemID_;
+	FSTR_RPG_ItemSlot(URPG_ItemData* Item_, int Count_) {
+		Item = Item_;
 		Count = Count_;
 	}
 };
@@ -88,7 +89,7 @@ struct  FSTR_RPG_LootItems : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FDataTableRowHandle Item;
+		URPG_ItemData* Item;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DropChance = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

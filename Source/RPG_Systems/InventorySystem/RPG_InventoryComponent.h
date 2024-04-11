@@ -43,14 +43,14 @@ public:
 	
 	virtual void InitContainer();
 	UFUNCTION(BlueprintCallable)
-	bool TryAddItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
+	bool TryAddItem(URPG_ItemData* ItemData,int Count, FSTR_RPG_ItemSlot& RemainingItems);
 	UFUNCTION(BlueprintCallable)
-	void RemoveItem(FName ItemID, int Count);
+	void RemoveItem(URPG_ItemData* Item_, int Count);
 	UFUNCTION(BlueprintCallable)
 		void RemoveItemFromIndex(int index, int Count,bool& Sucess);
-	void SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemData* ItemData, FSTR_RPG_ItemSlot& RemainingItems);
-	void SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemData* ItemData, FSTR_RPG_ItemSlot& RemainingItems);
-	void AddItemAtIndex(FSTR_RPG_ItemSlot Item,int SlotIndex, FSTR_RPG_ItemData* ItemData, FSTR_RPG_ItemSlot& RemainingItems);
+	void SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
+	void SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
+	void AddItemAtIndex(FSTR_RPG_ItemSlot Item,int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems);
 	//void UpdateAllPlayersSlots();
 	void UpdatePlayersSlot(int SlotIndex);
 	UFUNCTION(BlueprintCallable)
@@ -60,21 +60,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RemovePlayer(ARPG_PlayerController* PlayerController);
 	UFUNCTION(BlueprintCallable,BlueprintPure)
-		bool HasItem(FString ItemID);
+		bool HasItem(URPG_ItemData* Item);
 	UFUNCTION(BlueprintCallable,BlueprintPure)
-		bool HasItemCount(FString ItemID,int Count = 1);
+		bool HasItemCount(URPG_ItemData* Item,int Count = 1);
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		bool isInventoryFullOfItems();
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-		int GetItemCount(FString ItemID);
+		int GetItemCount(URPG_ItemData* Item);
 	UFUNCTION(BlueprintCallable)
 		void TransferItem(int SlotIndex, URPG_InventoryComponent* Container1 ,int Amount,int TargetSlotIndex, URPG_InventoryComponent* Container2);
-	 UFUNCTION(BlueprintCallable)
-		 void TryUseItem(int SlotIndex);
-	 
-		 UFUNCTION(BlueprintCallable)
-			 FSTR_RPG_ItemData GetItemDataFromSlot(int SlotIndex);
-		 UFUNCTION(BlueprintCallable)
-			 FSTR_RPG_ItemData GetItemData(FSTR_RPG_ItemSlot Item);
+	UFUNCTION(BlueprintCallable)
+		void TryUseItem(int SlotIndex);
+	UFUNCTION(Server,Reliable)
+		void TryUseItem_Server(int SlotIndex);
+	UFUNCTION(Client,Reliable)
+		void TryUseItem_Client(int SlotIndex);
+		 UFUNCTION(BlueprintCallable, BlueprintPure)
+			 URPG_ItemData*  GetItemDataFromSlot(int SlotIndex); 
 
+	UFUNCTION(BlueprintCallable)
+	int GetInventorySize() const;
 };

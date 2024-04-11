@@ -6,6 +6,7 @@
 #include "RPG_Systems/InteractiveObjects/RPG_InteractComponent.h"
 #include "RPG_Systems/Character/RPG_BaseCharacter.h"
 #include "RPG_Systems/BlueprintLibrary/RPG_BP_Library_Utilities.h"
+#include "RPG_Systems/InventorySystem/RPG_ItemData.h"
 
 // Sets default values for this component's properties
 URPG_InventoryComponent::URPG_InventoryComponent()
@@ -49,40 +50,33 @@ void URPG_InventoryComponent::InitContainer()
 }
 
 
-bool URPG_InventoryComponent::TryAddItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems)
+bool URPG_InventoryComponent::TryAddItem(URPG_ItemData* ItemData,int Count, FSTR_RPG_ItemSlot& RemainingItems)
 {
-	
+	FSTR_RPG_ItemSlot ItemSlot_ = FSTR_RPG_ItemSlot(ItemData,Count);
 	int EmptySlotIndex = -1;
-	RemainingItems = Item;
-	if (Item.Count < 1 || Item.ItemID == "")return false;
+	RemainingItems = ItemSlot_;
+	if (ItemSlot_.Count < 1 || ItemSlot_.Item == nullptr)return false;
 
-	if (!Item_DT.DataTable) {
-		GEngine->AddOnScreenDebugMessage(-1, 25, FColor::Red, "Item DT Invalid");
-		return false;
-	}
-
-	FSTR_RPG_ItemData* ItemData = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Item.ItemID, "");
+    if(!ItemSlot_.Item) return false;
 	
-    if(!ItemData) return false;
-	
-	SearchSlotsWithItem(Item, ItemData, RemainingItems);
+	SearchSlotsWithItem(ItemSlot_, RemainingItems);
 	
 	
 	if (RemainingItems.Count > 0)
 	{
-		SearchEmptySlots(RemainingItems, ItemData, RemainingItems);
+		SearchEmptySlots(RemainingItems, RemainingItems);
 
 	}
 
 	return true;
 }
-void URPG_InventoryComponent::RemoveItem(FName ItemID, int Count)
+void URPG_InventoryComponent::RemoveItem(URPG_ItemData* Item_, int Count)
 {
-	int InventorySize = Items.Num();
+	int InventorySize = GetInventorySize();
 	Count = Count < 1 ? 1 : Count;
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == ItemID)
+		if (Items[i].Item == Item_)
 		{
 			int SlotCount = Items[i].Count;
 			if (Items[i].Count <= Count)
@@ -116,22 +110,22 @@ void URPG_InventoryComponent::RemoveItemFromIndex(int index, int Count, bool& Su
 	}
 }
 
-void URPG_InventoryComponent::SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemData* ItemData, FSTR_RPG_ItemSlot& RemainingItems)
+void URPG_InventoryComponent::SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems)
 {
-	int InventorySize = Items.Num();
+	int InventorySize = GetInventorySize();
 
 	RemainingItems = Item;
 
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == Item.ItemID)
+		if (Items[i].Item == Item.Item)
 		{
-			if (Items[i].Count < FMath::Max(ItemData->MaxCount, 1))
+			if (Items[i].Count < FMath::Max(Item.Item->MaxCount, 1))
 			{
-				if ((Items[i].Count + Item.Count) > FMath::Max(ItemData->MaxCount,1)) {
+				if ((Items[i].Count + Item.Count) > FMath::Max(Item.Item->MaxCount,1)) {
 
-					Item.Count -= FMath::Max(ItemData->MaxCount, 1) - Items[i].Count;
-					Items[i].Count = FMath::Max(ItemData->MaxCount, 1);
+					Item.Count -= FMath::Max(Item.Item->MaxCount, 1) - Items[i].Count;
+					Items[i].Count = FMath::Max(Item.Item->MaxCount, 1);
 					RemainingItems = Item;
 					UpdatePlayersSlot(i);
 					
@@ -152,18 +146,19 @@ void URPG_InventoryComponent::SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_R
 	}
 }
 
-void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemData* ItemData, FSTR_RPG_ItemSlot& RemainingItems)
+void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item,FSTR_RPG_ItemSlot& RemainingItems)
 {
-	int InventorySize = Items.Num();
+	const int InventorySize = GetInventorySize();
+	const int MaxItemPerSlot = Item.Item->MaxCount;
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == "")
+		if (Items[i].Item == nullptr)
 		{
-			if (Item.Count > FMath::Max(ItemData->MaxCount, 1)) {
+			if (Item.Count > FMath::Max(MaxItemPerSlot, 1)) {
 				
-				Item.Count -= FMath::Max(ItemData->MaxCount, 1);
-				Items[i].ItemID = Item.ItemID;
-				Items[i].Count = FMath::Max(ItemData->MaxCount, 1);
+				Item.Count -= FMath::Max(MaxItemPerSlot, 1);
+				Items[i].Item = Item.Item;
+				Items[i].Count = FMath::Max(MaxItemPerSlot, 1);
 				 
 				RemainingItems = Item;
 				 
@@ -172,7 +167,7 @@ void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_
 			}
 			else
 			{
-				Items[i].ItemID = Item.ItemID;
+				Items[i].Item = Item.Item;
 				Items[i].Count = Item.Count;
 				 
 				RemainingItems = FSTR_RPG_ItemSlot();
@@ -184,20 +179,22 @@ void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_
 	}
 }
 
-void URPG_InventoryComponent::AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotIndex, FSTR_RPG_ItemData* ItemData, FSTR_RPG_ItemSlot& RemainingItems)
+void URPG_InventoryComponent::AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems)
 {
 	RemainingItems = Item;
 
-	if (RemainingItems.ItemID == "")return;
+	const int MaxItemPerSlot = Item.Item->MaxCount;
+	
+	if (RemainingItems.Item == nullptr)return;
 	 
-	if (Items[SlotIndex].ItemID == RemainingItems.ItemID)
+	if (Items[SlotIndex].Item == RemainingItems.Item)
 	{
 	
-		if (Items[SlotIndex].Count + RemainingItems.Count > ItemData->MaxCount)
+		if (Items[SlotIndex].Count + RemainingItems.Count > MaxItemPerSlot)
 		{
 			 
-			RemainingItems.Count -= ItemData->MaxCount - Items[SlotIndex].Count;
-			Items[SlotIndex].Count = ItemData->MaxCount;
+			RemainingItems.Count -= MaxItemPerSlot - Items[SlotIndex].Count;
+			Items[SlotIndex].Count = MaxItemPerSlot;
 			UpdatePlayersSlot(SlotIndex);
 		}
 		else
@@ -209,13 +206,13 @@ void URPG_InventoryComponent::AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotInd
 	}
 	else
 	{
-		if (Items[SlotIndex].ItemID == "")
+		if (Items[SlotIndex].Item == nullptr)
 		{
-			Items[SlotIndex].ItemID = RemainingItems.ItemID;
-			if (RemainingItems.Count > ItemData->MaxCount)
+			Items[SlotIndex].Item = RemainingItems.Item;
+			if (RemainingItems.Count > MaxItemPerSlot)
 			{
-				Items[SlotIndex].Count = ItemData->MaxCount;
-				RemainingItems.Count -= ItemData->MaxCount;
+				Items[SlotIndex].Count = MaxItemPerSlot;
+				RemainingItems.Count -= MaxItemPerSlot;
 				UpdatePlayersSlot(SlotIndex);
 			}
 			else
@@ -273,12 +270,12 @@ void URPG_InventoryComponent::RemovePlayer(ARPG_PlayerController* PlayerControll
 	}
 }
 
-bool URPG_InventoryComponent::HasItem(FString ItemID){
+bool URPG_InventoryComponent::HasItem(URPG_ItemData* Item){
 
-	int InventorySize = Items.Num();
+	const int InventorySize = GetInventorySize();
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == ItemID)
+		if (Items[i].Item == Item)
 		{
 			return true;
 		}
@@ -286,14 +283,14 @@ bool URPG_InventoryComponent::HasItem(FString ItemID){
 	return false;
 }
 
-bool URPG_InventoryComponent::HasItemCount(FString ItemID, int Count)
+bool URPG_InventoryComponent::HasItemCount(URPG_ItemData* Item, int Count)
 {
-	int InventorySize = Items.Num();
+	const int InventorySize = GetInventorySize();
 	Count = Count < 1 ? 1 : Count;
 	int FoundCount = 0;
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == ItemID)
+		if (Items[i].Item == Item)
 		{
 			FoundCount += Items[i].Count;
 			if (FoundCount >= Count)return true;
@@ -304,10 +301,10 @@ bool URPG_InventoryComponent::HasItemCount(FString ItemID, int Count)
 
 bool URPG_InventoryComponent::isInventoryFullOfItems()
 {
-	int InventorySize = Items.Num();
+	const int InventorySize = GetInventorySize();
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == "")
+		if (Items[i].Item == nullptr)
 		{
 			return false;
 		}
@@ -315,13 +312,13 @@ bool URPG_InventoryComponent::isInventoryFullOfItems()
 	return true;
 }
 
-int URPG_InventoryComponent::GetItemCount(FString ItemID)
+int URPG_InventoryComponent::GetItemCount(URPG_ItemData* Item)
 {
-	int InventorySize = Items.Num();
+	const int InventorySize = GetInventorySize();
 	int FoundCount = 0;
 	for (int i = 0; i < InventorySize; i++)
 	{
-		if (Items[i].ItemID == ItemID)
+		if (Items[i].Item == Item)
 		{
 			FoundCount += Items[i].Count;
 		}
@@ -341,13 +338,15 @@ void URPG_InventoryComponent::TransferItem(int SlotIndex, URPG_InventoryComponen
 		 
 		Item1 = Container1->Items[SlotIndex];
 		Item2 = Container2->Items[TargetSlotIndex];
-		FSTR_RPG_ItemData* Item1Data = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Container1->Items[SlotIndex].ItemID, "", true);
-		FSTR_RPG_ItemData* Item2Data = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Container2->Items[TargetSlotIndex].ItemID, "", true);
+		//FSTR_RPG_ItemData* Item1Data = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Container1->Items[SlotIndex].Item, "", true);
+		//FSTR_RPG_ItemData* Item2Data = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Container2->Items[TargetSlotIndex].Item, "", true);
+
+		URPG_ItemData* Item1Data = Container1->Items[SlotIndex].Item;
 		
-		if (Container1->Items[SlotIndex].ItemID == Container2->Items[TargetSlotIndex].ItemID)
+		if (Container1->Items[SlotIndex].Item == Container2->Items[TargetSlotIndex].Item)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, Container1->Items[SlotIndex].ItemID.ToString());
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, Container2->Items[TargetSlotIndex].ItemID.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, Container1->Items[SlotIndex].Item->GetName());
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, Container2->Items[TargetSlotIndex].Item->GetName());
 			// Se a quantia para movimentar for maior do que a quantia no slot cancelar 
 			if (Amount > Container1->Items[SlotIndex].Count)return;
 			if (Container2->Items[TargetSlotIndex].Count >= Item1Data->MaxCount)return;
@@ -401,9 +400,9 @@ void URPG_InventoryComponent::TransferItem(int SlotIndex, URPG_InventoryComponen
 			}
 			else
 			{
-				if (Container2->Items[TargetSlotIndex].ItemID == "")
+				if (Container2->Items[TargetSlotIndex].Item == nullptr)
 				{
-					Container2->Items[TargetSlotIndex].ItemID = Item1.ItemID;
+					Container2->Items[TargetSlotIndex].Item = Item1.Item;
 					Container2->Items[TargetSlotIndex].Count = Amount;
 					Container1->Items[SlotIndex].Count -= Amount;
 					
@@ -419,10 +418,26 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 {
 	if (OwnerCharacter)
 	{
-		FSTR_RPG_ItemData ItemData = GetItemData(Items[FMath::Min(SlotIndex, Items.Num() - 1)]);
-		if (ItemData.Tags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Usable"))))
+		URPG_ItemData* ItemData = Items[FMath::Min(SlotIndex, Items.Num() - 1)].Item;
+		if (!ItemData || !ItemData->ItemType)return;
+		if (Items[SlotIndex].Count > 0)
 		{
-			if (ItemData.Ability)
+			if(GIsServer)
+			{
+				bool Sucesss = ItemData->ItemType->ExecuteOnServer(GetOwner(),this,SlotIndex);
+
+			}
+			else
+			{
+				TryUseItem_Server(SlotIndex);
+				bool Sucesss = ItemData->ItemType->ExecuteOnClient(GetOwner(),this,SlotIndex);
+			}
+		}
+		
+		return;
+		if (ItemData->Tags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Usable"))))
+		{
+			if (ItemData->Ability)
 			{
 				FGameplayEventData GameplayEventData;
 				FRPG_GameplayAbilityTargetData_Item* Data = new FRPG_GameplayAbilityTargetData_Item(SlotIndex);
@@ -434,7 +449,7 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 				GameplayEventData.TargetData = Handle;
 				GameplayEventData.OptionalObject = this;
 				GameplayEventData.Instigator = OwnerCharacter;
-				if (OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilityByClass(ItemData.Ability))
+				if (OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilityByClass(ItemData->Ability))
 				{
 					OwnerCharacter->GetAbilitySystemComponent()->HandleGameplayEvent(Tag,&GameplayEventData);
 				}
@@ -444,19 +459,25 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 	}
 }
 
-FSTR_RPG_ItemData URPG_InventoryComponent::GetItemDataFromSlot(int SlotIndex)
+void URPG_InventoryComponent::TryUseItem_Server_Implementation(int SlotIndex)
 {
-	return GetItemData(Items[SlotIndex]);
+	TryUseItem(SlotIndex);
+			
 }
 
-FSTR_RPG_ItemData URPG_InventoryComponent::GetItemData(FSTR_RPG_ItemSlot Item)
+void URPG_InventoryComponent::TryUseItem_Client_Implementation(int SlotIndex)
 {
-	FSTR_RPG_ItemData* Item1Data = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Item.ItemID, "", true);
-	if (Item1Data)
-	{
-		return *Item1Data;
-	}
-	return FSTR_RPG_ItemData();
 }
+
+URPG_ItemData* URPG_InventoryComponent::GetItemDataFromSlot(int SlotIndex)
+{
+	return Items[SlotIndex].Item;
+}
+
+int URPG_InventoryComponent::GetInventorySize() const
+{
+	return Items.Num();
+}
+
 
  

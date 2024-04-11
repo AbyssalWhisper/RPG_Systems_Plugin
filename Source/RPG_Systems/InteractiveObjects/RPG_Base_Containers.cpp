@@ -63,10 +63,10 @@ void ARPG_Base_Containers::BeginPlay()
 					{
 						if (FMath::FRand() <= LootData->Items[i].DropChance)
 						{
-							if (LootData->Items[i].Item.RowName != "")
+							if (LootData->Items[i].Item != nullptr)
 							{
 
-								ContainerInventory->TryAddItem(FSTR_RPG_ItemSlot(LootData->Items[i].Item.RowName, FMath::RandRange(LootData->Items[i].MinCount, LootData->Items[i].MaxCount)), RemainingItem);
+								ContainerInventory->TryAddItem(LootData->Items[i].Item, FMath::RandRange(LootData->Items[i].MinCount, LootData->Items[i].MaxCount), RemainingItem);
 							}
 
 						}

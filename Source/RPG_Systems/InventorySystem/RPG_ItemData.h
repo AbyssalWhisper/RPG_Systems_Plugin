@@ -23,8 +23,8 @@ class RPG_SYSTEMS_API URPG_ItemData : public UPrimaryDataAsset
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText ItemName = FText::GetEmpty();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName ItemID;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//FName ItemID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> Texture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
