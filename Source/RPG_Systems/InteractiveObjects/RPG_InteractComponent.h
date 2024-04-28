@@ -68,4 +68,6 @@ public:
 
 		//Set Container
 		void SetContainer(URPG_InventoryComponent* Container);
+		UFUNCTION(Client,Reliable)
+		void InitContainerInventory(URPG_InventoryComponent* Inventory);
 };

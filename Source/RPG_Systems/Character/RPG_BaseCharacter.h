@@ -160,8 +160,7 @@ public:
 		void Server_StopMontage();
 	bool Server_StopMontage_Validate();
 	void Server_StopMontage_Implementation();
-	void PossessedBy(AController* NewController) override;
-
+ 
 
 	void TryCancelAttack();
 	UFUNCTION(BlueprintCallable)
@@ -238,4 +237,15 @@ public:
 
 #pragma endregion GameplayAbilites
 
+	void PossessedBy(AController* NewController) override;
+
+	virtual void UnPossessed() override;
+	UFUNCTION(Client,Reliable)
+	void Client_PossessedBy(APlayerController* PlayerController);
+	UFUNCTION(Client,Reliable)
+	void Client_UnPossessed(APlayerController* OldPlayerController);
+	UFUNCTION(BlueprintNativeEvent)
+	void PossessedOnClient(APlayerController* PlayerController);
+	UFUNCTION(BlueprintNativeEvent)
+	void UnPossessedOnClient(APlayerController* OldPlayerController);
 };

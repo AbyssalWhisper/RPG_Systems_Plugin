@@ -327,7 +327,37 @@ void ARPG_BaseCharacter::PossessedBy(AController* NewController)
 	{
 		AbilitySystemComp->RefreshAbilityActorInfo();
 	}
-	
+	if (auto a = Cast<APlayerController>(NewController))
+	{
+		Client_PossessedBy(a);
+	}
+}
+
+void ARPG_BaseCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+	if (auto a = Cast<APlayerController>(GetController()))
+	{
+		Client_UnPossessed(a);
+	}
+}
+
+void ARPG_BaseCharacter::Client_PossessedBy_Implementation(APlayerController* PlayerController)
+{
+	PossessedOnClient(PlayerController);
+}
+
+void ARPG_BaseCharacter::Client_UnPossessed_Implementation(APlayerController* OldPlayerController)
+{
+	UnPossessedOnClient(OldPlayerController);
+}
+
+void ARPG_BaseCharacter::PossessedOnClient_Implementation(APlayerController* PlayerController)
+{
+}
+
+void ARPG_BaseCharacter::UnPossessedOnClient_Implementation(APlayerController* OldPlayerController)
+{
 }
 
 void ARPG_BaseCharacter::TryCancelAttack()

@@ -2,20 +2,23 @@
 
 #include "BetterUtilitiesBPLibrary.h"
 #include "BetterUtilities.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
-UBetterUtilitiesBPLibrary::UBetterUtilitiesBPLibrary(const FObjectInitializer& ObjectInitializer)
+UBetterUtilities::UBetterUtilities(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 { 
 }
 
-float UBetterUtilitiesBPLibrary::BetterUtilitiesSampleFunction(float Param)
+float UBetterUtilities::BetterUtilitiesSampleFunction(float Param)
 {
 	return -1;
 }
  
-EPlatform UBetterUtilitiesBPLibrary::GetPlatformEnum()
+EPlatform UBetterUtilities::GetPlatformEnum()
 {
     FString PlatformName = UGameplayStatics::GetPlatformName();
 
@@ -58,7 +61,7 @@ EPlatform UBetterUtilitiesBPLibrary::GetPlatformEnum()
 }
  
 
-void UBetterUtilitiesBPLibrary::ClearWidget(UUserWidget*& Widget)
+void UBetterUtilities::ClearWidget(UUserWidget*& Widget)
 {
 	if (Widget)
 	{
@@ -67,7 +70,7 @@ void UBetterUtilitiesBPLibrary::ClearWidget(UUserWidget*& Widget)
 	}
 }
 
-void UBetterUtilitiesBPLibrary::GetPlatform(EPlatform& Platform)
+void UBetterUtilities::GetPlatform(EPlatform& Platform)
 {
     FString PlatformName = UGameplayStatics::GetPlatformName();
     
@@ -110,7 +113,7 @@ void UBetterUtilitiesBPLibrary::GetPlatform(EPlatform& Platform)
 }
 
 
-void UBetterUtilitiesBPLibrary::RunInEditor(ETrueFalse& TrueFalse)
+void UBetterUtilities::RunInEditor(ETrueFalse& TrueFalse)
 {
 #if WITH_EDITOR
     TrueFalse = ETrueFalse::True_;
@@ -120,7 +123,7 @@ void UBetterUtilitiesBPLibrary::RunInEditor(ETrueFalse& TrueFalse)
 }
 
  
-FTimerHandle UBetterUtilitiesBPLibrary::EditorDelay(FTimerDynamicDelegate InputDelegate, float DelayTime)
+FTimerHandle UBetterUtilities::EditorDelay(FTimerDynamicDelegate InputDelegate, float DelayTime)
 {
     FTimerHandle TimerHandle;
     if (!InputDelegate.IsBound())return TimerHandle;
@@ -132,7 +135,7 @@ FTimerHandle UBetterUtilitiesBPLibrary::EditorDelay(FTimerDynamicDelegate InputD
 }
 
 
-void UBetterUtilitiesBPLibrary::ClearTimerInEditor(FTimerHandle TimerHandle)
+void UBetterUtilities::ClearTimerInEditor(FTimerHandle TimerHandle)
 {
 #if WITH_EDITOR
     if (!GEditor)
@@ -145,7 +148,7 @@ void UBetterUtilitiesBPLibrary::ClearTimerInEditor(FTimerHandle TimerHandle)
 
 }
 
-void UBetterUtilitiesBPLibrary::SetMaterials(UMeshComponent* TargetMesh,
+void UBetterUtilities::SetMaterials(UMeshComponent* TargetMesh,
     TArray<UMaterialInterface*> Materials)
 {
     if (TargetMesh)
@@ -157,7 +160,7 @@ void UBetterUtilitiesBPLibrary::SetMaterials(UMeshComponent* TargetMesh,
     }
 }
 
-void UBetterUtilitiesBPLibrary::SetSkeletalMeshAndMaterials(USkeletalMeshComponent* TargetMesh, USkeletalMesh* Mesh,
+void UBetterUtilities::SetSkeletalMeshAndMaterials(USkeletalMeshComponent* TargetMesh, USkeletalMesh* Mesh,
     TArray<UMaterialInterface*> Materials)
 {
     if (TargetMesh)
@@ -170,7 +173,7 @@ void UBetterUtilitiesBPLibrary::SetSkeletalMeshAndMaterials(USkeletalMeshCompone
     }
 }
 
-void UBetterUtilitiesBPLibrary::SetStaticMeshAndMaterials(UStaticMeshComponent* TargetMesh, UStaticMesh* Mesh,
+void UBetterUtilities::SetStaticMeshAndMaterials(UStaticMeshComponent* TargetMesh, UStaticMesh* Mesh,
     TArray<UMaterialInterface*> Materials)
 {
     if (TargetMesh)
@@ -183,7 +186,7 @@ void UBetterUtilitiesBPLibrary::SetStaticMeshAndMaterials(UStaticMeshComponent* 
     }
 }
 
-void UBetterUtilitiesBPLibrary::AddWidgetToClientViewport(UWidget* Widget, int Z_Order)
+void UBetterUtilities::AddWidgetToClientViewport(UWidget* Widget, int Z_Order)
 {
     if (GEngine->GetCurrentPlayWorld() && Widget)
     {
@@ -191,40 +194,40 @@ void UBetterUtilitiesBPLibrary::AddWidgetToClientViewport(UWidget* Widget, int Z
     }
 }
 
-UObject* UBetterUtilitiesBPLibrary::GetWorldContextObjectFromGEngine()
+UObject* UBetterUtilities::GetWorldContextObjectFromGEngine()
 {
    return GEngine->GetCurrentPlayWorld();
 }
 
-FString UBetterUtilitiesBPLibrary::Conv_GameplayTagToString(FGameplayTag Tag)
+FString UBetterUtilities::Conv_GameplayTagToString(FGameplayTag Tag)
 {
     return Tag.ToString();
 }
 
 
-UAnimMontage* UBetterUtilitiesBPLibrary::AutoLoadAnimMontage(TSoftObjectPtr<UAnimMontage> SoftAnimMontage)
+UAnimMontage* UBetterUtilities::AutoLoadAnimMontage(TSoftObjectPtr<UAnimMontage> SoftAnimMontage)
 {
     return SoftAnimMontage.LoadSynchronous();
 }
 
-TSubclassOf<UGameplayAbility> UBetterUtilitiesBPLibrary::AutoLoadGameplayAbility(
+TSubclassOf<UGameplayAbility> UBetterUtilities::AutoLoadGameplayAbility(
     TSoftClassPtr<UGameplayAbility> SoftGameplayAbility)
 {
     return SoftGameplayAbility.LoadSynchronous();
 }
  
 
-USkeletalMesh* UBetterUtilitiesBPLibrary::AutoLoadSkeletalMesh(TSoftObjectPtr<USkeletalMesh> SoftSkeletalMesh)
+USkeletalMesh* UBetterUtilities::AutoLoadSkeletalMesh(TSoftObjectPtr<USkeletalMesh> SoftSkeletalMesh)
 {
     return SoftSkeletalMesh.LoadSynchronous();
 }
 
-UStaticMesh* UBetterUtilitiesBPLibrary::AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> SoftStaticMesh)
+UStaticMesh* UBetterUtilities::AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> SoftStaticMesh)
 {
     return SoftStaticMesh.LoadSynchronous();
 }
 
-void UBetterUtilitiesBPLibrary::ShowMouseCursor(bool bShow)
+void UBetterUtilities::ShowMouseCursor(bool bShow)
 {
     APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();
     if (PC)
@@ -233,7 +236,7 @@ void UBetterUtilitiesBPLibrary::ShowMouseCursor(bool bShow)
     }
 }
 
-bool UBetterUtilitiesBPLibrary::SimpleLineTraceSingleByChannel(const UObject* WorldContextObject,FVector StartLocation, FRotator Direction,
+bool UBetterUtilities::SimpleLineTraceSingleByChannel(const UObject* WorldContextObject,FVector StartLocation, FRotator Direction,
     double Distance, ETraceTypeQuery TraceChannel, bool bTraceComplex, const TArray<AActor*>& ActorsToIgnore,
     EDrawDebugTrace::Type DrawDebugType, FHitResult& OutHit, bool bIgnoreSelf, FLinearColor TraceColor,
     FLinearColor TraceHitColor, float DrawTime)
@@ -244,5 +247,55 @@ bool UBetterUtilitiesBPLibrary::SimpleLineTraceSingleByChannel(const UObject* Wo
         bTraceComplex, ActorsToIgnore, DrawDebugType,OutHit , bIgnoreSelf, TraceColor, TraceHitColor, DrawTime);
 }
 
- 
- 
+
+FVector UBetterUtilities::GetRandomPointInRadius(FVector Location,float Radius)
+{
+    return Location + (FMath::VRand()*(FMath::FRand()*Radius));
+}
+
+FVector UBetterUtilities::GetRandomPointInBoxCollision(UBoxComponent* BoxCollision)
+{
+    // Verifique se a caixa de colisão é válida
+    if (!BoxCollision)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Box collision is null"));
+        return FVector::ZeroVector;
+    }
+
+    // Obtenha a localização e os vetores da caixa de colisão
+    FVector BoxLocation = BoxCollision->GetComponentLocation();
+    FVector BoxExtent = BoxCollision->GetScaledBoxExtent();
+    FVector BoxUpVector = BoxCollision->GetUpVector();
+    FVector BoxForwardVector = BoxCollision->GetForwardVector();
+    FVector BoxRightVector = BoxCollision->GetRightVector();
+
+    // Calcule um ponto aleatório dentro da caixa de colisão local
+    FVector RandomLocation = BoxLocation +
+        (FMath::FRandRange(-1.f, 1.f) * BoxExtent.X * BoxForwardVector) +
+        (FMath::FRandRange(-1.f, 1.f) * BoxExtent.Y * BoxRightVector) +
+        (FMath::FRandRange(-1.f, 1.f) * BoxExtent.Z * BoxUpVector);
+
+    return RandomLocation;
+}
+
+FVector UBetterUtilities::GetRandomPointInSphereCollision(USphereComponent* SphereCollision)
+{
+    // Verifique se a colisão esférica é válida
+    if (!SphereCollision)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Sphere collision is null"));
+        return FVector::ZeroVector;
+    }
+
+    // Obtenha a localização e o raio da colisão esférica
+    FVector SphereLocation = SphereCollision->GetComponentLocation();
+    float SphereRadius = SphereCollision->GetScaledSphereRadius();
+
+    // Gere uma direção aleatória
+    FVector RandomDirection = FMath::VRand();
+
+    // Calcule a localização aleatória dentro da colisão esférica
+    FVector RandomLocation = SphereLocation + RandomDirection * (FMath::FRand()*SphereRadius);
+
+    return RandomLocation;
+}

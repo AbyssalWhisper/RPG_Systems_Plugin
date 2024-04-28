@@ -29,7 +29,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FOnInventorySlotChange OnInventorySlotChange;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<ARPG_PlayerController*> Players;
+		TArray<APlayerController*> Players;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		ARPG_BaseCharacter* OwnerCharacter;
 protected:
@@ -42,23 +42,35 @@ public:
 
 	
 	virtual void InitContainer();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Client,Reliable)
+	virtual void Client_InitContainer();
+	UFUNCTION(NetMulticast,Reliable)
+	virtual void Multicast_InitContainer();
+	
+	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
 	bool TryAddItem(URPG_ItemData* ItemData,int Count, FSTR_RPG_ItemSlot& RemainingItems);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
 	void RemoveItem(URPG_ItemData* Item_, int Count);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
 		void RemoveItemFromIndex(int index, int Count,bool& Sucess);
 	void SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
 	void SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
 	void AddItemAtIndex(FSTR_RPG_ItemSlot Item,int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems);
 	//void UpdateAllPlayersSlots();
 	void UpdatePlayersSlot(int SlotIndex);
-	UFUNCTION(BlueprintCallable)
-		void SetItemSlot(FSTR_RPG_ItemSlot Item, int SlotIndex);
-	UFUNCTION(BlueprintCallable)
-		void AddPlayer(ARPG_PlayerController* PlayerController);
-	UFUNCTION(BlueprintCallable)
-		void RemovePlayer(ARPG_PlayerController* PlayerController);
+
+	
+	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
+	void SetItemSlot(FSTR_RPG_ItemSlot Item, int SlotIndex);
+	void SetItemSlotOnClient(FSTR_RPG_ItemSlot Item, int SlotIndex);
+	
+	//Do not use this function on the client side
+	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
+		void AddPlayer(APlayerController* PlayerController);
+	//Do not use this function on the client side
+	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
+		void RemovePlayer(APlayerController* PlayerController);
+	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 		bool HasItem(URPG_ItemData* Item);
 	UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -80,4 +92,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetInventorySize() const;
+	UFUNCTION(BlueprintCallable)
+	void UpdateAllInventory(APlayerController* PlayerController);
 };

@@ -2,11 +2,14 @@
 
 
 #include "RPG_Systems/InventorySystem/RPG_InventoryComponent.h"
+
+#include "BetterUtilitiesBPLibrary.h"
 #include "RPG_Systems/PlayerController/RPG_PlayerController.h"
 #include "RPG_Systems/InteractiveObjects/RPG_InteractComponent.h"
 #include "RPG_Systems/Character/RPG_BaseCharacter.h"
 #include "RPG_Systems/BlueprintLibrary/RPG_BP_Library_Utilities.h"
 #include "RPG_Systems/InventorySystem/RPG_ItemData.h"
+
 
 // Sets default values for this component's properties
 URPG_InventoryComponent::URPG_InventoryComponent()
@@ -27,8 +30,8 @@ URPG_InventoryComponent::URPG_InventoryComponent()
 void URPG_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-		InitContainer();
+
+	InitContainer();
 	
 		OwnerCharacter = Cast<ARPG_BaseCharacter>(GetOwner());
 	// ...
@@ -46,7 +49,17 @@ void URPG_InventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void URPG_InventoryComponent::InitContainer()
 {
-	Items.SetNum(Slots);
+	if(Items.Num() != Slots) Items.SetNum(Slots);
+}
+
+void URPG_InventoryComponent::Client_InitContainer_Implementation()
+{
+	InitContainer();
+}
+
+void URPG_InventoryComponent::Multicast_InitContainer_Implementation()
+{
+	InitContainer();
 }
 
 
@@ -234,10 +247,11 @@ void URPG_InventoryComponent::UpdatePlayersSlot(int SlotIndex)
 		if (Players[i])
 		{
 
-			Players[i]->InteractionManager->Client_UpdateInventorySlot(this, this->Items[SlotIndex], SlotIndex);
-			
+			Players[i]->FindComponentByClass<URPG_InteractComponent>()->
+			Client_UpdateInventorySlot(this, this->Items[SlotIndex], SlotIndex);
 		}
 	}
+	
 	OnInventorySlotChange.Broadcast(Items[SlotIndex], SlotIndex);		
 }
 
@@ -249,24 +263,32 @@ void URPG_InventoryComponent::SetItemSlot(FSTR_RPG_ItemSlot Item, int SlotIndex)
  
 }
 
-void URPG_InventoryComponent::AddPlayer(ARPG_PlayerController* PlayerController)
+void URPG_InventoryComponent::SetItemSlotOnClient(FSTR_RPG_ItemSlot Item, int SlotIndex)
+{
+	Items[SlotIndex] = Item;
+	OnInventorySlotChange.Broadcast(Items[SlotIndex], SlotIndex);	
+}
+
+void URPG_InventoryComponent::AddPlayer(APlayerController* PlayerController)
 {
 	if (PlayerController)
 	{
 		Players.AddUnique(PlayerController);
+		URPG_InteractComponent* a = PlayerController->FindComponentByClass<URPG_InteractComponent>();
+		if (a) a->InitContainerInventory(this);
+		UpdateAllInventory(PlayerController);
 	}
 }
 
-void URPG_InventoryComponent::RemovePlayer(ARPG_PlayerController* PlayerController)
+void URPG_InventoryComponent::RemovePlayer(APlayerController* PlayerController)
 {
 	if (PlayerController)
 	{
-		int index = Players.Find(PlayerController);
-		if (Players.Find(PlayerController) > -1)
+		const int index = Players.Find(PlayerController);
+		if (index > -1)
 		{
 			Players.Remove(PlayerController);
 		}
-		
 	}
 }
 
@@ -422,7 +444,7 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 		if (!ItemData || !ItemData->ItemType)return;
 		if (Items[SlotIndex].Count > 0)
 		{
-			if(GIsServer)
+			if(GetOwner()->HasAuthority())
 			{
 				bool Sucesss = ItemData->ItemType->ExecuteOnServer(GetOwner(),this,SlotIndex);
 
@@ -477,6 +499,23 @@ URPG_ItemData* URPG_InventoryComponent::GetItemDataFromSlot(int SlotIndex)
 int URPG_InventoryComponent::GetInventorySize() const
 {
 	return Items.Num();
+}
+
+void URPG_InventoryComponent::UpdateAllInventory(APlayerController* PlayerController)
+{
+	if (PlayerController)
+	{
+		
+		auto InteractComponent = PlayerController->FindComponentByClass<URPG_InteractComponent>();
+		
+		if (InteractComponent)
+		{
+			for (int i = 0; i < Items.Num(); i++)
+			{
+				InteractComponent->Client_UpdateInventorySlot(this, Items[i], i);
+			}
+		}
+	}
 }
 
 

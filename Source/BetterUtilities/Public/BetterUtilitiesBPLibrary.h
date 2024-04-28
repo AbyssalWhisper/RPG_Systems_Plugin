@@ -9,18 +9,18 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
-#include "Blueprint/UserWidget.h"
 #include "UObject/Object.h"
 #include "UObject/UnrealType.h"
 #include "Kismet/GameplayStatics.h"
 #include "BetterUtilitiesBPLibrary.generated.h"
- 
+
+
 USTRUCT(BlueprintType)
 struct  FMinMaxValues {
     GENERATED_BODY()
 
 public:
-	
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     double Min;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -84,26 +84,27 @@ enum class EPropertyAccess : uint8
     BlueprintReadWrite UMETA(DisplayName = "BlueprintReadWrite")
 };
 
- 
+
+
 UCLASS()
-class UBetterUtilitiesBPLibrary : public UBlueprintFunctionLibrary
+class UBetterUtilities : public UBlueprintFunctionLibrary
 {
-	GENERATED_UCLASS_BODY()
+    GENERATED_UCLASS_BODY()
 public:
 
- 
-    
 
-         
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "BetterUtilities sample test testing"), Category = "BetterUtilitiesTesting")
-	    static float BetterUtilitiesSampleFunction(float Param);
-	UFUNCTION(BlueprintCallable)
-	    static void ClearWidget(UPARAM(ref) UUserWidget*& Widget);
+
+
+     
+    UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "BetterUtilities sample test testing"), Category = "BetterUtilitiesTesting")
+    static float BetterUtilitiesSampleFunction(float Param);
+    UFUNCTION(BlueprintCallable)
+    static void ClearWidget(UPARAM(ref) UUserWidget*& Widget);
     UFUNCTION(BlueprintCallable,meta = (ExpandEnumAsExecs = "Platform"))
-        static void GetPlatform(EPlatform& Platform);
+    static void GetPlatform(EPlatform& Platform);
     UFUNCTION(BlueprintCallable,BlueprintPure)
     static EPlatform GetPlatformEnum();
-    
+
     UFUNCTION(BlueprintCallable,meta = (ExpandEnumAsExecs = "TrueFalse"))
     static void RunInEditor(ETrueFalse& TrueFalse);
     UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -139,7 +140,7 @@ public:
         return GetAlphaPercent(CurrentValue, MaxValue);
     }
 
- 
+
     UFUNCTION(BlueprintCallable,BlueprintPure)
     static FVector GetDownVector(USceneComponent* Target)
     {
@@ -159,7 +160,7 @@ public:
         if (Target) return Target->GetForwardVector() * -1;
         return FVector::ZeroVector;
     }
-    
+
     UFUNCTION(BlueprintCallable,meta = (ExpandEnumAsExecs = "TrueFalse"))
     static void ClassIsChildOfBranch(TSubclassOf<class UObject> TestClass, TSubclassOf<class UObject> ParentClass,ETrueFalse& TrueFalse)
     {
@@ -244,7 +245,7 @@ public:
         }
         return nullptr;
     }
-    
+
     UFUNCTION(BlueprintCallable, Category = "Player", meta = (WorldContext = "WorldContextObject", DeterminesOutputType = "PlayerStateClass",ExpandEnumAsExecs = "TrueFalse"))
     static APlayerState* GetPlayerStateWithAutoCast(const UObject* WorldContextObject,TSubclassOf<APlayerState> PlayerStateClass, int32 PlayerIndex,ETrueFalse& TrueFalse) {
         if (PlayerStateClass && WorldContextObject && WorldContextObject->GetWorld()) {
@@ -305,10 +306,10 @@ public:
     static void ClearTimerInEditor(FTimerHandle TimerHandle);
 #pragma endregion Cast
 
-    
+
 #pragma region Mesh
     //Mesh
- 
+
     UFUNCTION(BlueprintCallable, Category = "Mesh")
     static void SetMaterials(UMeshComponent* TargetMesh, TArray<UMaterialInterface*> Materials);
     UFUNCTION(BlueprintCallable, Category = "Mesh")
@@ -361,5 +362,13 @@ public:
     static void ShowMouseCursor(bool bShow);
     UFUNCTION(BlueprintCallable, Category="Collision", meta=(bIgnoreSelf="true",Distance="100", WorldContext="WorldContextObject", AutoCreateRefTerm="ActorsToIgnore", AdvancedDisplay="TraceColor,TraceHitColor,DrawTime", Keywords="raycast"))
     static bool SimpleLineTraceSingleByChannel(const UObject* WorldContextObject,FVector StartLocation,FRotator Direction,double Distance,ETraceTypeQuery TraceChannel, bool bTraceComplex, const TArray<AActor*>& ActorsToIgnore, EDrawDebugTrace::Type DrawDebugType, FHitResult& OutHit, bool bIgnoreSelf, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawTime = 5.0f);
-    
+
+    UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Utilities")
+    static FVector GetRandomPointInRadius(FVector Location,float Radius = 100);
+    UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Utilities")
+    static FVector GetRandomPointInBoxCollision(class UBoxComponent* BoxCollision);
+    UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Utilities")
+    static FVector GetRandomPointInSphereCollision(class USphereComponent* SphereCollision);
+
+
 };

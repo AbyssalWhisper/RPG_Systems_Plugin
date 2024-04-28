@@ -128,7 +128,7 @@ void URPG_InteractComponent::Client_UpdateInventorySlot_Implementation(URPG_Inve
 {
 	if (Inventory)
 	{
-		Inventory->SetItemSlot(Item, SlotIndex);
+		Inventory->SetItemSlotOnClient(Item, SlotIndex);
 	}
 
 }
@@ -196,6 +196,15 @@ void URPG_InteractComponent::SetContainer(URPG_InventoryComponent* Container)
 		CurrentContainer->AddPlayer(PlayerController);
 	}
 }
+
+void URPG_InteractComponent::InitContainerInventory_Implementation(URPG_InventoryComponent* Inventory)
+{
+	if (Inventory)
+	{
+		Inventory->InitContainer();
+	}
+}
+
 
 
 

@@ -29,15 +29,6 @@ public class BetterUtilities : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
-			
-	if (Target.Type == TargetType.Editor)
-		{
-			PublicDependencyModuleNames.Add("UnrealEd"); 
-			PublicDependencyModuleNames.Add("GraphEditor"); 
-			PublicDependencyModuleNames.Add("BlueprintGraph"); 
-			PublicDependencyModuleNames.Add("KismetCompiler"); 
-			// Adiciona o módulo UnrealEd apenas para builds de Editor
-		}
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -51,7 +42,7 @@ public class BetterUtilities : ModuleRules
 				"GameplayTags",
 				// ... add private dependencies that you statically link with here ...	
 			}
-			);
+		);
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(
@@ -59,6 +50,15 @@ public class BetterUtilities : ModuleRules
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
+		);
+	if (Target.Type == TargetType.Editor)
+		{
+			PublicDependencyModuleNames.Add("UnrealEd"); 
+			PublicDependencyModuleNames.Add("GraphEditor"); 
+			PublicDependencyModuleNames.Add("BlueprintGraph"); 
+			PublicDependencyModuleNames.Add("KismetCompiler"); 
+			// Adiciona o módulo UnrealEd apenas para builds de Editor
+		}
+		
 	}
 }

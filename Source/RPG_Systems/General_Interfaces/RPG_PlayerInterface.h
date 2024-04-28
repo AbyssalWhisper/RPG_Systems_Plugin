@@ -27,4 +27,6 @@ public:
 	void Open_Container(URPG_InventoryComponent* Container);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Try_PickupItem(ARPG_MasterItem* Item);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	class URPG_InteractComponent* GetInteractComponent();
 };

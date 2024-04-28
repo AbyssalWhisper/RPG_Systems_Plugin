@@ -110,4 +110,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static class URPG_ItemData* CreateNewItemAsset(FString Name,FString FolderPath);
 #endif
+
+	template<typename T>
+	static T* GetComponentByClassWithAutoCast(AActor* Actor)
+	{
+		if (Actor)
+		{
+			return Cast<T>(Actor->GetComponentByClass(T::StaticClass()));
+		}
+		return nullptr;
+	}
 };
