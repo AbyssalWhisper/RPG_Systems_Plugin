@@ -1,8 +1,10 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSet.h"
 #include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
@@ -37,7 +39,6 @@ public:
 	TArray<FSTR_RPG_Effects_Data> Effects;
 	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
 	TObjectPtr<URPG_BaseItemType> ItemType;
-
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static TArray<URPG_ItemData*> GetAllItems()
 	{
@@ -49,6 +50,7 @@ public:
 		AssetRegistryModule.Get().GetAssetsByClass(ClassPathName, AssetData,true);
 		for (int i = 0; i < AssetData.Num(); i++) {
 			URPG_ItemData* FoundAsset = Cast<URPG_ItemData>(AssetData[i].GetAsset());
+			
 			if (FoundAsset != NULL) {
 				Items.Add(FoundAsset);
 			}

@@ -34,8 +34,8 @@ void URPG_AsyncTaskAttributeChanged::EndTask()
 	}
 
 	SetReadyToDestroy();
-	//MarkAsGarbage();
-	 MarkPendingKill();
+	MarkAsGarbage();
+	//MarkPendingKill();
 }
 
 void URPG_AsyncTaskAttributeChanged::AttributeChanged(const FOnAttributeChangeData & Data)

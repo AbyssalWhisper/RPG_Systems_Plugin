@@ -117,9 +117,9 @@ void UBetterUtilities::RunInEditor(ETrueFalse& TrueFalse)
 {
 #if WITH_EDITOR
     TrueFalse = ETrueFalse::True_;
-    return;
-#endif
+#else
     TrueFalse = ETrueFalse::False_;
+#endif
 }
 
  

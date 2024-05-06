@@ -30,8 +30,8 @@ void URPG_AsyncTaskEffectStackChanged::EndTask()
 	}
 
 	SetReadyToDestroy();
-	//MarkAsGarbage();
-	 MarkPendingKill();
+	MarkAsGarbage();
+	//MarkPendingKill();
 }
 
 void URPG_AsyncTaskEffectStackChanged::OnActiveGameplayEffectAddedCallback(UAbilitySystemComponent * Target, const FGameplayEffectSpec & SpecApplied, FActiveGameplayEffectHandle ActiveHandle)

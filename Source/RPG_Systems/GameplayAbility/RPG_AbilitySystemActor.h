@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RPG_Systems/GameplayAbility/RPG_BaseAttributeSet.h"
 #include "GameFramework/Actor.h"
 #include "RPG_AbilitySystemActor.generated.h"
+
 class UAbilitySystemComponent;
-class URPG_BaseAttributeSet;
+
+
 UCLASS()
 class RPG_SYSTEMS_API ARPG_AbilitySystemActor : public AActor
 {

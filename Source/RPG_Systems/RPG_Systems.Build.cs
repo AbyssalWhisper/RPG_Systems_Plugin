@@ -25,7 +25,7 @@ public class RPG_Systems : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-                "NavigationSystem","AIModule","Core","GameplayTags", "GameplayAbilities","AIModule" , "GameplayTasks", "Niagara" ,"PhysicsCore"
+                "CoreOnline","NavigationSystem","AIModule","Core","GameplayTags", "GameplayAbilities","AIModule" , "GameplayTasks", "Niagara" ,"PhysicsCore"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
