@@ -35,7 +35,7 @@ public:
 	TSubclassOf<UGameplayAbility> Ability;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSTR_RPG_Effects_Data> Effects;
-	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties, DisplayPriority = 0))
+	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
 	TObjectPtr<URPG_BaseItemType> ItemType;
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
