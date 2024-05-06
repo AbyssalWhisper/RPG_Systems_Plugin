@@ -247,8 +247,12 @@ void URPG_InventoryComponent::UpdatePlayersSlot(int SlotIndex)
 		if (Players[i])
 		{
 
-			Players[i]->FindComponentByClass<URPG_InteractComponent>()->
-			Client_UpdateInventorySlot(this, this->Items[SlotIndex], SlotIndex);
+			URPG_InteractComponent* component = Players[i]->FindComponentByClass<URPG_InteractComponent>();
+			if (component)
+			{
+				component->Client_UpdateInventorySlot(this, this->Items[SlotIndex], SlotIndex);
+		
+			}
 		}
 	}
 	

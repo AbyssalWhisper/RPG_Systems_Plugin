@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
 #include "ItemTypes/RPG_BaseItemType.h"
+#include "ModifierOp/RPG_ItemModifierOp.h"
 #include "RPG_ItemStruct.generated.h"
 
 class UGameplayAbility;
@@ -25,6 +26,23 @@ public:
 	FSTR_RPG_Effects_Data() {
 		Effect = nullptr;
 		Value = 1;
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct  FSTR_RPG_GameplayAttributeApply : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
+	TObjectPtr<URPG_ItemModifierOp> ModifierOp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Magnitude = 0;
+	FSTR_RPG_GameplayAttributeApply() {
+		Magnitude = 0;
 	}
 };
 
@@ -57,6 +75,8 @@ public:
 		MaxCount = 999;
 		Ability = nullptr;
 	}
+
+	
 };
 
 USTRUCT(BlueprintType)
