@@ -16,11 +16,11 @@ class EASYEDITOREXTEND_API UDynamicButtonEditorExtend : public UPrimaryDataAsset
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FName ButtonName = "";
+	FName ButtonName = "MyButtonNameId";
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonTooltip = FText();
+	FText ButtonTooltip = FText::FromString("MyButton Tooltip");
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonLabel = FText();
+	FText ButtonLabel = FText::FromString("MyButton");
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Instanced,meta = (ShowOnlyInnerProperties))
 	UEasyEditorObjectExecuteCode* CustomExecuteCode;
 	UFUNCTION()

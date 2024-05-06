@@ -25,9 +25,9 @@ public:
 
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonTooltip = FText();
+	FText ButtonTooltip = FText::FromString("MyButton Tooltip");
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonLabel = FText();
+	FText ButtonLabel = FText::FromString("MyButton");
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	bool bIsSubMenu = false;
 	
@@ -43,11 +43,11 @@ class EASYEDITOREXTEND_API UDynamicComboButtonExtend : public UPrimaryDataAsset
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FName ButtonName = "";
+	FName ButtonName = "MyButtonNameId";
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonTooltip = FText();
+	FText ButtonTooltip = FText::FromString("MyButton Tooltip");
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonLabel = FText();
+	FText ButtonLabel = FText::FromString("MyButton");
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	bool bInSimpleComboBox=false;
 	FName IconID = "SettingsEditor.Collision_Engine";
