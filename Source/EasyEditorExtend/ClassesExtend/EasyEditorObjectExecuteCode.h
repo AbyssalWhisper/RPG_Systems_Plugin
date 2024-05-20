@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew)
+UCLASS(Abstract,Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew)
 class EASYEDITOREXTEND_API UEasyEditorObjectExecuteCode : public UEditorUtilityObject
 {
 	GENERATED_BODY()

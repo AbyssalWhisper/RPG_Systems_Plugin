@@ -94,4 +94,6 @@ public:
 	int GetInventorySize() const;
 	UFUNCTION(BlueprintCallable)
 	void UpdateAllInventory(APlayerController* PlayerController);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool CanUseItem(int SlotIndex);
 };

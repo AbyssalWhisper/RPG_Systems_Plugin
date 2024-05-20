@@ -2,6 +2,7 @@
 
 #include "EasyEditorExtend/EasyEditorExtendLibrary.h"
 #include "EasyEditorExtend/ClassesExtend/EasyEditorObjectExecuteCode.h"
+#include "EasyEditorExtend/ClassesExtend/ComboButtonEntry/EasyComboButtonComponent.h"
 
 #define LOCTEXT_NAMESPACE "FEasyEditorExtendModule"
 
@@ -14,7 +15,7 @@ void FEasyEditorExtendModule::OnWorldInitialized(UWorld* World, FWorldInitializa
 {
 	if (Initialized)return;
 	Initialized=true;
-	for (auto Element : GetAllDataAssets())
+	for (auto Element : GetAllGetAllDynamicButtonExtend())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found %s "), *Element->GetName());
 		if (Element && GEditor)
@@ -99,16 +100,9 @@ void FEasyEditorExtendModule::CreateComboButton(UDynamicComboButtonExtend* Butto
 			
 			for (auto& Element : ButtonObject->ButtonsList)
 			{
-				if (Element.CustomExecuteCode)
+				if (Element)
 				{
-					FUIAction MyButtonAction = FUIAction(
-						FExecuteAction::CreateLambda([=]() {
-						Element.CustomExecuteCode->Run();
-						})
-					);
-					
-					MenuBuilder.AddMenuEntry(Element.ButtonLabel, Element.ButtonTooltip, FSlateIcon(), MyButtonAction);
-                
+					Element->Execute(MenuBuilder);
 				}
 			}
 			

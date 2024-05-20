@@ -17,28 +17,53 @@
  */
 class UGameplayAbility;
 class UGameplayEffect;
-
+class URPG_UseItemConditionComponent;
+class URPG_ItemDropSound;
 UCLASS()
 class RPG_SYSTEMS_API URPG_ItemData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText ItemName = FText::GetEmpty();
+	FText Name = FText::GetEmpty();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Description = FText::GetEmpty();
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//FName ItemID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<UTexture2D> Texture;
+	TSoftObjectPtr<UTexture2D> Icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MaxCount = 999;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTagContainer Tags = FGameplayTagContainer();
+	float Weight = 0;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//FGameplayTagContainer Tags = FGameplayTagContainer();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayAbility> Ability;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSTR_RPG_Effects_Data> Effects;
 	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
+	TArray<TObjectPtr<URPG_UseItemConditionComponent>> UseItemConditions;
+	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
 	TObjectPtr<URPG_BaseItemType> ItemType;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Decay")
+	bool bCanDecay = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDecay"),Category="Decay")
+	float DecayTime = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDecay"),Category="Decay")
+	TSoftObjectPtr<URPG_ItemData> DecayItem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
+	bool bCanDrop = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
+	TSoftObjectPtr<UStaticMesh> DropMesh;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
+	TSoftObjectPtr<URPG_ItemDropSound> DropSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<USoundBase> TakeSound;
+
+	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static TArray<URPG_ItemData*> GetAllItems()
 	{

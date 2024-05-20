@@ -9,7 +9,7 @@
 #include "RPG_Systems/Character/RPG_BaseCharacter.h"
 #include "RPG_Systems/BlueprintLibrary/RPG_BP_Library_Utilities.h"
 #include "RPG_Systems/InventorySystem/RPG_ItemData.h"
-
+#include "RPG_Systems/InventorySystem/ItemUseCondition/RPG_UseItemConditionComponent.h"
 
 // Sets default values for this component's properties
 URPG_InventoryComponent::URPG_InventoryComponent()
@@ -448,6 +448,7 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 		if (!ItemData || !ItemData->ItemType)return;
 		if (Items[SlotIndex].Count > 0)
 		{
+			if (!CanUseItem(SlotIndex))return;
 			if(GetOwner()->HasAuthority())
 			{
 				bool Sucesss = ItemData->ItemType->ExecuteOnServer(GetOwner(),this,SlotIndex);
@@ -457,29 +458,6 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 			{
 				TryUseItem_Server(SlotIndex);
 				bool Sucesss = ItemData->ItemType->ExecuteOnClient(GetOwner(),this,SlotIndex);
-			}
-		}
-		
-		return;
-		if (ItemData->Tags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Item.Usable"))))
-		{
-			if (ItemData->Ability)
-			{
-				FGameplayEventData GameplayEventData;
-				FRPG_GameplayAbilityTargetData_Item* Data = new FRPG_GameplayAbilityTargetData_Item(SlotIndex);
-				FGameplayAbilityTargetDataHandle Handle;
-				Handle.Data.Add(TSharedPtr<FGameplayAbilityTargetData>(Data));
-				if (!Data)return;
-				FGameplayTag Tag = FGameplayTag::RequestGameplayTag(FName("Event.ReceiveItemData"));
-				if (!Tag.IsValid())return;
-				GameplayEventData.TargetData = Handle;
-				GameplayEventData.OptionalObject = this;
-				GameplayEventData.Instigator = OwnerCharacter;
-				if (OwnerCharacter->GetAbilitySystemComponent()->TryActivateAbilityByClass(ItemData->Ability))
-				{
-					OwnerCharacter->GetAbilitySystemComponent()->HandleGameplayEvent(Tag,&GameplayEventData);
-				}
-				
 			}
 		}
 	}
@@ -522,5 +500,25 @@ void URPG_InventoryComponent::UpdateAllInventory(APlayerController* PlayerContro
 	}
 }
 
+bool URPG_InventoryComponent::CanUseItem(int SlotIndex)
+{
+	if (Items[SlotIndex].Item)
+	{
+		for (auto& Element : Items[SlotIndex].Item->UseItemConditions)
+		{
+			if (Element)
+			{
+				if (!Element->CanUse(GetOwner()))
+				{
+					return false;
+				}
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
 
- 

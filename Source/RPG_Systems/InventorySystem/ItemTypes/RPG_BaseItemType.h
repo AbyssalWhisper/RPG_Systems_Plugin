@@ -10,7 +10,7 @@
  * 
  */
 class URPG_InventoryComponent;
-UCLASS(Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew)
+UCLASS(Abstract,Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew,CollapseCategories)
 class RPG_SYSTEMS_API URPG_BaseItemType : public UObject
 {
 	GENERATED_BODY()

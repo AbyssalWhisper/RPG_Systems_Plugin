@@ -6,7 +6,6 @@
 #include "Algo/ForEach.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "EasyEditorExtend/EasyEditorExtendLibrary.h"
-#include "EasyEditorExtend/ClassesExtend/DynamicButtonEditorExtendExecuteCode.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "EasyEditorExtend/ClassesExtend/DynamicButtonEditorExtend.h"
 #include "EasyEditorExtend/ClassesExtend/DynamicComboButtonExtend.h"
@@ -39,7 +38,7 @@ public:
     }
 
 	
-	static TArray<UDynamicButtonEditorExtend*> GetAllDataAssets()
+	static TArray<UDynamicButtonEditorExtend*> GetAllGetAllDynamicButtonExtend()
     {
     	TArray<UDynamicButtonEditorExtend*> Items;
     	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -86,4 +85,6 @@ public:
     }
     void CreateButton(UDynamicButtonEditorExtend* ButtonObject);
 	void CreateComboButton(UDynamicComboButtonExtend* ButtonObject);
+
+
 };
