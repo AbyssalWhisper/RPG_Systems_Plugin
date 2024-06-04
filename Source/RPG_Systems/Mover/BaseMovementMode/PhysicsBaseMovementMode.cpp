@@ -4,7 +4,11 @@
 #include "RPG_Systems/Mover/BaseMovementMode/PhysicsBaseMovementMode.h"
 
 #include "MoverComponent.h"
+#include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
+#include "GameFramework/PhysicsVolume.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Math/UnitConversion.h"
+#include "MoveLibrary/AirMovementUtils.h"
 
 
 #if WITH_EDITOR
@@ -39,9 +43,129 @@ EDataValidationResult UPhysicsBaseMovementMode::IsDataValid(FDataValidationConte
 		
 	return Result;
 }
-
 #endif // WITH_EDITOR
-float UPhysicsBaseMovementMode::GetDeltaSecondsFromParams(const FSimulationTickParams& Params)
+
+void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
-	return Params.TimeStep.StepMs * 0.001f;
+	Super::OnSimulationTick(Params, OutputState);
+
+	const FMoverTickStartData& StartState = Params.StartState;
+	USceneComponent* UpdatedComponent = Params.UpdatedComponent;
+	UPrimitiveComponent* UpdatedPrimitive = Params.UpdatedPrimitive;
+	FProposedMove ProposedMove = Params.ProposedMove;
+
+	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
+	check(StartingSyncState);
+
+	FMoverDefaultSyncState& OutputSyncState = OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FMoverDefaultSyncState>();
+
+	const float DeltaSeconds = GetDeltaSecondsFromTimeStep(Params.TimeStep);
+	const FVector UpDir = GetMoverComponent()->GetUpDirection();
+
+	/*
+	// Instantaneous movement changes that are executed and we exit before consuming any time
+	if (ProposedMove.bHasTargetLocation && AttemptTeleport(UpdatedComponent, ProposedMove.TargetLocation, UpdatedComponent->GetComponentRotation(), *StartingSyncState, OutputState))
+	{
+		OutputState.MovementEndState.RemainingMs = Params.TimeStep.StepMs; 	// Give back all the time
+		return;
+	}
+*/
+	// Don't need a floor query - just invalidate the blackboard to ensure we don't use an old result elsewhere
+
+	if (UMoverBlackboard* SimBlackboard = GetBlackboard_Mutable())
+	{
+		SimBlackboard->Invalidate(CommonBlackboard::LastFloorResult);
+		SimBlackboard->Invalidate(CommonBlackboard::LastWaterResult);
+	}
+
+	// In air steering
+
+	FRotator TargetOrient = StartingSyncState->GetOrientation_WorldSpace();
+	if (!ProposedMove.AngularVelocity.IsZero())
+	{
+		TargetOrient += (ProposedMove.AngularVelocity * DeltaSeconds);
+	}
+
+	FVector TargetVel = ProposedMove.LinearVelocity;
+	if (const APhysicsVolume* CurPhysVolume = UpdatedComponent->GetPhysicsVolume())
+	{
+		// The physics simulation applies Z-only gravity acceleration via physics volumes, so we need to account for it here 
+		TargetVel -= (CurPhysVolume->GetGravityZ() * FVector::UpVector * DeltaSeconds);
+	}
+
+	FVector TargetPos = StartingSyncState->GetLocation_WorldSpace() + TargetVel * DeltaSeconds;
+
+	OutputState.MovementEndState.NextModeName = NextModeName;
+
+	OutputState.MovementEndState.RemainingMs = 0.0f;
+	OutputSyncState.MoveDirectionIntent = ProposedMove.bHasDirIntent ? ProposedMove.DirectionIntent : FVector::ZeroVector;
+	OutputSyncState.SetTransforms_WorldSpace(
+		TargetPos,
+		TargetOrient,
+		TargetVel);
+}
+
+void UPhysicsBaseMovementMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
+	FProposedMove& OutProposedMove) const
+{
+	const FCharacterDefaultInputs* CharacterInputs = StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>();
+	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
+	check(StartingSyncState);
+
+	const float DeltaSeconds = GetDeltaSecondsFromTimeStep(TimeStep);
+
+	FFreeMoveParams Params;
+	if (CharacterInputs)
+	{
+		Params.MoveInputType = CharacterInputs->GetMoveInputType();
+		Params.MoveInput = CharacterInputs->GetMoveInput();
+	}
+	else
+	{
+		Params.MoveInputType = EMoveInputType::Invalid;
+		Params.MoveInput = FVector::ZeroVector;
+	}
+ 
+	FRotator IntendedOrientation_WorldSpace;
+	
+	// If there's no intent from input to change orientation, use the current orientation
+	if (!CharacterInputs || CharacterInputs->OrientationIntent.IsNearlyZero())
+	{
+		IntendedOrientation_WorldSpace = StartingSyncState->GetOrientation_WorldSpace();
+	}
+	else
+	{
+		IntendedOrientation_WorldSpace = CharacterInputs->GetOrientationIntentDir_WorldSpace().ToOrientationRotator();
+	}
+	
+	Params.OrientationIntent = IntendedOrientation_WorldSpace;
+	Params.PriorVelocity = StartingSyncState->GetVelocity_WorldSpace();
+	Params.PriorOrientation = StartingSyncState->GetOrientation_WorldSpace();
+	Params.TurningRate = CommonLegacySettings->TurningRate;
+	Params.TurningBoost = CommonLegacySettings->TurningBoost;
+	Params.MaxSpeed = CommonLegacySettings->MaxSpeed;
+	Params.Acceleration = CommonLegacySettings->Acceleration;
+	Params.Deceleration = CommonLegacySettings->Deceleration;
+	Params.DeltaSeconds = DeltaSeconds;
+	
+	OutProposedMove = UAirMovementUtils::ComputeControlledFreeMove(Params);
+}
+
+void UPhysicsBaseMovementMode::OnRegistered(const FName ModeName)
+{
+	Super::OnRegistered(ModeName);
+	CommonLegacySettings = GetMoverComponent()->FindSharedSettings<UCommonLegacyMovementSettings>();
+	ensureMsgf(CommonLegacySettings, TEXT("Failed to find instance of CommonLegacyMovementSettings on %s. Movement may not function properly."), *GetPathNameSafe(this));
+
+}
+
+void UPhysicsBaseMovementMode::OnUnregistered()
+{
+	CommonLegacySettings = nullptr;
+	Super::OnUnregistered();
+}
+
+float UPhysicsBaseMovementMode::GetDeltaSecondsFromTimeStep(const FMoverTimeStep& TimeStep) const
+{
+	return TimeStep.StepMs * 0.001f;
 }

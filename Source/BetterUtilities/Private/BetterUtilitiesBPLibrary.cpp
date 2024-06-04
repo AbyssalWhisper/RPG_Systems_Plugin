@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
+DEFINE_LOG_CATEGORY(EasyLog);
+
 UBetterUtilities::UBetterUtilities(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 { 
@@ -299,3 +301,32 @@ FVector UBetterUtilities::GetRandomPointInSphereCollision(USphereComponent* Sphe
 
     return RandomLocation;
 }
+
+void UBetterUtilities::DebugLog(FString LogMessage, EEasylog LogVerbosity)
+{
+    FString FinalLogString = LogMessage;
+    switch (LogVerbosity) {
+    case NoLogging:
+		
+        break;
+    case Fatal:
+        UE_LOG(EasyLog,Fatal, TEXT("%s"), *FinalLogString)
+        break;
+    case Error:
+        UE_LOG(EasyLog,Error, TEXT("%s"), *FinalLogString)
+        break;
+    case Warning:
+        UE_LOG(EasyLog,Warning, TEXT("%s"), *FinalLogString)
+        break;
+    case Verbose:
+        UE_LOG(EasyLog,Verbose, TEXT("%s"), *FinalLogString)
+        break;
+    }
+
+}
+
+float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)
+{
+    return StepMs * 0.001f;
+}
+

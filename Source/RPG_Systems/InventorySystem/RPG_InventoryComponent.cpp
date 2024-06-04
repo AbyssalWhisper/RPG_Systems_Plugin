@@ -11,6 +11,8 @@
 #include "RPG_Systems/InventorySystem/RPG_ItemData.h"
 #include "RPG_Systems/InventorySystem/ItemUseCondition/RPG_UseItemConditionComponent.h"
 
+
+
 // Sets default values for this component's properties
 URPG_InventoryComponent::URPG_InventoryComponent()
 {
@@ -121,6 +123,7 @@ void URPG_InventoryComponent::RemoveItemFromIndex(int index, int Count, bool& Su
 		Sucess = true;
 		UpdatePlayersSlot(index);
 	}
+	
 }
 
 void URPG_InventoryComponent::SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems)

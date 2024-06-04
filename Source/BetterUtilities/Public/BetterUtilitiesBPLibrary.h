@@ -15,6 +15,37 @@
 #include "BetterUtilitiesBPLibrary.generated.h"
 
 
+DECLARE_LOG_CATEGORY_EXTERN(EasyLog, Log, All);
+
+UENUM(BlueprintType)
+enum EEasylog : uint8
+{
+    /** Not used */
+    NoLogging		= 0,
+
+    /** Always prints a fatal error to console (and log file) and crashes (even if logging is disabled) */
+    Fatal,
+
+    /** 
+     * Prints an error to console (and log file). 
+     * Commandlets and the editor collect and report errors. Error messages result in commandlet failure.
+     */
+    Error,
+
+    /** 
+     * Prints a warning to console (and log file).
+     * Commandlets and the editor collect and report warnings. Warnings can be treated as an error.
+     */
+    Warning,
+
+    /** 
+     * Prints a verbose message to a log file (if Verbose logging is enabled for the given category, 
+     * usually used for detailed logging) 
+     */
+    Verbose,
+
+};
+	
 USTRUCT(BlueprintType)
 struct  FMinMaxValues {
     GENERATED_BODY()
@@ -87,12 +118,13 @@ enum class EPropertyAccess : uint8
 
 
 UCLASS()
-class UBetterUtilities : public UBlueprintFunctionLibrary
+class BETTERUTILITIES_API UBetterUtilities : public UBlueprintFunctionLibrary
 {
     GENERATED_UCLASS_BODY()
 public:
 
 
+    
 
 
      
@@ -369,6 +401,12 @@ public:
     static FVector GetRandomPointInBoxCollision(class UBoxComponent* BoxCollision);
     UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Utilities")
     static FVector GetRandomPointInSphereCollision(class USphereComponent* SphereCollision);
+    
+    UFUNCTION(BlueprintCallable)
+    static void DebugLog(FString LogMessage,EEasylog LogVerbosity);
+
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static float GetDeltaSecondsFromStepMs(const float& StepMs);
 
 
 };
