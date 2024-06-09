@@ -13,4 +13,7 @@ UCLASS(Abstract,Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew,Col
 class RPG_SYSTEMS_API URPG_ItemSubCategory : public UObject
 {
 	GENERATED_BODY()
+public:
+	UFUNCTION(BlueprintNativeEvent)
+	FText GetSubCategoryText();
 };

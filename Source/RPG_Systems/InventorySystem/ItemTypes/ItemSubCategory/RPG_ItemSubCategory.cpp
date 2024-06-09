@@ -2,3 +2,8 @@
 
 
 #include "RPG_ItemSubCategory.h"
+
+FText URPG_ItemSubCategory::GetSubCategoryText_Implementation()
+{
+	return FText();
+}

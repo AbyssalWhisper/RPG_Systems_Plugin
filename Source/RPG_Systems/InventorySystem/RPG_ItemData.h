@@ -9,8 +9,11 @@
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "ItemExecuteCode/RPG_ExecuteItemCodeComponent.h"
 #include "RPG_Systems/InventorySystem/RPG_ItemStruct.h"
+
 #include "RPG_ItemData.generated.h"
+
 
 /**
  * 
@@ -19,6 +22,7 @@ class UGameplayAbility;
 class UGameplayEffect;
 class URPG_UseItemConditionComponent;
 class URPG_ItemDropSound;
+class URPG_AddedOrRemovedItemCodeComponent;
 UCLASS()
 class RPG_SYSTEMS_API URPG_ItemData : public UPrimaryDataAsset
 {
@@ -36,12 +40,15 @@ public:
 	int MaxCount = 999;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Weight = 0;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//FGameplayTagContainer Tags = FGameplayTagContainer();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayAbility> Ability;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FSTR_RPG_Effects_Data> Effects;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InventoryEvents")
+	TArray<TObjectPtr<URPG_ExecuteItemCodeComponent>> OnUseItem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InventoryEvents")
+	TArray<TObjectPtr<URPG_AddedOrRemovedItemCodeComponent>> OnItemAddedToInventory;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InventoryEvents")
+	TArray<TObjectPtr<URPG_AddedOrRemovedItemCodeComponent>> OnItemRemovedFromInventory;
+
+
 	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
 	TArray<TObjectPtr<URPG_UseItemConditionComponent>> UseItemConditions;
 	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
@@ -63,6 +70,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<USoundBase> TakeSound;
 
+	UFUNCTION(BlueprintCallable)
+	FText GetCategoryText();
+	UFUNCTION(BlueprintCallable)
+	FText GetSubCategoryText();
 	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static TArray<URPG_ItemData*> GetAllItems()

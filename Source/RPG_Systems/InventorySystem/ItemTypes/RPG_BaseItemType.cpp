@@ -2,15 +2,18 @@
 
 
 #include "RPG_Systems/InventorySystem/ItemTypes/RPG_BaseItemType.h"
+#include "RPG_Systems/InventorySystem/ItemTypes/ItemSubCategory/RPG_ItemSubCategory.h"
 
-bool URPG_BaseItemType::ExecuteOnServer_Implementation(AActor* OwnerActor, URPG_InventoryComponent* OwnerInventory,
-	int ItemSlot)
+FText URPG_BaseItemType::GetCategoryText_Implementation()
 {
-	return false;
+	return FText();
 }
 
-bool URPG_BaseItemType::ExecuteOnClient_Implementation(AActor* OwnerActor, URPG_InventoryComponent* OwnerInventory,
-	int ItemSlot)
+FText URPG_BaseItemType::GetSubCategoryText()
 {
-	return false;
+	if (SubCategory)
+	{
+		return SubCategory->GetSubCategoryText();
+	}
+	return FText();
 }
