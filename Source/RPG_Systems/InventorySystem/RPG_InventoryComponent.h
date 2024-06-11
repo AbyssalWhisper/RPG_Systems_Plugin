@@ -53,7 +53,7 @@ public:
 	void RemoveItem(URPG_ItemData* Item_, int Count);
 	void AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems);
 	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
-		void RemoveItemFromIndex(int index, int Count,bool& Sucess);
+		void RemoveItemFromIndex(int SlotIndex, int Count,bool& Sucess);
 	void SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
 	void SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
 

@@ -112,24 +112,24 @@ void URPG_InventoryComponent::RemoveItem(URPG_ItemData* Item_, int Count)
 	
 }
 
-void URPG_InventoryComponent::RemoveItemFromIndex(int index, int Count, bool& Sucess)
+void URPG_InventoryComponent::RemoveItemFromIndex(int SlotIndex, int Count, bool& Sucess)
 {
 	Sucess = false;
-	if (Items.IsValidIndex(index) && Items[index].Count > 0)
+	if (Items.IsValidIndex(SlotIndex) && Items[SlotIndex].Count > 0)
 	{
-		int LastItemCount = Items[index].Count;
+		int LastItemCount = Items[SlotIndex].Count;
 
-		Items[index].Count -= Count;
-		if (Items[index].Count <= 0)
+		Items[SlotIndex].Count -= Count;
+		if (Items[SlotIndex].Count <= 0)
 		{
-			OnItemRemoved(Items[index].Item, Count);
-			Items[index] = FSTR_RPG_ItemSlot();
+			OnItemRemoved(Items[SlotIndex].Item, Count);
+			Items[SlotIndex] = FSTR_RPG_ItemSlot();
 			
 		} else {
-			OnItemRemoved(Items[index].Item, LastItemCount);
+			OnItemRemoved(Items[SlotIndex].Item, LastItemCount);
 		}
 		Sucess = true;
-		UpdatePlayersSlot(index);
+		UpdatePlayersSlot(SlotIndex);
 	}
 	
 }
@@ -560,7 +560,7 @@ void URPG_InventoryComponent::OnItemAdded(URPG_ItemData* Item_, int Count_)
 		for (auto Code : Item_->OnItemAddedToInventory) {
 			if (Code)
 			{
-				Code->Execute(this->GetOwner(), this, Item_, Count_);
+				Code->Execute(this->GetOwner(), this, Item_, Count_, ESlotOp::ItemAdded);
 			}
 		}
 	}
@@ -572,7 +572,7 @@ void URPG_InventoryComponent::OnItemRemoved(URPG_ItemData* Item_, int Count_)
 		for (auto Code : Item_->OnItemRemovedFromInventory) {
 			if (Code)
 			{
-				Code->Execute(this->GetOwner(), this, Item_, Count_);
+				Code->Execute(this->GetOwner(), this, Item_, Count_, ESlotOp::ItemRemoved);
 			}
 		}
 	}
