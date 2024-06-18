@@ -27,14 +27,17 @@ public class RPG_Systems : ModuleRules
 			{
                 "CoreOnline","NavigationSystem","AIModule","Core"
                 ,"GameplayTags", "GameplayAbilities","AIModule" 
-                , "GameplayTasks", "Niagara" ,"PhysicsCore","FunctionalTesting"
-                , "BetterUtilities", "Mover", "MoverExamples","Chaos"
+                , "GameplayTasks", "Niagara" ,"PhysicsCore" 
+                , "BetterUtilities", "Mover","Chaos"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
-			
-		
-		PrivateDependencyModuleNames.AddRange(
+
+        if (Target.bBuildEditor)
+        {
+            PublicDependencyModuleNames.AddRange(new string[] { "FunctionalTesting", });
+        }
+        PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"CoreUObject",

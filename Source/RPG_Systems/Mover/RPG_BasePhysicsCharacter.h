@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #define private public
-#include "MoverExamplesCharacter.h"
+//#include "MoverExamplesCharacter.h"
 
 #include "RPG_BasePhysicsCharacter.generated.h"
 #undef private
@@ -20,7 +20,7 @@ namespace RPG_MovementModes
 
 
 UCLASS()
-class RPG_SYSTEMS_API ARPG_BasePhysicsCharacter : public AActor
+class RPG_SYSTEMS_API ARPG_BasePhysicsCharacter : public APawn
 {
 	GENERATED_BODY()
 	//void OnProduceInput(float DeltaMs, FMoverInputCmdContext& InputCmdResult) override;

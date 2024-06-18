@@ -59,17 +59,17 @@ bool URPG_CheckAttribute::CanUse_Implementation(AActor* Owner)
     // Perform comparison based on the ComparisonMethod
     switch (ComparisonMethod)
     {
-        case EComparisonMethod::Equal_To:
+        case ERPG_ComparisonMethod::Equal_To:
             return TargetValue == CompareValue;
-        case EComparisonMethod::Not_Equal_To:
+        case ERPG_ComparisonMethod::Not_Equal_To:
             return TargetValue != CompareValue;
-        case EComparisonMethod::Greater_Than_Or_Equal_To:
+        case ERPG_ComparisonMethod::Greater_Than_Or_Equal_To:
             return TargetValue >= CompareValue;
-        case EComparisonMethod::Less_Than_Or_Equal_To:
+        case ERPG_ComparisonMethod::Less_Than_Or_Equal_To:
             return TargetValue <= CompareValue;
-        case EComparisonMethod::Greater_Than:
+        case ERPG_ComparisonMethod::Greater_Than:
             return TargetValue > CompareValue;
-        case EComparisonMethod::Less_Than:
+        case ERPG_ComparisonMethod::Less_Than:
             return TargetValue < CompareValue;
         default:
             return false;
