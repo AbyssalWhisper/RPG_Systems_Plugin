@@ -28,7 +28,7 @@ public class RPG_Systems : ModuleRules
                 "CoreOnline","NavigationSystem","AIModule","Core"
                 ,"GameplayTags", "GameplayAbilities","AIModule" 
                 , "GameplayTasks", "Niagara" ,"PhysicsCore","FunctionalTesting"
-                , "BetterUtilities", "Mover", "MoverExamples"
+                , "BetterUtilities", "Mover", "MoverExamples","Chaos"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -322,7 +322,6 @@ void UBetterUtilities::DebugLog(FString LogMessage, EEasylog LogVerbosity)
         UE_LOG(EasyLog,Verbose, TEXT("%s"), *FinalLogString)
         break;
     }
-
 }
 
 float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)

@@ -2,7 +2,8 @@
 
 
 #include "RPG_Systems/Mover/BaseMovementMode/PhysicsBaseMovementMode.h"
-
+#include "Chaos/Character/CharacterGroundConstraint.h"
+#include "Chaos/Character/CharacterGroundConstraintContainer.h"
 #include "MoverComponent.h"
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
 #include "GameFramework/PhysicsVolume.h"
