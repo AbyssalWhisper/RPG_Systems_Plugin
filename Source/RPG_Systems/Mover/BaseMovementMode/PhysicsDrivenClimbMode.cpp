@@ -12,7 +12,10 @@
 void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
                                              FProposedMove& OutProposedMove) const
 {
-	
+	//Super::OnGenerateMove(StartState, TimeStep, OutProposedMove);
+
+
+
 	const FCharacterDefaultInputs* CharacterInputs = StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>();
 	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
 	check(StartingSyncState);
@@ -95,7 +98,7 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 	Params.Acceleration = CommonLegacySettings->Acceleration;
 	Params.Deceleration = CommonLegacySettings->Deceleration;
 	Params.DeltaSeconds = DeltaSeconds;
-	
+
 	OutProposedMove = UAirMovementUtils::ComputeControlledFreeMove(Params);
 
 	

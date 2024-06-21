@@ -48,8 +48,6 @@ EDataValidationResult UPhysicsBaseMovementMode::IsDataValid(FDataValidationConte
 
 void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
-	Super::OnSimulationTick(Params, OutputState);
-
 	const FMoverTickStartData& StartState = Params.StartState;
 	USceneComponent* UpdatedComponent = Params.UpdatedComponent;
 	UPrimitiveComponent* UpdatedPrimitive = Params.UpdatedPrimitive;

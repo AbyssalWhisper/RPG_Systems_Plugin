@@ -28,6 +28,9 @@ public:
 
 protected:
 	virtual void OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
+	
+	
+	//Acontece antes do tick 
 	virtual void OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
 		FProposedMove& OutProposedMove) const override;
 	virtual void OnRegistered(const FName ModeName) override;
