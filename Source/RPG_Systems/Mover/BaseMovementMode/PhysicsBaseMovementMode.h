@@ -43,6 +43,11 @@ public:
 	float SwingTorqueLimit = 3000.0f;
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	float GetDeltaSecondsFromTimeStep(const FMoverTimeStep& TimeStep) const;
- 
+	UFUNCTION(BlueprintCallable)
+	void SwitchToState(const FName& StateName, const FSimulationTickParams& Params, FMoverTickEndData& OutputState);
+	
 	TObjectPtr<const class UCommonLegacyMovementSettings> CommonLegacySettings;
+
+	
+
 };

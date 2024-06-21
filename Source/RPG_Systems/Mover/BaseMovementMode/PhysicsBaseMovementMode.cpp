@@ -148,7 +148,7 @@ void UPhysicsBaseMovementMode::OnGenerateMove(const FMoverTickStartData& StartSt
 	Params.Acceleration = CommonLegacySettings->Acceleration;
 	Params.Deceleration = CommonLegacySettings->Deceleration;
 	Params.DeltaSeconds = DeltaSeconds;
-	
+
 	OutProposedMove = UAirMovementUtils::ComputeControlledFreeMove(Params);
 }
 
@@ -169,4 +169,19 @@ void UPhysicsBaseMovementMode::OnUnregistered()
 float UPhysicsBaseMovementMode::GetDeltaSecondsFromTimeStep(const FMoverTimeStep& TimeStep) const
 {
 	return TimeStep.StepMs * 0.001f;
+}
+
+
+void UPhysicsBaseMovementMode::SwitchToState(const FName& StateName, const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
+{
+	OutputState.MovementEndState.RemainingMs = Params.TimeStep.StepMs;
+	OutputState.MovementEndState.NextModeName = StateName;
+
+	const FMoverDefaultSyncState* StartingSyncState = Params.StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
+	FMoverDefaultSyncState& OutputSyncState = OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FMoverDefaultSyncState>();
+	OutputSyncState.SetTransforms_WorldSpace(
+		StartingSyncState->GetLocation_WorldSpace(),
+		StartingSyncState->GetOrientation_WorldSpace(),
+		StartingSyncState->GetVelocity_WorldSpace(),
+		nullptr);
 }

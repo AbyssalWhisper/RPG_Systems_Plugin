@@ -19,6 +19,4 @@ public:
 protected:
 	virtual void OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
 		FProposedMove& OutProposedMove) const override;
-	UFUNCTION(BlueprintCallable)
-	void DrawDebug();
 };

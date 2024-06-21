@@ -7,6 +7,7 @@
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MoveLibrary/AirMovementUtils.h"
+#include <RPG_Systems/Mover/MoverFunctionLibrary.h>
 
 void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
                                              FProposedMove& OutProposedMove) const
@@ -63,22 +64,10 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 		else
 		{
 			IntendedOrientation_WorldSpace = StartingSyncState->GetOrientation_WorldSpace();
+			//SwitchToState(DefaultModeNames::Walking,,);
 		}
 		
-		// Cria um evento para sincronização
-		FEventRef TaskCompletedEvent(EEventMode::ManualReset);
-		AsyncTask(ENamedThreads::GameThread, [this,&TaskCompletedEvent, StartLocation,EndLocation]()
-			{
-				if (!GetWorld())
-				{
-					UKismetSystemLibrary::DrawDebugLine(this, StartLocation, EndLocation, FLinearColor::Red, GetWorld()->DeltaTimeSeconds, 0.5f);
-
-				}
-				
-				// Coloque aqui o código que precisa rodar no Game Thread
-				TaskCompletedEvent->Trigger();
-			});
-		TaskCompletedEvent->Wait();
+		UMoverFunctionLibrary::DrawDebugLine(GetMoverComponent(), StartLocation, EndLocation);
 	}
 	
 	/*
@@ -112,26 +101,3 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 	
 }
 
-void UPhysicsDrivenClimbMode::DrawDebug()
-{
-	auto OwnerActor = GetMoverComponent()->GetOwner();
-	float DeltaSeconds = GetWorld()->GetDeltaSeconds();
-	if (OwnerActor)
-	{
-		FHitResult Hit;  
-		// Define the start and end locations for the line trace
-		FVector StartLocation = OwnerActor->GetActorLocation();
-		FVector EndLocation = StartLocation + OwnerActor->GetActorForwardVector() * 100.0f;
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(OwnerActor);
-		TArray<AActor*> aa;
-		GEngine->AddOnScreenDebugMessage(-1,DeltaSeconds,FColor::Blue,"Test");
-		UKismetSystemLibrary::LineTraceSingle(OwnerActor,StartLocation,EndLocation,TraceTypeQuery1,false,aa,EDrawDebugTrace::None,Hit,true);
-		//bool IsHiting = GetWorld()->LineTraceSingleByChannel(Hit,StartLocation,EndLocation,TraceChannel,CollisionParams,FCollisionResponseParams(ECollisionResponse::ECR_Block));
-		// Draw the debug line
-		//FColor LineColor = IsHiting ? FColor::Green : FColor::Red;
-		//DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, DeltaSeconds, 0, 1.0f);
- 
-		
-	}
-}

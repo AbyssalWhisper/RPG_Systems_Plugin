@@ -16,5 +16,11 @@ class RPG_SYSTEMS_API UMoverFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable)
 	static void SetTransforms_WorldSpace(UPARAM(ref) FMoverTickEndData& OutputState, FVector WorldLocation, FRotator WorldOrient, FVector WorldVelocity, UPrimitiveComponent* Base=nullptr, FName BaseBone = NAME_None);
+	UFUNCTION(BlueprintCallable)
+	static void DrawDebugCapsule(UObject* Context,FVector Start, FVector End, FRotator Rotation, float HalfHeigth, float Radius, float DrawTime = 1);
+	UFUNCTION(BlueprintCallable)
+	static void DrawDebugLine(UObject* Context,FVector Start, FVector End, float DrawTime = 1) ;
+
+
 
 };

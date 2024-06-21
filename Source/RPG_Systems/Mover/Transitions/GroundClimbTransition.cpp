@@ -7,6 +7,7 @@
 #include "MoverComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "BetterUtilities/Public/TraceUtils.h"
+#include "RPG_Systems/Mover/MoverFunctionLibrary.h"
 
 FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickParams& Params) const
 {
@@ -28,7 +29,9 @@ FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickPa
 			float CapsuleRadius = Capsule->GetScaledCapsuleRadius();
 			bool bHit = UTraceUtils::CapsuleTraceSingle(pawn, pawn->GetActorLocation(), pawn->GetActorLocation() + Capsule->GetForwardVector() * CapsuleRadius,
 				CapsuleRadius, Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetComponentRotation(),
-				TraceChannel, false, a, EDrawDebugTrace::ForDuration, Hit, true);
+				TraceChannel, false, a, EDrawDebugTrace::None, Hit, true);
+			UMoverFunctionLibrary::DrawDebugCapsule(Params.MoverComponent,pawn->GetActorLocation(), pawn->GetActorLocation() + Capsule->GetForwardVector(),Capsule->GetComponentRotation(),Capsule->GetScaledCapsuleHalfHeight(), CapsuleRadius);
+			
 			if (bHit)
 			{
 				return Transition.NextMode = "Climb";
