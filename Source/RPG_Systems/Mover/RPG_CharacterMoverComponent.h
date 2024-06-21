@@ -14,4 +14,7 @@ class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UCharacterMoverCompo
 {
 	GENERATED_BODY()
 	
+public:
+
+	URPG_CharacterMoverComponent();
 };

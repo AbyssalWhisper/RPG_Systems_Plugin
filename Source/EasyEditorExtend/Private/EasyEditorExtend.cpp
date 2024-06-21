@@ -4,6 +4,8 @@
 #include "EasyEditorExtend/ClassesExtend/EasyEditorObjectExecuteCode.h"
 #include "EasyEditorExtend/ClassesExtend/ComboButtonEntry/EasyComboButtonComponent.h"
 
+#include "EasyEditorExtend/ClassesExtend/EasyEditorObjectAutoExecuteCode.h"
+
 #define LOCTEXT_NAMESPACE "FEasyEditorExtendModule"
 
 void FEasyEditorExtendModule::RegisterMenuExtensions()
@@ -13,8 +15,21 @@ void FEasyEditorExtendModule::RegisterMenuExtensions()
 
 void FEasyEditorExtendModule::OnWorldInitialized(UWorld* World, FWorldInitializationValues WorldInitializationValues)
 {
+	if (MainWorld)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("World Name %s"), *GetCurrentEditorWorld()->GetName());
+	}
+	else
+	{
+		MainWorld = World;
+		UE_LOG(LogTemp, Warning, TEXT("World Name %s"), *GetCurrentEditorWorld()->GetName());
+
+	}
+	
+
 	if (Initialized)return;
-	Initialized=true;
+	Initialized = true;
+
 	for (auto Element : GetAllGetAllDynamicButtonExtend())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found %s "), *Element->GetName());
@@ -33,6 +48,20 @@ void FEasyEditorExtendModule::OnWorldInitialized(UWorld* World, FWorldInitializa
 			DynamicComboButtonExtend.Add(Element);
 			UE_LOG(LogTemp, Warning, TEXT("Try Create %s Combo Button"), *Element->GetName());
 			CreateComboButton(Element);
+		}
+	}
+
+	for (auto Element : GetAllEasyEditorAutoExecuteCode())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found %s "), *Element->GetName());
+		if (Element && GEditor)
+		{
+			EasyEditorAutoExecuteCode.Add(Element);
+			UE_LOG(LogTemp, Warning, TEXT("Try Execute Code %s"), *Element->GetName());
+			if (Element->CustomExecuteCode)
+			{
+				Element->CustomExecuteCode->Execute();
+			}
 		}
 	}
 }
@@ -114,6 +143,17 @@ void FEasyEditorExtendModule::CreateComboButton(UDynamicComboButtonExtend* Butto
 			ButtonObject->bInSimpleComboBox //bInSimpleComboBox
 		);
 	ToolbarSection.AddEntry(ComboButtonEntry);
+}
+
+UWorld* FEasyEditorExtendModule::GetCurrentEditorWorld()
+{
+	if (GEditor)
+	{
+		// Obtém o contexto do mundo do editor
+		FWorldContext& EditorWorldContext = GEditor->GetEditorWorldContext();
+		return EditorWorldContext.World();
+	}
+	return nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE
