@@ -329,3 +329,15 @@ float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)
     return StepMs * 0.001f;
 }
 
+
+void UBetterUtilities::AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition)
+{
+    if (!ActorComponent && !Object)return;
+    ActorComponent->AddReplicatedSubObject(Object, LifetimeCondition);
+}
+
+void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object)
+{
+    if (!ActorComponent && !Object)return;
+    ActorComponent->RemoveReplicatedSubObject(Object);
+}
