@@ -2,6 +2,7 @@
 
 #include "BetterUtilitiesBPLibrary.h"
 #include "BetterUtilities.h"
+#include "BetterUtilities/Objects/ReplicatedObject.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
@@ -329,13 +330,13 @@ float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)
     return StepMs * 0.001f;
 }
 
-void UBetterUtilities::AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition)
+void UBetterUtilities::AddReplicatedSubObject(UActorComponent* ActorComponent, UReplicatedObject* Object, ELifetimeCondition LifetimeCondition)
 {
     if (!ActorComponent && !Object)return;
     ActorComponent->AddReplicatedSubObject(Object, LifetimeCondition);
 }
 
-void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object)
+void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent, UReplicatedObject* Object)
 {
     if (!ActorComponent && !Object)return;
     ActorComponent->RemoveReplicatedSubObject(Object);
