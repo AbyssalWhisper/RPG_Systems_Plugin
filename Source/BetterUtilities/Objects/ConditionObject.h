@@ -21,4 +21,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, BlueprintNativeEvent)
 	bool CheckCondition(AActor* Actor);
+	virtual bool CheckCondition_Implementation(AActor* Actor);
 };
