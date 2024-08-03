@@ -14,6 +14,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "BetterUtilitiesBPLibrary.generated.h"
 
+class UReplicatedObject;
+
 
 DECLARE_LOG_CATEGORY_EXTERN(EasyLog, Log, All);
 
@@ -122,12 +124,6 @@ class BETTERUTILITIES_API UBetterUtilities : public UBlueprintFunctionLibrary
 {
     GENERATED_UCLASS_BODY()
 public:
-
-
-    
-
-
-     
     UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "BetterUtilities sample test testing"), Category = "BetterUtilitiesTesting")
     static float BetterUtilitiesSampleFunction(float Param);
     UFUNCTION(BlueprintCallable)
@@ -409,7 +405,7 @@ public:
     static float GetDeltaSecondsFromStepMs(const float& StepMs);
 
     UFUNCTION(BlueprintCallable)
-    static void AddReplicatedSubObject(UActorComponent* ActorComponent,UObject* Object, ELifetimeCondition LifetimeCondition = ELifetimeCondition::COND_None);
-    static void RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object);
+    static void AddReplicatedSubObject(UActorComponent* ActorComponent, UReplicatedObject* Object, ELifetimeCondition LifetimeCondition = ELifetimeCondition::COND_None);
+    static void RemoveReplicatedSubObject(UActorComponent* ActorComponent, UReplicatedObject* Object);
 
 };
