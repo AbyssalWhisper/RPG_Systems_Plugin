@@ -2,6 +2,7 @@
 
 
 #include "RPG_Systems/MovementComponent/RPG_MovementComponent.h"
+#include "RPG_Systems/MovementComponent/RPG_BaseMovementMode.h"
 
 // Sets default values for this component's properties
 URPG_MovementComponent::URPG_MovementComponent()
@@ -18,7 +19,7 @@ URPG_MovementComponent::URPG_MovementComponent()
 void URPG_MovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	CurrentMovementMode = *MovementModes.Find(StartMovementMode);
 	// ...
 	
 }
@@ -28,7 +29,18 @@ void URPG_MovementComponent::BeginPlay()
 void URPG_MovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	if (CurrentMovementMode)
+	{
+		CurrentMovementMode->PerformMovement(DirectionInput, DeltaTime,this);
+	}
 	// ...
+	LastDirectionInput = DirectionInput;
+	DirectionInput = FVector();
+}
+
+void URPG_MovementComponent::AddInput(FVector Input)
+{
+	DirectionInput += Input;
 }
 

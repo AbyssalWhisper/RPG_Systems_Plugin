@@ -18,7 +18,18 @@ public:
 	// Sets default values for this component's properties
 	URPG_MovementComponent();
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector DirectionInput;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector LastDirectionInput;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FGameplayTag StartMovementMode;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	URPG_BaseMovementMode* CurrentMovementMode;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FGameplayTag, URPG_BaseMovementMode*> MovementModes;
+
+
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -26,5 +37,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	UFUNCTION(BlueprintCallable)
+	void AddInput(FVector Input);
 };
