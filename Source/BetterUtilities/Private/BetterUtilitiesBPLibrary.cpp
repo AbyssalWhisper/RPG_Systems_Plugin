@@ -230,6 +230,21 @@ UStaticMesh* UBetterUtilities::AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> So
     return SoftStaticMesh.LoadSynchronous();
 }
 
+UMaterialInterface* UBetterUtilities::AutoLoadMaterial(TSoftObjectPtr<UMaterialInterface> Material)
+{
+    return Material.LoadSynchronous();
+}
+
+TArray<UMaterialInterface*> UBetterUtilities::AutoLoadMaterials(TArray<TSoftObjectPtr<UMaterialInterface>> Materials)
+{
+    TArray<UMaterialInterface*> a;
+    for (auto A : Materials)
+    {
+        a.Add(A.LoadSynchronous());
+    }
+    return a;
+}
+
 void UBetterUtilities::ShowMouseCursor(bool bShow)
 {
     APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();

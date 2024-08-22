@@ -146,6 +146,29 @@ public:
     {
         return (value / maxValue) * 100.0f;
     }
+    
+    UFUNCTION(BlueprintCallable,BlueprintPure)
+    static float GetPercentFromBytes(int64 CurrentBytes, int64 TotalBytes)
+    {
+        if (TotalBytes == 0)
+        {
+            return 0.0f; // Evita divisão por zero
+        }
+
+        return static_cast<float>(CurrentBytes) / static_cast<float>(TotalBytes) * 100.0f;
+    }
+
+    UFUNCTION(BlueprintCallable,BlueprintPure)
+    static float GetAlphaPercentFromBytesT(int64 CurrentBytes, int64 TotalBytes)
+    {
+        if (TotalBytes == 0)
+        {
+            return 0.0f; // Evita divisão por zero
+        }
+
+        return static_cast<float>(CurrentBytes) / static_cast<float>(TotalBytes);
+    }
+    
     UFUNCTION(BlueprintCallable,BlueprintPure)
     static float GetAlphaPercent(const float value,const float maxValue)
     {
@@ -386,6 +409,10 @@ public:
     static USkeletalMesh* AutoLoadSkeletalMesh(TSoftObjectPtr<USkeletalMesh> SoftSkeletalMesh);
     UFUNCTION(BlueprintPure, meta = (DisplayName = "AutoLoadStaticMesh",BlueprintAutocast),Category = "Converter")
     static UStaticMesh* AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> SoftStaticMesh);
+    UFUNCTION(BlueprintPure, meta = (DisplayName = "AutoLoadMaterial",BlueprintAutocast),Category = "Converter")
+    static UMaterialInterface* AutoLoadMaterial(TSoftObjectPtr<UMaterialInterface> Material);
+    UFUNCTION(BlueprintPure, meta = (DisplayName = "AutoLoadMaterials",BlueprintAutocast),Category = "Converter")
+    static TArray<UMaterialInterface*> AutoLoadMaterials(TArray<TSoftObjectPtr<UMaterialInterface>> Materials);
     UFUNCTION(BlueprintCallable, Category = "PlayerController")
     static void ShowMouseCursor(bool bShow);
     UFUNCTION(BlueprintCallable, Category="Collision", meta=(bIgnoreSelf="true",Distance="100", WorldContext="WorldContextObject", AutoCreateRefTerm="ActorsToIgnore", AdvancedDisplay="TraceColor,TraceHitColor,DrawTime", Keywords="raycast"))
