@@ -51,7 +51,6 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 		FVector EndLocation = StartLocation + OwnerActor->GetActorForwardVector() * 100.0f;
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(OwnerActor); 
-		GEngine->AddOnScreenDebugMessage(-1,0,FColor::Red,"Test");
 		
 		bool IsHiting = GetWorld()->LineTraceSingleByChannel(Hit,StartLocation,EndLocation,TraceChannel,CollisionParams,FCollisionResponseParams(ECollisionResponse::ECR_Block));
 		// Draw the debug line
