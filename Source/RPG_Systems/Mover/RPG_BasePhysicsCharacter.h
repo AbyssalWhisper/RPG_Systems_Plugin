@@ -37,7 +37,8 @@ class RPG_SYSTEMS_API ARPG_BasePhysicsCharacter : public APawn, public IMoverInp
 	void TryCrouch();
 	UFUNCTION(BlueprintCallable)
 	void TryUnCrouch();
-
+	UFUNCTION(BlueprintCallable)
+	void TryJump();
 
 
 	UFUNCTION(BlueprintCallable)
@@ -53,6 +54,8 @@ public:
 
 
 public:
+	virtual void PawnClientRestart() override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -84,6 +87,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "On Produce Input", meta = (ScriptName = "OnProduceInput"))
 	FMoverInputCmdContext OnProduceInputInBlueprint(float DeltaMs, FMoverInputCmdContext InputCmd);
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputMappingContext* DefaultMappingContext;
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveInputAction;
@@ -91,10 +96,6 @@ protected:
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* LookInputAction;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* JumpInputAction;
 
 	/** Fly Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -146,9 +147,8 @@ private:
 	void OnMoveCompleted(const FInputActionValue& Value);
 	void OnLookTriggered(const FInputActionValue& Value);
 	void OnLookCompleted(const FInputActionValue& Value);
-	void OnJumpStarted(const FInputActionValue& Value);
-	void OnJumpReleased(const FInputActionValue& Value);
 	void OnFlyTriggered(const FInputActionValue& Value);
+
 
 	uint8 bHasProduceInputinBpFunc : 1;
 };
