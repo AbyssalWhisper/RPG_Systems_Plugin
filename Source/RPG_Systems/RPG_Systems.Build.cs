@@ -25,19 +25,26 @@ public class RPG_Systems : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-                "CoreOnline","NavigationSystem","AIModule","Core","GameplayTags", "GameplayAbilities","AIModule" , "GameplayTasks", "Niagara" ,"PhysicsCore"
+                "CoreOnline","NavigationSystem","AIModule","Core"
+                ,"GameplayTags", "GameplayAbilities","AIModule" 
+                , "GameplayTasks", "Niagara" ,"PhysicsCore" 
+                , "BetterUtilities", "Mover","Chaos","InputCore",
+                "EnhancedInput","AsyncTickPhysics"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
-			
-		
-		PrivateDependencyModuleNames.AddRange(
+
+        if (Target.bBuildEditor)
+        {
+            PublicDependencyModuleNames.AddRange(new string[] { "FunctionalTesting", });
+        }
+        PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore", "BetterUtilities"
+				"SlateCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -6,10 +6,13 @@
 #include "Algo/ForEach.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "EasyEditorExtend/EasyEditorExtendLibrary.h"
-#include "EasyEditorExtend/ClassesExtend/DynamicButtonEditorExtendExecuteCode.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "EasyEditorExtend/ClassesExtend/DynamicButtonEditorExtend.h"
 #include "EasyEditorExtend/ClassesExtend/DynamicComboButtonExtend.h"
+
+#include "EasyEditorExtend/ClassesExtend/EasyEditorAutoExecuteCode.h"
+
+
 #include "Modules/ModuleManager.h"
 
 class FEasyEditorExtendModule : public IModuleInterface
@@ -22,7 +25,9 @@ public:
 	bool Initialized = false;
     TArray<UDynamicButtonEditorExtend*> DynamicButtonEditor;
 	TArray<UDynamicComboButtonExtend*> DynamicComboButtonExtend;
-    
+    TArray<UEasyEditorAutoExecuteCode*> EasyEditorAutoExecuteCode;
+
+
     TArray<UClass*> GetAllClasses()
     {
         TArray<FAssetData> AssetDataList;
@@ -39,7 +44,7 @@ public:
     }
 
 	
-	static TArray<UDynamicButtonEditorExtend*> GetAllDataAssets()
+	static TArray<UDynamicButtonEditorExtend*> GetAllGetAllDynamicButtonExtend()
     {
     	TArray<UDynamicButtonEditorExtend*> Items;
     	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -86,4 +91,32 @@ public:
     }
     void CreateButton(UDynamicButtonEditorExtend* ButtonObject);
 	void CreateComboButton(UDynamicComboButtonExtend* ButtonObject);
+
+    UWorld* MainWorld;
+    UWorld* GetCurrentEditorWorld();
 };
+
+static TArray<UEasyEditorAutoExecuteCode*> GetAllEasyEditorAutoExecuteCode()
+{
+    TArray<UEasyEditorAutoExecuteCode*> Items;
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    TArray<FAssetData> AssetData;
+    FTopLevelAssetPath ClassPathName = FTopLevelAssetPath("/Script/EasyEditorExtend", "EasyEditorAutoExecuteCode");
+
+    AssetRegistryModule.Get().GetAssetsByClass(ClassPathName, AssetData, true);
+    for (int i = 0; i < AssetData.Num(); i++) {
+        UEasyEditorAutoExecuteCode* FoundAsset = Cast<UEasyEditorAutoExecuteCode>(AssetData[i].GetAsset());
+
+        if (FoundAsset != NULL) {
+            Items.Add(FoundAsset);
+        }
+    }
+    /*
+    for (TObjectIterator<URPG_ItemData> It; It; ++It)
+    {
+        Items.Add(*It);
+    }*/
+    return Items;
+}
+
+

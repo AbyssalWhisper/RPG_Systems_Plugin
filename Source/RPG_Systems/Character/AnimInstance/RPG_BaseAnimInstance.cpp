@@ -45,10 +45,10 @@ void URPG_BaseAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	float L_Rate;
 
 	bIsMoving = MoveSpeed >= 10 ? true : false;
-	float L_AnimSlowWalkMoveSpeed;
-	float L_AnimWalkMoveSpeed;
-	float L_AnimRunMoveSpeed;
-	float L_AnimSprintMoveSpeed;
+	float L_AnimSlowWalkMoveSpeed = 0;
+	float L_AnimWalkMoveSpeed = 0;
+	float L_AnimRunMoveSpeed = 0;
+	float L_AnimSprintMoveSpeed = 0;
 	if (RefCharacter->CharacterData)
 	{
 		L_AnimSlowWalkMoveSpeed = RefCharacter->CharacterData->AnimSlowWalkMoveSpeed;

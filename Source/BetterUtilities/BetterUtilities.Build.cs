@@ -40,6 +40,7 @@ public class BetterUtilities : ModuleRules
 				"UMG",
 				"GameplayAbilities",
 				"GameplayTags",
+                "PhysicsCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

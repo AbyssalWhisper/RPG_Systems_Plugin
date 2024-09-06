@@ -15,13 +15,14 @@
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
+
 		{
-			"Name": "RPG_Systems",
+			"Name": "BetterUtilities",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "BetterUtilities",
+			"Name": "RPG_Systems",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
@@ -47,6 +48,22 @@
 		},
 		{
 			"Name": "CommonUI",
+			"Enabled": true
+		},
+		{
+			"Name": "Mover",
+			"Enabled": true
+		},
+		{
+			"Name": "MoverExamples",
+			"Enabled": true
+		},
+		{
+			"Name": "EditorScriptingUtilities",
+			"Enabled": true
+		},
+		{
+			"Name": "AsyncTickPhysics",
 			"Enabled": true
 		}
 	]

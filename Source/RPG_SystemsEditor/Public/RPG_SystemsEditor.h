@@ -17,6 +17,7 @@ public:
 
     void RegisterMenuExtensions()
     {
+        return;
         // Use the current object as the owner of the menus
         // This allows us to remove all our custom menus when the 
         // module is unloaded (see ShutdownModule below)
@@ -44,7 +45,7 @@ public:
     void CreateSubMenu()
     {
         
-        
+        return;
         // Use the current object as the owner of the menus
         // This allows us to remove all our custom menus when the 
         // module is unloaded (see ShutdownModule below)

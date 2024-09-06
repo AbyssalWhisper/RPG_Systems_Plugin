@@ -11,31 +11,8 @@
  */
 class UEasyEditorObjectExecuteCode;
 
-class UDynamicComboButtonSubMenu;
+class UEasyComboButtonComponent;
 
-
-
-
-
-USTRUCT(BlueprintType)
-struct FComboButtonList
-{
-	GENERATED_BODY()
-public:
-
-	
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonTooltip = FText::FromString("MyButton Tooltip");
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FText ButtonLabel = FText::FromString("MyButton");
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	bool bIsSubMenu = false;
-	
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Instanced,meta = (ShowOnlyInnerProperties,EditCondition="bIsSubMenu==false",EditConditionHides))
-	UEasyEditorObjectExecuteCode* CustomExecuteCode;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Instanced,meta = (ShowOnlyInnerProperties,EditCondition="bIsSubMenu==true",EditConditionHides))
-	UDynamicComboButtonSubMenu* SubMenuButtonsList;
-};
 
 UCLASS()
 class EASYEDITOREXTEND_API UDynamicComboButtonExtend : public UPrimaryDataAsset
@@ -51,6 +28,6 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	bool bInSimpleComboBox=false;
 	FName IconID = "SettingsEditor.Collision_Engine";
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,meta = (ShowOnlyInnerProperties))
-	TArray<FComboButtonList> ButtonsList;
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Instanced,meta = (ShowOnlyInnerProperties,TitleProperty = ButtonLabel))
+	TArray<UEasyComboButtonComponent*> ButtonsList;
 };

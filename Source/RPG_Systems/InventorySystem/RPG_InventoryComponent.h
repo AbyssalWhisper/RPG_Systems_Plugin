@@ -51,11 +51,12 @@ public:
 	bool TryAddItem(URPG_ItemData* ItemData,int Count, FSTR_RPG_ItemSlot& RemainingItems);
 	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
 	void RemoveItem(URPG_ItemData* Item_, int Count);
+	void AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems);
 	UFUNCTION(BlueprintCallable,BlueprintAuthorityOnly)
-		void RemoveItemFromIndex(int index, int Count,bool& Sucess);
+		void RemoveItemFromIndex(int SlotIndex, int Count,bool& Sucess);
 	void SearchSlotsWithItem(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
 	void SearchEmptySlots(FSTR_RPG_ItemSlot Item, FSTR_RPG_ItemSlot& RemainingItems);
-	void AddItemAtIndex(FSTR_RPG_ItemSlot Item,int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems);
+
 	//void UpdateAllPlayersSlots();
 	void UpdatePlayersSlot(int SlotIndex);
 
@@ -94,4 +95,9 @@ public:
 	int GetInventorySize() const;
 	UFUNCTION(BlueprintCallable)
 	void UpdateAllInventory(APlayerController* PlayerController);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool CanUseItem(int SlotIndex);
+
+	void OnItemAdded(URPG_ItemData* Item_,int Count_);
+	void OnItemRemoved(URPG_ItemData* Item_, int Count_);
 };

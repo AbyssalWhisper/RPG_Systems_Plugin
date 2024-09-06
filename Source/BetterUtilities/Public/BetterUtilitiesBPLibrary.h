@@ -14,7 +14,40 @@
 #include "Kismet/GameplayStatics.h"
 #include "BetterUtilitiesBPLibrary.generated.h"
 
+class UReplicatedObject;
 
+
+DECLARE_LOG_CATEGORY_EXTERN(EasyLog, Log, All);
+
+UENUM(BlueprintType)
+enum EEasylog : uint8
+{
+    /** Not used */
+    NoLogging		= 0,
+
+    /** Always prints a fatal error to console (and log file) and crashes (even if logging is disabled) */
+    Fatal,
+
+    /** 
+     * Prints an error to console (and log file). 
+     * Commandlets and the editor collect and report errors. Error messages result in commandlet failure.
+     */
+    Error,
+
+    /** 
+     * Prints a warning to console (and log file).
+     * Commandlets and the editor collect and report warnings. Warnings can be treated as an error.
+     */
+    Warning,
+
+    /** 
+     * Prints a verbose message to a log file (if Verbose logging is enabled for the given category, 
+     * usually used for detailed logging) 
+     */
+    Verbose,
+
+};
+	
 USTRUCT(BlueprintType)
 struct  FMinMaxValues {
     GENERATED_BODY()
@@ -87,15 +120,10 @@ enum class EPropertyAccess : uint8
 
 
 UCLASS()
-class UBetterUtilities : public UBlueprintFunctionLibrary
+class BETTERUTILITIES_API UBetterUtilities : public UBlueprintFunctionLibrary
 {
     GENERATED_UCLASS_BODY()
 public:
-
-
-
-
-     
     UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "BetterUtilities sample test testing"), Category = "BetterUtilitiesTesting")
     static float BetterUtilitiesSampleFunction(float Param);
     UFUNCTION(BlueprintCallable)
@@ -118,6 +146,29 @@ public:
     {
         return (value / maxValue) * 100.0f;
     }
+    
+    UFUNCTION(BlueprintCallable,BlueprintPure)
+    static float GetPercentFromBytes(int64 CurrentBytes, int64 TotalBytes)
+    {
+        if (TotalBytes == 0)
+        {
+            return 0.0f; // Evita divisão por zero
+        }
+
+        return static_cast<float>(CurrentBytes) / static_cast<float>(TotalBytes) * 100.0f;
+    }
+
+    UFUNCTION(BlueprintCallable,BlueprintPure)
+    static float GetAlphaPercentFromBytesT(int64 CurrentBytes, int64 TotalBytes)
+    {
+        if (TotalBytes == 0)
+        {
+            return 0.0f; // Evita divisão por zero
+        }
+
+        return static_cast<float>(CurrentBytes) / static_cast<float>(TotalBytes);
+    }
+    
     UFUNCTION(BlueprintCallable,BlueprintPure)
     static float GetAlphaPercent(const float value,const float maxValue)
     {
@@ -358,6 +409,10 @@ public:
     static USkeletalMesh* AutoLoadSkeletalMesh(TSoftObjectPtr<USkeletalMesh> SoftSkeletalMesh);
     UFUNCTION(BlueprintPure, meta = (DisplayName = "AutoLoadStaticMesh",BlueprintAutocast),Category = "Converter")
     static UStaticMesh* AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> SoftStaticMesh);
+    UFUNCTION(BlueprintPure, meta = (DisplayName = "AutoLoadMaterial",BlueprintAutocast),Category = "Converter")
+    static UMaterialInterface* AutoLoadMaterial(TSoftObjectPtr<UMaterialInterface> Material);
+    UFUNCTION(BlueprintPure, meta = (DisplayName = "AutoLoadMaterials",BlueprintAutocast),Category = "Converter")
+    static TArray<UMaterialInterface*> AutoLoadMaterials(TArray<TSoftObjectPtr<UMaterialInterface>> Materials);
     UFUNCTION(BlueprintCallable, Category = "PlayerController")
     static void ShowMouseCursor(bool bShow);
     UFUNCTION(BlueprintCallable, Category="Collision", meta=(bIgnoreSelf="true",Distance="100", WorldContext="WorldContextObject", AutoCreateRefTerm="ActorsToIgnore", AdvancedDisplay="TraceColor,TraceHitColor,DrawTime", Keywords="raycast"))
@@ -369,6 +424,15 @@ public:
     static FVector GetRandomPointInBoxCollision(class UBoxComponent* BoxCollision);
     UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Utilities")
     static FVector GetRandomPointInSphereCollision(class USphereComponent* SphereCollision);
+    
+    UFUNCTION(BlueprintCallable)
+    static void DebugLog(FString LogMessage,EEasylog LogVerbosity);
 
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static float GetDeltaSecondsFromStepMs(const float& StepMs);
 
+    UFUNCTION(BlueprintCallable)
+    static void AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition = ELifetimeCondition::COND_None);
+    UFUNCTION(BlueprintCallable)
+    static void RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object);
 };

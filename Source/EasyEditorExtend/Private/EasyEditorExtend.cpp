@@ -2,6 +2,9 @@
 
 #include "EasyEditorExtend/EasyEditorExtendLibrary.h"
 #include "EasyEditorExtend/ClassesExtend/EasyEditorObjectExecuteCode.h"
+#include "EasyEditorExtend/ClassesExtend/ComboButtonEntry/EasyComboButtonComponent.h"
+
+#include "EasyEditorExtend/ClassesExtend/EasyEditorObjectAutoExecuteCode.h"
 
 #define LOCTEXT_NAMESPACE "FEasyEditorExtendModule"
 
@@ -12,9 +15,22 @@ void FEasyEditorExtendModule::RegisterMenuExtensions()
 
 void FEasyEditorExtendModule::OnWorldInitialized(UWorld* World, FWorldInitializationValues WorldInitializationValues)
 {
+	if (MainWorld)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("World Name %s"), *GetCurrentEditorWorld()->GetName());
+	}
+	else
+	{
+		MainWorld = World;
+		UE_LOG(LogTemp, Warning, TEXT("World Name %s"), *GetCurrentEditorWorld()->GetName());
+
+	}
+	
+
 	if (Initialized)return;
-	Initialized=true;
-	for (auto Element : GetAllDataAssets())
+	Initialized = true;
+
+	for (auto Element : GetAllGetAllDynamicButtonExtend())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found %s "), *Element->GetName());
 		if (Element && GEditor)
@@ -32,6 +48,20 @@ void FEasyEditorExtendModule::OnWorldInitialized(UWorld* World, FWorldInitializa
 			DynamicComboButtonExtend.Add(Element);
 			UE_LOG(LogTemp, Warning, TEXT("Try Create %s Combo Button"), *Element->GetName());
 			CreateComboButton(Element);
+		}
+	}
+
+	for (auto Element : GetAllEasyEditorAutoExecuteCode())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found %s "), *Element->GetName());
+		if (Element && GEditor)
+		{
+			EasyEditorAutoExecuteCode.Add(Element);
+			UE_LOG(LogTemp, Warning, TEXT("Try Execute Code %s"), *Element->GetName());
+			if (Element->CustomExecuteCode)
+			{
+				Element->CustomExecuteCode->Execute();
+			}
 		}
 	}
 }
@@ -99,16 +129,9 @@ void FEasyEditorExtendModule::CreateComboButton(UDynamicComboButtonExtend* Butto
 			
 			for (auto& Element : ButtonObject->ButtonsList)
 			{
-				if (Element.CustomExecuteCode)
+				if (Element)
 				{
-					FUIAction MyButtonAction = FUIAction(
-						FExecuteAction::CreateLambda([=]() {
-						Element.CustomExecuteCode->Run();
-						})
-					);
-					
-					MenuBuilder.AddMenuEntry(Element.ButtonLabel, Element.ButtonTooltip, FSlateIcon(), MyButtonAction);
-                
+					Element->Execute(MenuBuilder);
 				}
 			}
 			
@@ -120,6 +143,17 @@ void FEasyEditorExtendModule::CreateComboButton(UDynamicComboButtonExtend* Butto
 			ButtonObject->bInSimpleComboBox //bInSimpleComboBox
 		);
 	ToolbarSection.AddEntry(ComboButtonEntry);
+}
+
+UWorld* FEasyEditorExtendModule::GetCurrentEditorWorld()
+{
+	if (GEditor)
+	{
+		// Obtém o contexto do mundo do editor
+		FWorldContext& EditorWorldContext = GEditor->GetEditorWorldContext();
+		return EditorWorldContext.World();
+	}
+	return nullptr;
 }
 
 #undef LOCTEXT_NAMESPACE

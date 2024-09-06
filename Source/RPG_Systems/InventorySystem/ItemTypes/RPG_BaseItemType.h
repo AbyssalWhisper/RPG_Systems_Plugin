@@ -9,17 +9,17 @@
 /**
  * 
  */
+class URPG_ItemSubCategory;
 class URPG_InventoryComponent;
-UCLASS(Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew)
+UCLASS(Abstract,Blueprintable,BlueprintType,DefaultToInstanced,EditInlineNew,CollapseCategories)
 class RPG_SYSTEMS_API URPG_BaseItemType : public UObject
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	bool ExecuteOnServer(AActor* OwnerActor,URPG_InventoryComponent* OwnerInventory,int ItemSlot);
-
-	// Only use this function for visual effects.
-	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	bool ExecuteOnClient(AActor* OwnerActor,URPG_InventoryComponent* OwnerInventory,int ItemSlot);
-	
+	UFUNCTION(BlueprintNativeEvent)
+	FText GetCategoryText();
+	UFUNCTION(BlueprintCallable)
+	FText GetSubCategoryText();
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	URPG_ItemSubCategory* SubCategory;
 };

@@ -2,11 +2,14 @@
 
 #include "BetterUtilitiesBPLibrary.h"
 #include "BetterUtilities.h"
+#include "BetterUtilities/Objects/ReplicatedObject.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
+DEFINE_LOG_CATEGORY(EasyLog);
 
 UBetterUtilities::UBetterUtilities(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -227,6 +230,21 @@ UStaticMesh* UBetterUtilities::AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> So
     return SoftStaticMesh.LoadSynchronous();
 }
 
+UMaterialInterface* UBetterUtilities::AutoLoadMaterial(TSoftObjectPtr<UMaterialInterface> Material)
+{
+    return Material.LoadSynchronous();
+}
+
+TArray<UMaterialInterface*> UBetterUtilities::AutoLoadMaterials(TArray<TSoftObjectPtr<UMaterialInterface>> Materials)
+{
+    TArray<UMaterialInterface*> a;
+    for (auto A : Materials)
+    {
+        a.Add(A.LoadSynchronous());
+    }
+    return a;
+}
+
 void UBetterUtilities::ShowMouseCursor(bool bShow)
 {
     APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();
@@ -298,4 +316,44 @@ FVector UBetterUtilities::GetRandomPointInSphereCollision(USphereComponent* Sphe
     FVector RandomLocation = SphereLocation + RandomDirection * (FMath::FRand()*SphereRadius);
 
     return RandomLocation;
+}
+
+void UBetterUtilities::DebugLog(FString LogMessage, EEasylog LogVerbosity)
+{
+    FString FinalLogString = LogMessage;
+    switch (LogVerbosity) {
+    case NoLogging:
+		
+        break;
+    case Fatal:
+        UE_LOG(EasyLog,Fatal, TEXT("%s"), *FinalLogString)
+        break;
+    case Error:
+        UE_LOG(EasyLog,Error, TEXT("%s"), *FinalLogString)
+        break;
+    case Warning:
+        UE_LOG(EasyLog,Warning, TEXT("%s"), *FinalLogString)
+        break;
+    case Verbose:
+        UE_LOG(EasyLog,Verbose, TEXT("%s"), *FinalLogString)
+        break;
+    }
+}
+
+float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)
+{
+    return StepMs * 0.001f;
+}
+
+void UBetterUtilities::AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition)
+{
+    if (!ActorComponent && !Object)return;
+    ActorComponent->AddReplicatedSubObject(Object, LifetimeCondition);
+}
+
+
+void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object)
+{
+    if (!ActorComponent && !Object)return;
+    ActorComponent->RemoveReplicatedSubObject(Object);
 }
