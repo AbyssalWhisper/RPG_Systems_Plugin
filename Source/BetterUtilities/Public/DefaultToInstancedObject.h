@@ -13,5 +13,21 @@ UCLASS(Abstract, Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew
 class BETTERUTILITIES_API UDefaultToInstancedObject : public UObject
 {
 	GENERATED_BODY()
-	
+public:
+
+	//UObject interface implementation
+	virtual UWorld* GetWorld() const override;
+	//End of implementation
+
+	//Will mark this UObject as garbage and will eventually get cleaned by the garbage collector. 
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
+	void DestroyObject();
+	 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	AActor* GetOwningActor() const;
+
+protected:
+	 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDestroyed();
 };

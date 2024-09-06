@@ -9,8 +9,8 @@ void URPG_PhysicsDrivenCrouchMode::OnSimulationTick(const FSimulationTickParams&
 	Super::OnSimulationTick(Params, OutputState);
 
 	const float DeltaSeconds = Params.TimeStep.StepMs * 0.001f;
-	return;
-	//AjustCapsule(Params, DeltaSeconds);
+	//return;
+	AjustCapsule(Params, DeltaSeconds);
 }
 
 void URPG_PhysicsDrivenCrouchMode::AjustCapsule(const FSimulationTickParams& Params,const float& DeltaSeconds)

@@ -2,6 +2,7 @@
 
 #include "BetterUtilitiesBPLibrary.h"
 #include "BetterUtilities.h"
+#include "BetterUtilities/Objects/ReplicatedObject.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
@@ -229,6 +230,21 @@ UStaticMesh* UBetterUtilities::AutoLoadStaticMesh(TSoftObjectPtr<UStaticMesh> So
     return SoftStaticMesh.LoadSynchronous();
 }
 
+UMaterialInterface* UBetterUtilities::AutoLoadMaterial(TSoftObjectPtr<UMaterialInterface> Material)
+{
+    return Material.LoadSynchronous();
+}
+
+TArray<UMaterialInterface*> UBetterUtilities::AutoLoadMaterials(TArray<TSoftObjectPtr<UMaterialInterface>> Materials)
+{
+    TArray<UMaterialInterface*> a;
+    for (auto A : Materials)
+    {
+        a.Add(A.LoadSynchronous());
+    }
+    return a;
+}
+
 void UBetterUtilities::ShowMouseCursor(bool bShow)
 {
     APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();
@@ -329,12 +345,12 @@ float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)
     return StepMs * 0.001f;
 }
 
-
 void UBetterUtilities::AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition)
 {
     if (!ActorComponent && !Object)return;
     ActorComponent->AddReplicatedSubObject(Object, LifetimeCondition);
 }
+
 
 void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object)
 {

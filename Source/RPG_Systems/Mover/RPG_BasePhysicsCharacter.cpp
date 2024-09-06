@@ -27,6 +27,10 @@
 #include "PhysicsMover/Modes/PhysicsDrivenFallingMode.h"
 #include "PhysicsMover/Modes/PhysicsDrivenFlyingMode.h"
 #include "RPG_CharacterMoverComponent.h"
+
+#include "Engine/LocalPlayer.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 /*
 void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& InputCmdResult)
 {
@@ -208,6 +212,12 @@ void ARPG_BasePhysicsCharacter::TryUnCrouch()
 {
 	bWantsCrouch = false;
 }
+
+void ARPG_BasePhysicsCharacter::TryJump()
+{
+	bIsJumpJustPressed = !bIsJumpPressed;
+	bIsJumpPressed = true;
+}
  
 
 bool ARPG_BasePhysicsCharacter::IsClimbing() const
@@ -243,6 +253,8 @@ ARPG_BasePhysicsCharacter::ARPG_BasePhysicsCharacter(const FObjectInitializer& O
 	: Super(ObjectInitializer)
 {
 	CharacterMotionComponent = CreateDefaultSubobject<URPG_CharacterMoverComponent>("CharacterMoveComponent");
+ 
+	
 	//ensure(CharacterMotionComponent);
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -261,6 +273,23 @@ ARPG_BasePhysicsCharacter::ARPG_BasePhysicsCharacter(const FObjectInitializer& O
 	bHasProduceInputinBpFunc = IsImplementedInBlueprint(ProduceInputFunction);
 }
 
+
+void ARPG_BasePhysicsCharacter::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	if (Controller)
+	{
+		if (auto PlayerController = Cast<APlayerController>(Controller))
+		{
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			{
+				Subsystem->ClearAllMappings();
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+		}
+	}
+}
 
 // Called every frame
 void ARPG_BasePhysicsCharacter::Tick(float DeltaTime)
@@ -287,7 +316,8 @@ void ARPG_BasePhysicsCharacter::Tick(float DeltaTime)
 
 void ARPG_BasePhysicsCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay(); 
+
 
 	if (APlayerController* PC = Cast<APlayerController>(Controller))
 	{
@@ -308,8 +338,6 @@ void ARPG_BasePhysicsCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		Input->BindAction(MoveInputAction, ETriggerEvent::Completed, this, &ARPG_BasePhysicsCharacter::OnMoveCompleted);
 		Input->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ARPG_BasePhysicsCharacter::OnLookTriggered);
 		Input->BindAction(LookInputAction, ETriggerEvent::Completed, this, &ARPG_BasePhysicsCharacter::OnLookCompleted);
-		Input->BindAction(JumpInputAction, ETriggerEvent::Started, this, &ARPG_BasePhysicsCharacter::OnJumpStarted);
-		Input->BindAction(JumpInputAction, ETriggerEvent::Completed, this, &ARPG_BasePhysicsCharacter::OnJumpReleased);
 		Input->BindAction(FlyInputAction, ETriggerEvent::Triggered, this, &ARPG_BasePhysicsCharacter::OnFlyTriggered);
 	}
 }
@@ -355,12 +383,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 		// We don't have a local controller so we can't run the code below. This is ok. Simulated proxies will just use previous input when extrapolating
 		return;
 	}
-
-	if (USpringArmComponent* SpringComp = FindComponentByClass<USpringArmComponent>())
-	{
-		// This is not best practice: do not search for component every frame
-		SpringComp->bUsePawnControlRotation = true;
-	}
+ 
 
 	CharacterInputs.ControlRotation = FRotator::ZeroRotator;
 
@@ -483,6 +506,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 	{
 
 		bIsJumpJustPressed = false;
+		bIsJumpPressed = false;
 		bShouldToggleFlying = false;
 	}
 }
@@ -513,17 +537,7 @@ void ARPG_BasePhysicsCharacter::OnLookCompleted(const FInputActionValue& Value)
 	CachedTurnInput = FRotator::ZeroRotator;
 }
 
-void ARPG_BasePhysicsCharacter::OnJumpStarted(const FInputActionValue& Value)
-{
-	bIsJumpJustPressed = !bIsJumpPressed;
-	bIsJumpPressed = true;
-}
 
-void ARPG_BasePhysicsCharacter::OnJumpReleased(const FInputActionValue& Value)
-{
-	bIsJumpPressed = false;
-	bIsJumpJustPressed = false;
-}
 
 void ARPG_BasePhysicsCharacter::OnFlyTriggered(const FInputActionValue& Value)
 {
