@@ -432,7 +432,7 @@ public:
     static float GetDeltaSecondsFromStepMs(const float& StepMs);
 
     UFUNCTION(BlueprintCallable)
-    static void AddReplicatedSubObject(UActorComponent* ActorComponent, UReplicatedObject* Object, ELifetimeCondition LifetimeCondition = ELifetimeCondition::COND_None);
-    static void RemoveReplicatedSubObject(UActorComponent* ActorComponent, UReplicatedObject* Object);
-
+    static void AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition = ELifetimeCondition::COND_None);
+    UFUNCTION(BlueprintCallable)
+    static void RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object);
 };

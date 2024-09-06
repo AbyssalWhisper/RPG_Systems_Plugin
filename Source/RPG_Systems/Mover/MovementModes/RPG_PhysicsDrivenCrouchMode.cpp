@@ -15,8 +15,7 @@ void URPG_PhysicsDrivenCrouchMode::OnSimulationTick(const FSimulationTickParams&
 
 void URPG_PhysicsDrivenCrouchMode::AjustCapsule(const FSimulationTickParams& Params,const float& DeltaSeconds)
 {
-	auto capsule = Cast<UCapsuleComponent>(Params.UpdatedComponent);
-	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Green, "hh");
+	auto capsule = Cast<UCapsuleComponent>(Params.MovingComps.UpdatedComponent);
 	if (capsule)
 	{
 		if (capsule->GetUnscaledCapsuleHalfHeight() != TargetCapsuleHalfHeight || capsule->GetUnscaledCapsuleRadius() != TargetCapsuleRadius)

@@ -29,7 +29,7 @@ public class RPG_Systems : ModuleRules
                 ,"GameplayTags", "GameplayAbilities","AIModule" 
                 , "GameplayTasks", "Niagara" ,"PhysicsCore" 
                 , "BetterUtilities", "Mover","Chaos","InputCore",
-                "EnhancedInput"
+                "EnhancedInput","AsyncTickPhysics"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

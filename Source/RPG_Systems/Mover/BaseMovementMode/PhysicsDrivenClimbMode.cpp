@@ -62,6 +62,7 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 			GEngine->AddOnScreenDebugMessage(-1,0,FColor::Red,OwnerActor->GetName());
 		
 			IntendedOrientation_WorldSpace = (Hit.ImpactNormal * -1).ToOrientationRotator();
+			UAsyncTickFunctions::
 		}
 		else
 		{
