@@ -58,11 +58,9 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 		//DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, DeltaSeconds, 0, 1.0f);
 
 		if (IsHiting)
-		{
-			GEngine->AddOnScreenDebugMessage(-1,0,FColor::Red,OwnerActor->GetName());
-		
+		{ 
 			IntendedOrientation_WorldSpace = (Hit.ImpactNormal * -1).ToOrientationRotator();
-			UAsyncTickFunctions::
+			
 		}
 		else
 		{
@@ -70,7 +68,7 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 			//SwitchToState(DefaultModeNames::Walking,,);
 		}
 		
-		UMoverFunctionLibrary::DrawDebugLine(GetMoverComponent(), StartLocation, EndLocation);
+		UMoverFunctionLibrary::ChaosDrawDebugLine( StartLocation, EndLocation);
 	}
 	
 	/*

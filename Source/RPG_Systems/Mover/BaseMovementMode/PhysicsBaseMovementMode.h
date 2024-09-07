@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "MovementMode.h"
 #include "PhysicsMover/PhysicsMoverSimulationTypes.h"
+
+
 #include "PhysicsBaseMovementMode.generated.h"
 
 /**
@@ -47,8 +49,11 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	float GetDeltaSecondsFromTimeStep(const FMoverTimeStep& TimeStep) const;
 	UFUNCTION(BlueprintCallable)
+	void DrawCapsule(FVector Start, FVector End, float QueryRadius);
+	UFUNCTION(BlueprintCallable)
 	void SwitchToState(const FName& StateName, const FSimulationTickParams& Params, FMoverTickEndData& OutputState);
 	
+
 	TObjectPtr<const class UCommonLegacyMovementSettings> CommonLegacySettings;
 
 	

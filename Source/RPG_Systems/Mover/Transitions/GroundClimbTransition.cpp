@@ -18,11 +18,11 @@ FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickPa
 	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, CharacterInputs->GetMoveInput().ToString());
 
 	if (CharacterInputs->GetMoveInput().IsNearlyZero())return Transition.NoTransition;
-	APawn* pawn = Cast<APawn>(Params.MovingComps.MoverComponent->GetOwner());
+	APawn* pawn = Cast<APawn>(Params.MoverComponent->GetOwner());
 	UCapsuleComponent*Capsule = pawn->GetComponentByClass<UCapsuleComponent>();
 	if (pawn && pawn->IsLocallyControlled())
 	{
-		if (Params.MovingComps.MoverComponent->GetVelocity().Length() <= 50)
+		if (Params.MoverComponent->GetVelocity().Length() <= 50)
 		{
 			FHitResult Hit;
 			TArray<AActor*> a;
@@ -30,7 +30,7 @@ FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickPa
 			bool bHit = UTraceUtils::CapsuleTraceSingle(pawn, pawn->GetActorLocation(), pawn->GetActorLocation() + Capsule->GetForwardVector() * CapsuleRadius,
 				CapsuleRadius, Capsule->GetScaledCapsuleHalfHeight(), Capsule->GetComponentRotation(),
 				TraceChannel, false, a, EDrawDebugTrace::None, Hit, true);
-			UMoverFunctionLibrary::DrawDebugCapsule(pawn,pawn->GetActorLocation(), pawn->GetActorLocation() + Capsule->GetForwardVector(),Capsule->GetComponentRotation(),Capsule->GetScaledCapsuleHalfHeight(), CapsuleRadius);
+			UMoverFunctionLibrary::ChaosDrawDebugCapsuleRay(pawn->GetActorLocation(), pawn->GetActorLocation() + Capsule->GetForwardVector(),Capsule->GetScaledCapsuleHalfHeight(), CapsuleRadius, Capsule->GetComponentRotation());
 			
 			if (bHit)
 			{

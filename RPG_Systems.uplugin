@@ -27,6 +27,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "AsyncTickPhysics",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RPG_SystemsEditor",
 			"Type": "Editor",
 			"LoadingPhase": "PostEngineInit"
@@ -60,10 +65,6 @@
 		},
 		{
 			"Name": "EditorScriptingUtilities",
-			"Enabled": true
-		},
-		{
-			"Name": "AsyncTickPhysics",
 			"Enabled": true
 		}
 	]

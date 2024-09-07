@@ -2,15 +2,20 @@
 
 
 #include "RPG_Systems/Mover/BaseMovementMode/PhysicsBaseMovementMode.h"
+
 #include "Chaos/Character/CharacterGroundConstraint.h"
 #include "Chaos/Character/CharacterGroundConstraintContainer.h"
+#include "Chaos/PhysicsObject.h"
+#include "Chaos/PhysicsObjectInternalInterface.h"
+
 #include "MoverComponent.h"
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/UnitConversion.h"
 #include "MoveLibrary/AirMovementUtils.h"
-
+#include "PhysicsMover/PhysicsMoverSimulationTypes.h" 
+#include "HAL/IConsoleManager.h"
 
 #if WITH_EDITOR
 #include "Backends/MoverNetworkPhysicsLiaison.h"
@@ -18,6 +23,11 @@
 #include "Misc/DataValidation.h"
 #endif // WITH_EDITOR
 
+
+#if PHYSICSDRIVENMOTION_DEBUG_DRAW
+#include "Chaos/DebugDrawQueue.h"
+#endif
+ 
 #define LOCTEXT_NAMESPACE "BasePhysicsDrivenMode"
 
 
@@ -49,8 +59,8 @@ EDataValidationResult UPhysicsBaseMovementMode::IsDataValid(FDataValidationConte
 void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
 	const FMoverTickStartData& StartState = Params.StartState;
-	auto UpdatedComponent = Params.MovingComps.UpdatedComponent;
-	auto UpdatedPrimitive = Params.MovingComps.UpdatedPrimitive;
+	auto UpdatedComponent = Params.UpdatedComponent;
+	auto UpdatedPrimitive = Params.UpdatedPrimitive;
 	FProposedMove ProposedMove = Params.ProposedMove;
 
 	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
@@ -167,6 +177,15 @@ void UPhysicsBaseMovementMode::OnUnregistered()
 float UPhysicsBaseMovementMode::GetDeltaSecondsFromTimeStep(const FMoverTimeStep& TimeStep) const
 {
 	return TimeStep.StepMs * 0.001f;
+}
+
+void UPhysicsBaseMovementMode::DrawCapsule(FVector Start,FVector End,float QueryRadius)
+{
+ 
+	const FVector Center = 0.5f * (Start + End);
+	const float Dist = (Start - End).Size();
+	Chaos::FDebugDrawQueue::GetInstance().DrawDebugCapsule(Center, 0.5f * Dist + QueryRadius, QueryRadius, FQuat::Identity, FColor::Silver, false, -1.f, 10, 1.0f);
+	
 }
 
 

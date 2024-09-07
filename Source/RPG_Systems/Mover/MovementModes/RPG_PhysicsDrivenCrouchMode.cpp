@@ -10,12 +10,13 @@ void URPG_PhysicsDrivenCrouchMode::OnSimulationTick(const FSimulationTickParams&
 
 	const float DeltaSeconds = Params.TimeStep.StepMs * 0.001f;
 	//return;
-	AjustCapsule(Params, DeltaSeconds);
+	//AjustCapsule(Params, DeltaSeconds);
+	
 }
 
 void URPG_PhysicsDrivenCrouchMode::AjustCapsule(const FSimulationTickParams& Params,const float& DeltaSeconds)
 {
-	auto capsule = Cast<UCapsuleComponent>(Params.MovingComps.UpdatedComponent);
+	auto capsule = Cast<UCapsuleComponent>(Params.UpdatedComponent);
 	if (capsule)
 	{
 		if (capsule->GetUnscaledCapsuleHalfHeight() != TargetCapsuleHalfHeight || capsule->GetUnscaledCapsuleRadius() != TargetCapsuleRadius)
