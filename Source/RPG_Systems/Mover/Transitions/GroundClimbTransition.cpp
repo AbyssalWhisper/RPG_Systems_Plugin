@@ -13,10 +13,11 @@ FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickPa
 {
 	
 	FTransitionEvalResult Transition;
+
+	if (!CanClimb)return Transition.NoTransition;
+
 	const FCharacterDefaultInputs* CharacterInputs = Params.StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>();
-
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, CharacterInputs->GetMoveInput().ToString());
-
+	
 	if (CharacterInputs->GetMoveInput().IsNearlyZero())return Transition.NoTransition;
 	APawn* pawn = Cast<APawn>(Params.MoverComponent->GetOwner());
 	UCapsuleComponent*Capsule = pawn->GetComponentByClass<UCapsuleComponent>();

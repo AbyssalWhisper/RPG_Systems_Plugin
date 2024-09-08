@@ -17,4 +17,6 @@ public:
 	virtual FTransitionEvalResult OnEvaluate(const FSimulationTickParams& Params) const override;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TEnumAsByte<ETraceTypeQuery> TraceChannel;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool CanClimb = false;
 };

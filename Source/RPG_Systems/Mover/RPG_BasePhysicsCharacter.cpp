@@ -356,7 +356,7 @@ void ARPG_BasePhysicsCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMo
 
 void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& OutInputCmd)
 {
-
+	 
 	// Generate user commands. Called right before the Character movement simulation will tick (for a locally controlled pawn)
 	// This isn't meant to be the best way of doing a camera system. It is just meant to show a couple of ways it may be done
 	// and to make sure we can keep distinct the movement, rotation, and view angles.
@@ -387,12 +387,16 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 
 	CharacterInputs.ControlRotation = FRotator::ZeroRotator;
 
-	APlayerController* PC = Cast<APlayerController>(Controller);
-	if (PC)
+	// Obter rotação do controle 
 	{
-		CharacterInputs.ControlRotation = PC->GetControlRotation();
-	}
+		APlayerController* PC = Cast<APlayerController>(Controller);
+		if (PC)
+		{
+			CharacterInputs.ControlRotation = PC->GetControlRotation();
+		}
 
+	}
+	
 	// Favor velocity input 
 	bool bUsingInputIntentForMove = CachedMoveInputVelocity.IsZero();
 
@@ -508,7 +512,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 		bIsJumpJustPressed = false;
 		bIsJumpPressed = false;
 		bShouldToggleFlying = false;
-	}
+	} 
 }
 
 void ARPG_BasePhysicsCharacter::OnMoveTriggered(const FInputActionValue& Value)

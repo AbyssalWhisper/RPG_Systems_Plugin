@@ -52,18 +52,14 @@ public:
     	FTopLevelAssetPath ClassPathName = FTopLevelAssetPath("/Script/EasyEditorExtend","DynamicButtonEditorExtend");
 		
     	AssetRegistryModule.Get().GetAssetsByClass(ClassPathName, AssetData,true);
+        UE_LOG(LogTemp, Warning, TEXT("encontrados %s  "), *FString::FromInt(AssetData.Num()));
     	for (int i = 0; i < AssetData.Num(); i++) {
     		UDynamicButtonEditorExtend* FoundAsset = Cast<UDynamicButtonEditorExtend>(AssetData[i].GetAsset());
 			
     		if (FoundAsset != NULL) {
     			Items.Add(FoundAsset);
     		}
-    	}
-    	/*
-		for (TObjectIterator<URPG_ItemData> It; It; ++It)
-		{
-			Items.Add(*It);
-		}*/
+    	} 
     	return Items;
     }
 
