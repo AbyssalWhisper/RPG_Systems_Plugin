@@ -30,3 +30,22 @@ URPG_CharacterMoverComponent::URPG_CharacterMoverComponent()
 	MovementModes.Find(DefaultModeNames::Walking)->Get()->Transitions.Add(CreateDefaultSubobject<UGroundClimbTransition>(TEXT("GroundClimbTransition")));
  
 }
+
+bool URPG_CharacterMoverComponent::IsSwimming() const
+{
+	if (bHasValidCachedState)
+	{
+		return CachedLastSyncState.MovementMode == DefaultModeNames::Swimming;
+	}
+
+	return false;
+
+}bool URPG_CharacterMoverComponent::IsFlying() const
+{
+	if (bHasValidCachedState)
+	{
+		return CachedLastSyncState.MovementMode == DefaultModeNames::Flying;
+	}
+
+	return false;
+}

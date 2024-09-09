@@ -17,4 +17,10 @@ class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UCharacterMoverCompo
 public:
 
 	URPG_CharacterMoverComponent();
+
+
+	UFUNCTION(BlueprintPure, Category = Mover)
+	virtual bool IsSwimming() const;
+	UFUNCTION(BlueprintPure, Category = Mover)
+	virtual bool IsFlying() const;
 };

@@ -66,7 +66,7 @@ public:
 
 	// Accessor for the actor's movement component
 	UFUNCTION(BlueprintPure, Category = Mover)
-	UCharacterMoverComponent* GetMoverComponent() const { return CharacterMotionComponent; }
+	URPG_CharacterMoverComponent* GetMoverComponent() const { return CharacterMotionComponent; }
 
 	// Request the character starts moving with an intended directional magnitude. A length of 1 indicates maximum acceleration.
 	UFUNCTION(BlueprintCallable, Category = MoverExamples)
@@ -127,7 +127,7 @@ public:
 
 protected:
 	UPROPERTY(Category = Movement, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCharacterMoverComponent> CharacterMotionComponent;
+	TObjectPtr<URPG_CharacterMoverComponent> CharacterMotionComponent;
 
 private:
 	FVector LastAffirmativeMoveInput = FVector::ZeroVector;	// Movement input (intent or velocity) the last time we had one that wasn't zero
