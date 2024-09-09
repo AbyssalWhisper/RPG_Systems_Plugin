@@ -48,9 +48,7 @@ public:
 	float SwingTorqueLimit = 3000.0f;
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	float GetDeltaSecondsFromTimeStep(const FMoverTimeStep& TimeStep) const;
-	UFUNCTION(BlueprintCallable)
-	void DrawCapsule(FVector Start, FVector End, float QueryRadius);
-	UFUNCTION(BlueprintCallable)
+UFUNCTION(BlueprintCallable)
 	void SwitchToState(const FName& StateName, const FSimulationTickParams& Params, FMoverTickEndData& OutputState);
 	
 

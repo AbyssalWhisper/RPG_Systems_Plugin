@@ -19,7 +19,7 @@ public:
 
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
+	virtual void GetCharacter();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ARPG_BasePhysicsCharacter* RefCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -179,16 +179,6 @@ float UPhysicsBaseMovementMode::GetDeltaSecondsFromTimeStep(const FMoverTimeStep
 	return TimeStep.StepMs * 0.001f;
 }
 
-void UPhysicsBaseMovementMode::DrawCapsule(FVector Start,FVector End,float QueryRadius)
-{
- 
-	const FVector Center = 0.5f * (Start + End);
-	const float Dist = (Start - End).Size();
-	Chaos::FDebugDrawQueue::GetInstance().DrawDebugCapsule(Center, 0.5f * Dist + QueryRadius, QueryRadius, FQuat::Identity, FColor::Silver, false, -1.f, 10, 1.0f);
-	
-}
-
-
 void UPhysicsBaseMovementMode::SwitchToState(const FName& StateName, const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
 	OutputState.MovementEndState.RemainingMs = Params.TimeStep.StepMs;

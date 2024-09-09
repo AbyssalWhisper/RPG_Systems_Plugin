@@ -14,8 +14,11 @@
 
 void URPG_BasePhysicsCharacterAnimInstance::NativeInitializeAnimation() {
 	Super::NativeInitializeAnimation();
-	RefCharacter = Cast<ARPG_BasePhysicsCharacter>(TryGetPawnOwner());
+	if (!GetWorld())return;
 	bIsDedicatedServer = GetWorld()->GetNetMode() == NM_DedicatedServer ? true : false;
+	
+	
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &URPG_BasePhysicsCharacterAnimInstance::GetCharacter);
 }
 
 void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -52,6 +55,8 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 
 	//Direction = FMath::FInterpTo(Direction, RefCharacter->GetCapsuleComponent()->GetPhysicsAngularVelocityInDegrees().Z, DeltaSeconds, RotationSpeed);
 	ForwardVelocity = UKismetMathLibrary::LessLess_VectorRotator(RefCharacter->GetVelocity(), RefCharacter->GetActorRotation()).X;
+	
+	/*
 	float L_Rate;
 
 	
@@ -59,7 +64,7 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 	float L_AnimWalkMoveSpeed = 0;
 	float L_AnimRunMoveSpeed = 0;
 	float L_AnimSprintMoveSpeed = 0;
-	/*
+	
 	if (RefCharacter->CharacterData)
 	{
 		L_AnimSlowWalkMoveSpeed = RefCharacter->CharacterData->AnimSlowWalkMoveSpeed;
@@ -101,4 +106,10 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 		*/
 	
 }
+
+void URPG_BasePhysicsCharacterAnimInstance::GetCharacter()
+{
+	RefCharacter = Cast<ARPG_BasePhysicsCharacter>(TryGetPawnOwner());
+}
+
 
