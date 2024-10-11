@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MovementMode.h"
+
 #include "PhysicsMover/PhysicsMoverSimulationTypes.h"
 
+#define private public
+#include "MovementMode.h"
+#undef private
 
 #include "PhysicsBaseMovementMode.generated.h"
 
@@ -22,8 +25,12 @@ private:
 	GENERATED_BODY()
 
 public:
+	UPhysicsBaseMovementMode();
+
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	FName NextModeName = "";
+
+
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
 #endif // WITH_EDITOR
@@ -31,8 +38,7 @@ public:
 protected:
 	virtual void OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
 	
-	
-	//Acontece antes do tick 
+ 
 	virtual void OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
 		FProposedMove& OutProposedMove) const override;
 	virtual void OnRegistered(const FName ModeName) override;
@@ -54,6 +60,5 @@ UFUNCTION(BlueprintCallable)
 
 	TObjectPtr<const class UCommonLegacyMovementSettings> CommonLegacySettings;
 
-	
-
+ 
 };

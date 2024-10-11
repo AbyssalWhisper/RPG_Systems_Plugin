@@ -15,6 +15,7 @@ void FEasyEditorExtendModule::RegisterMenuExtensions()
 
 void FEasyEditorExtendModule::OnWorldInitialized(UWorld* World, FWorldInitializationValues WorldInitializationValues)
 {
+	if (!GetCurrentEditorWorld())return;
 	if (MainWorld)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("World Name %s"), *GetCurrentEditorWorld()->GetName());

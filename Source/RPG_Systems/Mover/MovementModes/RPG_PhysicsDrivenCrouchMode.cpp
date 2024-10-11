@@ -14,17 +14,15 @@ void URPG_PhysicsDrivenCrouchMode::OnSimulationTick(const FSimulationTickParams&
 	
 }
 
-void URPG_PhysicsDrivenCrouchMode::AjustCapsule(const FSimulationTickParams& Params,const float& DeltaSeconds)
+float URPG_PhysicsDrivenCrouchMode::GetCapsuleHeight_Implementation()
 {
-	auto capsule = Cast<UCapsuleComponent>(Params.UpdatedComponent);
-	if (capsule)
-	{
-		if (capsule->GetUnscaledCapsuleHalfHeight() != TargetCapsuleHalfHeight || capsule->GetUnscaledCapsuleRadius() != TargetCapsuleRadius)
-		{
-			capsule->SetCapsuleSize(FMath::FInterpTo(capsule->GetUnscaledCapsuleRadius(), TargetCapsuleRadius, DeltaSeconds, 2),
-				FMath::FInterpTo(capsule->GetUnscaledCapsuleHalfHeight(), TargetCapsuleHalfHeight, DeltaSeconds, 2));
-			
-		}
-	}
-	
+	return TargetCapsuleHalfHeight;
 }
+
+float URPG_PhysicsDrivenCrouchMode::GetCapsuleRadius_Implementation()
+{
+	return TargetCapsuleRadius;
+
+}
+
+

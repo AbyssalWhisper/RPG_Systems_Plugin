@@ -1,38 +1,36 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RPG_Systems/Mover/RPG_BasePhysicsCharacter.h"
+#include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
 
 #include "DefaultMovementSet/CharacterMoverComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "MoveLibrary/BasedMovementUtils.h"
 
 #include "Components/InputComponent.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/LocalPlayer.h"
-#include "DefaultMovementSet/CharacterMoverComponent.h"
-#include "MoveLibrary/BasedMovementUtils.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
-#include "GameFramework/PlayerInput.h"
-#include "GameFramework/PhysicsVolume.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Backends/MoverNetworkPhysicsLiaison.h"
-#include "RPG_Systems/Mover/BaseMovementMode/PhysicsDrivenClimbMode.h"
 
+#include "Net/UnrealNetwork.h"
+
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 
 #include "PhysicsMover/Modes/PhysicsDrivenWalkingMode.h"
-#include "PhysicsMover/Modes/PhysicsDrivenFallingMode.h"
-#include "PhysicsMover/Modes/PhysicsDrivenFlyingMode.h"
-#include "RPG_CharacterMoverComponent.h"
 
-#include "Engine/LocalPlayer.h"
-#include "EnhancedInputComponent.h"
+#include "Components/CapsuleComponent.h"
+
+#include "RPG_Systems/GameplayAbility/RPG_BaseAttributeSet.h"
+
 #include "EnhancedInputSubsystems.h"
+#include "MovementComponents/RPG_CharacterMoverComponent.h"
 /*
-void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& InputCmdResult)
+void ARPG_MoverBaseCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& InputCmdResult)
 {
 	FCharacterDefaultInputs& CharacterInputs = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FCharacterDefaultInputs>();
 
@@ -104,7 +102,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 
 	if (bUsingInputIntentForMove && bHasAffirmativeMoveInput)
 	{
-		//Verifica se deve rotacionar para a direção do movimento 
+		//Verifica se deve rotacionar para a direï¿½ï¿½o do movimento 
 		if (bOrientRotationToMovement && !IsClimbing())
 		{
 			// set the intent to the actors movement direction
@@ -203,58 +201,38 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 
 }
 */
-void ARPG_BasePhysicsCharacter::TryCrouch()
+void ARPG_BaseMoverCharacter::TryCrouch()
 {
 	bWantsCrouch = true;
 }
 
-void ARPG_BasePhysicsCharacter::TryUnCrouch()
+void ARPG_BaseMoverCharacter::TryUnCrouch()
 {
 	bWantsCrouch = false;
 }
 
-void ARPG_BasePhysicsCharacter::TryJump()
+void ARPG_BaseMoverCharacter::TryJump()
 {
 	bIsJumpJustPressed = !bIsJumpPressed;
 	bIsJumpPressed = true;
 }
  
 
-bool ARPG_BasePhysicsCharacter::IsClimbing() const
-{
-	//if (GetMoverComponent())
-	//{
-	//	return GetMoverComponent()->GetMovementModeName() == RPG_MovementModes::Climb;
-	//}
 
-	return false;
-}
-
-bool ARPG_BasePhysicsCharacter::IsCrouching() const
-{
-	//if (GetMoverComponent())
-	//{
-	//	return GetMoverComponent()->GetMovementModeName() == RPG_MovementModes::Crouch;
-	//}
-	//
-	return false;
-}
-
-bool ARPG_BasePhysicsCharacter::IsWalking() const
-{
-	if (CharacterMotionComponent)
-	{
-		return CharacterMotionComponent->IsOnGround();
-	}
-	return false;
-}
-
-ARPG_BasePhysicsCharacter::ARPG_BasePhysicsCharacter(const FObjectInitializer& ObjectInitializer)
+ARPG_BaseMoverCharacter::ARPG_BaseMoverCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	CharacterMotionComponent = CreateDefaultSubobject<URPG_CharacterMoverComponent>("CharacterMoveComponent");
- 
+	//Gas
+	AbilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComp");
+	AbilitySystemComp->SetIsReplicated(true);
+	AttributesSet = CreateDefaultSubobject<URPG_BaseAttributeSet>("PlayerAttributes");
+
+
+	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComp");
+	RootComponent = CapsuleComp;
 	
+	CharacterMotionComponent = CreateDefaultSubobject<URPG_CharacterMoverComponent>(CharacterMovementComponentName);
+
 	//ensure(CharacterMotionComponent);
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -273,8 +251,40 @@ ARPG_BasePhysicsCharacter::ARPG_BasePhysicsCharacter(const FObjectInitializer& O
 	bHasProduceInputinBpFunc = IsImplementedInBlueprint(ProduceInputFunction);
 }
 
+UAbilitySystemComponent* ARPG_BaseMoverCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComp;
+}
 
-void ARPG_BasePhysicsCharacter::PawnClientRestart()
+#pragma region GameplayTags
+void ARPG_BaseMoverCharacter::AddGameplayTag(FGameplayTag TagToAdd)
+{
+	GetAbilitySystemComponent()->AddLooseGameplayTag(TagToAdd);
+	GetAbilitySystemComponent()->SetTagMapCount(TagToAdd, 1);
+}
+
+void ARPG_BaseMoverCharacter::RemoveGameplayTag(FGameplayTag TagToRemove)
+{
+	GetAbilitySystemComponent()->RemoveLooseGameplayTag(TagToRemove);
+
+}
+#pragma endregion
+
+bool ARPG_BaseMoverCharacter::IsCrouching() const
+{
+	return bIsCrouching;
+}
+
+void ARPG_BaseMoverCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	//DOREPLIFETIME(ARPG_BaseCharacter, MovementStates);
+	DOREPLIFETIME(ARPG_BaseMoverCharacter, bIsDead);
+	DOREPLIFETIME(ARPG_BaseMoverCharacter, bIsEating);
+	DOREPLIFETIME(ARPG_BaseMoverCharacter, bIsDrinking);
+}
+
+void ARPG_BaseMoverCharacter::PawnClientRestart()
 {
 	Super::PawnClientRestart();
 
@@ -292,7 +302,7 @@ void ARPG_BasePhysicsCharacter::PawnClientRestart()
 }
 
 // Called every frame
-void ARPG_BasePhysicsCharacter::Tick(float DeltaTime)
+void ARPG_BaseMoverCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -312,9 +322,24 @@ void ARPG_BasePhysicsCharacter::Tick(float DeltaTime)
 
 	// Clear all camera-related cached input
 	CachedLookInput = FRotator::ZeroRotator;
+	{
+		/*
+		if (CharacterMotionComponent->GetMovementModeName() == DefaultModeNames::Walking) {
+		if (bWantsCrouch)
+		{
+			CapsuleComp->SetCapsuleSize(CrouchTargetCapsuleRadius, CrouchTargetCapsuleHalfHeight);
+		}
+		else
+		{
+			CapsuleComp->SetCapsuleSize(TargetCapsuleRadius, TargetCapsuleHalfHeight);
+
+		}*/
+	}
+	
+
 }
 
-void ARPG_BasePhysicsCharacter::BeginPlay()
+void ARPG_BaseMoverCharacter::BeginPlay()
 {
 	Super::BeginPlay(); 
 
@@ -326,24 +351,30 @@ void ARPG_BasePhysicsCharacter::BeginPlay()
 	}
 }
 
+
+
+
+
+#pragma region Input
+
 // Called to bind functionality to input
-void ARPG_BasePhysicsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ARPG_BaseMoverCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Setup some bindings - we are currently using Enhanced Input and just using some input actions assigned in editor for simplicity
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		Input->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ARPG_BasePhysicsCharacter::OnMoveTriggered);
-		Input->BindAction(MoveInputAction, ETriggerEvent::Completed, this, &ARPG_BasePhysicsCharacter::OnMoveCompleted);
-		Input->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ARPG_BasePhysicsCharacter::OnLookTriggered);
-		Input->BindAction(LookInputAction, ETriggerEvent::Completed, this, &ARPG_BasePhysicsCharacter::OnLookCompleted);
-		Input->BindAction(FlyInputAction, ETriggerEvent::Triggered, this, &ARPG_BasePhysicsCharacter::OnFlyTriggered);
+		Input->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ARPG_BaseMoverCharacter::OnMoveTriggered);
+		Input->BindAction(MoveInputAction, ETriggerEvent::Completed, this, &ARPG_BaseMoverCharacter::OnMoveCompleted);
+		Input->BindAction(LookInputAction, ETriggerEvent::Triggered, this, &ARPG_BaseMoverCharacter::OnLookTriggered);
+		Input->BindAction(LookInputAction, ETriggerEvent::Completed, this, &ARPG_BaseMoverCharacter::OnLookCompleted);
+		Input->BindAction(FlyInputAction, ETriggerEvent::Triggered, this, &ARPG_BaseMoverCharacter::OnFlyTriggered);
 	}
 }
 
 
-void ARPG_BasePhysicsCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdContext& InputCmdResult)
+void ARPG_BaseMoverCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdContext& InputCmdResult)
 {
 	OnProduceInput((float)SimTimeMs, InputCmdResult);
 
@@ -354,9 +385,9 @@ void ARPG_BasePhysicsCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMo
 }
 
 
-void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& OutInputCmd)
+void ARPG_BaseMoverCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdContext& OutInputCmd)
 {
-	 
+
 	// Generate user commands. Called right before the Character movement simulation will tick (for a locally controlled pawn)
 	// This isn't meant to be the best way of doing a camera system. It is just meant to show a couple of ways it may be done
 	// and to make sure we can keep distinct the movement, rotation, and view angles.
@@ -383,11 +414,11 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 		// We don't have a local controller so we can't run the code below. This is ok. Simulated proxies will just use previous input when extrapolating
 		return;
 	}
- 
+
 
 	CharacterInputs.ControlRotation = FRotator::ZeroRotator;
 
-	// Obter rotação do controle 
+	// Obter rotaï¿½ï¿½o do controle 
 	{
 		APlayerController* PC = Cast<APlayerController>(Controller);
 		if (PC)
@@ -396,7 +427,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 		}
 
 	}
-	
+
 	// Favor velocity input 
 	bool bUsingInputIntentForMove = CachedMoveInputVelocity.IsZero();
 
@@ -434,7 +465,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 	{
 		if (bOrientRotationToMovement)
 		{
-			// set the intent to the actors movement direction
+			// set the intent to the actors movement direction 
 			CharacterInputs.OrientationIntent = CharacterInputs.GetMoveInput();
 		}
 		else
@@ -512,30 +543,32 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 		bIsJumpJustPressed = false;
 		bIsJumpPressed = false;
 		bShouldToggleFlying = false;
-	} 
+	}
 }
 
-void ARPG_BasePhysicsCharacter::OnMoveTriggered(const FInputActionValue& Value)
+
+
+
+void ARPG_BaseMoverCharacter::OnMoveTriggered(const FInputActionValue& Value)
 {
 	const FVector MovementVector = Value.Get<FVector>();
 	CachedMoveInputIntent.X = FMath::Clamp(MovementVector.X, -1.0f, 1.0f);
 	CachedMoveInputIntent.Y = FMath::Clamp(MovementVector.Y, -1.0f, 1.0f);
 	CachedMoveInputIntent.Z = FMath::Clamp(MovementVector.Z, -1.0f, 1.0f);
 }
-
-void ARPG_BasePhysicsCharacter::OnMoveCompleted(const FInputActionValue& Value)
+void ARPG_BaseMoverCharacter::OnMoveCompleted(const FInputActionValue& Value)
 {
 	CachedMoveInputIntent = FVector::ZeroVector;
 }
 
-void ARPG_BasePhysicsCharacter::OnLookTriggered(const FInputActionValue& Value)
+void ARPG_BaseMoverCharacter::OnLookTriggered(const FInputActionValue& Value)
 {
 	const FVector2D LookVector = Value.Get<FVector2D>();
 	CachedLookInput.Yaw = CachedTurnInput.Yaw = FMath::Clamp(LookVector.X, -1.0f, 1.0f);
 	CachedLookInput.Pitch = CachedTurnInput.Pitch = FMath::Clamp(LookVector.Y, -1.0f, 1.0f);
 }
 
-void ARPG_BasePhysicsCharacter::OnLookCompleted(const FInputActionValue& Value)
+void ARPG_BaseMoverCharacter::OnLookCompleted(const FInputActionValue& Value)
 {
 	CachedLookInput = FRotator::ZeroRotator;
 	CachedTurnInput = FRotator::ZeroRotator;
@@ -543,7 +576,51 @@ void ARPG_BasePhysicsCharacter::OnLookCompleted(const FInputActionValue& Value)
 
 
 
-void ARPG_BasePhysicsCharacter::OnFlyTriggered(const FInputActionValue& Value)
+void ARPG_BaseMoverCharacter::OnFlyTriggered(const FInputActionValue& Value)
 {
 	bShouldToggleFlying = true;
 }
+#pragma endregion
+
+#pragma region Posses
+void ARPG_BaseMoverCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (AbilitySystemComp)
+	{
+		AbilitySystemComp->RefreshAbilityActorInfo();
+	}
+	if (auto a = Cast<APlayerController>(NewController))
+	{
+		Client_PossessedByPlayer(a);
+	}
+}
+
+void ARPG_BaseMoverCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+	if (auto a = Cast<APlayerController>(GetController()))
+	{
+		Client_UnPossessedByPlayer(a);
+	}
+}
+
+void ARPG_BaseMoverCharacter::Client_PossessedByPlayer_Implementation(APlayerController* PlayerController)
+{
+	PossessedByPlayerOnClient(PlayerController);
+}
+
+void ARPG_BaseMoverCharacter::Client_UnPossessedByPlayer_Implementation(APlayerController* OldPlayerController)
+{
+	UnPossessedByPlayerOnClient(OldPlayerController);
+}
+
+void ARPG_BaseMoverCharacter::PossessedByPlayerOnClient_Implementation(APlayerController* PlayerController)
+{
+}
+
+void ARPG_BaseMoverCharacter::UnPossessedByPlayerOnClient_Implementation(APlayerController* OldPlayerController)
+{
+}
+
+#pragma endregion

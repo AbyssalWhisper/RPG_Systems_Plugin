@@ -38,6 +38,9 @@ void UPhysicsBaseMovementMode::UpdateConstraintSettings(Chaos::FCharacterGroundC
 	Constraint.SetSwingTorqueLimit(FUnitConversion::Convert(SwingTorqueLimit, EUnit::NewtonMeters, EUnit::KilogramCentimetersSquaredPerSecondSquared));
 	Constraint.SetTargetHeight(0.0f);
 }
+UPhysicsBaseMovementMode::UPhysicsBaseMovementMode()
+{ 
+}
 #if WITH_EDITOR
 EDataValidationResult UPhysicsBaseMovementMode::IsDataValid(FDataValidationContext& Context) const
 {
@@ -58,9 +61,11 @@ EDataValidationResult UPhysicsBaseMovementMode::IsDataValid(FDataValidationConte
 
 void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
+ 
+
 	const FMoverTickStartData& StartState = Params.StartState;
-	auto UpdatedComponent = Params.UpdatedComponent;
-	auto UpdatedPrimitive = Params.UpdatedPrimitive;
+	auto UpdatedComponent = Params.MovingComps.UpdatedComponent;
+	auto UpdatedPrimitive = Params.MovingComps.UpdatedPrimitive;
 	FProposedMove ProposedMove = Params.ProposedMove;
 
 	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
@@ -81,7 +86,7 @@ void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Par
 */
 	// Don't need a floor query - just invalidate the blackboard to ensure we don't use an old result elsewhere
 
-	if (UMoverBlackboard* SimBlackboard = GetBlackboard_Mutable())
+	if (UMoverBlackboard* SimBlackboard = GetMoverComponent()->GetSimBlackboard_Mutable())
 	{
 		SimBlackboard->Invalidate(CommonBlackboard::LastFloorResult);
 		SimBlackboard->Invalidate(CommonBlackboard::LastWaterResult);
@@ -104,7 +109,7 @@ void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Par
 
 	FVector TargetPos = StartingSyncState->GetLocation_WorldSpace() + TargetVel * DeltaSeconds;
 
-	OutputState.MovementEndState.NextModeName = NextModeName;
+	//OutputState.MovementEndState.NextModeName = NextModeName;
 
 	OutputState.MovementEndState.RemainingMs = 0.0f;
 	OutputSyncState.MoveDirectionIntent = ProposedMove.bHasDirIntent ? ProposedMove.DirectionIntent : FVector::ZeroVector;
@@ -117,6 +122,8 @@ void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Par
 void UPhysicsBaseMovementMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
 	FProposedMove& OutProposedMove) const
 {
+ 
+
 	const FCharacterDefaultInputs* CharacterInputs = StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>();
 	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
 	check(StartingSyncState);

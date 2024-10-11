@@ -87,8 +87,7 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 	
 	Params.OrientationIntent = IntendedOrientation_WorldSpace;
 	Params.PriorVelocity = StartingSyncState->GetVelocity_WorldSpace();
-	
-	//Params.PriorVelocity = FVector(1000*DeltaSeconds,0,0)+InputDirection;
+	 
 	Params.PriorOrientation = StartingSyncState->GetOrientation_WorldSpace();
 	Params.TurningRate = CommonLegacySettings->TurningRate;
 	Params.TurningBoost = CommonLegacySettings->TurningBoost;

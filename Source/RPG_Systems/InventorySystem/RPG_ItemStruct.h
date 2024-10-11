@@ -109,7 +109,7 @@ struct  FSTR_RPG_LootItems : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		URPG_ItemData* Item;
+		URPG_ItemData* Item = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DropChance = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

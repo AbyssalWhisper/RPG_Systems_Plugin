@@ -12,12 +12,16 @@
 #include "UObject/Object.h"
 #include "UObject/UnrealType.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "Engine/StreamableManager.h"
+#include "Engine/AssetManager.h"
+
 #include "BetterUtilitiesBPLibrary.generated.h"
 
 class UReplicatedObject;
 
-
-DECLARE_LOG_CATEGORY_EXTERN(EasyLog, Log, All);
+//É necessário implementar no arquivo cpp
+DECLARE_LOG_CATEGORY_EXTERN(LogRPG_Systems, Log, All);
 
 UENUM(BlueprintType)
 enum EEasylog : uint8
@@ -44,7 +48,7 @@ enum EEasylog : uint8
      * Prints a verbose message to a log file (if Verbose logging is enabled for the given category, 
      * usually used for detailed logging) 
      */
-    Verbose,
+    Log,
 
 };
 	
@@ -60,7 +64,7 @@ public:
     double Max;
     FMinMaxValues() :
         Min(0.0),
-        Max(0.0)
+        Max(1.0)
     {
     }
     FMinMaxValues(double min, double max) :
@@ -91,33 +95,6 @@ enum class ETrueFalse : uint8
     True_,
     False_
 };
-/* 
-*	Function library class.
-*	Each function in it is expected to be static and represents blueprint node that can be called in any blueprint.
-*
-*	When declaring function you can define metadata for the node. Key function specifiers will be BlueprintPure and BlueprintCallable.
-*	BlueprintPure - means the function does not affect the owning object in any way and thus creates a node without Exec pins.
-*	BlueprintCallable - makes a function which can be executed in Blueprints - Thus it has Exec pins.
-*	DisplayName - full name of the node, shown when you mouse over the node and in the blueprint drop down menu.
-*				Its lets you name the node using characters not allowed in C++ function names.
-*	CompactNodeTitle - the word(s) that appear on the node.
-*	Keywords -	the list of keywords that helps you to find node when you search for it using Blueprint drop-down menu. 
-*				Good example is "Print String" node which you can find also by using keyword "log".
-*	Category -	the category your node will be under in the Blueprint drop-down menu.
-*
-*	For more info on custom blueprint nodes visit documentation:
-*	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
-*/
-
-UENUM(BlueprintType)
-enum class EPropertyAccess : uint8
-{
-    None UMETA(DisplayName = "None"),
-    BlueprintReadOnly UMETA(DisplayName = "BlueprintReadOnly"),
-    BlueprintReadWrite UMETA(DisplayName = "BlueprintReadWrite")
-};
-
-
 
 UCLASS()
 class BETTERUTILITIES_API UBetterUtilities : public UBlueprintFunctionLibrary
@@ -435,4 +412,93 @@ public:
     static void AddReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object, ELifetimeCondition LifetimeCondition = ELifetimeCondition::COND_None);
     UFUNCTION(BlueprintCallable)
     static void RemoveReplicatedSubObject(UActorComponent* ActorComponent, UObject* Object);
+
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static int32 GetNextIndex(int32 CurrentIndex, int32 ArraySize)
+    {
+        if (ArraySize == 0)
+        {
+            return INDEX_NONE; // Retorna INDEX_NONE se o array estiver vazio (convencionalmente -1 no Unreal Engine)
+        }
+
+        return (CurrentIndex + 1) % ArraySize; // Próximo índice, retorna 0 se for o último
+    }
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static int32 GetPreviousIndex(int32 CurrentIndex, int32 ArraySize)
+    {
+        if (ArraySize == 0)
+        {
+            return INDEX_NONE; // Retorna INDEX_NONE se o array estiver vazio
+        }
+
+        return (CurrentIndex - 1 + ArraySize) % ArraySize; // Volta para o último índice se estiver no início
+    }
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static FVector2D GetMainWindowPosition()
+    {
+        // Obtém a instância do aplicativo Slate
+        TSharedPtr<SWindow> MainWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+    
+        if (MainWindow.IsValid())
+        {
+            // Obtém a posição da janela
+            FVector2D WindowPosition = MainWindow->GetPositionInScreen();
+            return WindowPosition;
+        }
+
+        // Se a janela não estiver disponível, retorna um vetor nulo
+        return FVector2D::ZeroVector;
+    }
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static FVector2D GetViewportPosition()
+    {
+        // Obtém a instância do aplicativo Slate
+        TSharedPtr<SWindow> MainWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+    
+        if (MainWindow.IsValid())
+        {
+            // Obtém a posição da janela
+            FVector2D WindowPosition = MainWindow->GetPositionInScreen() + (MainWindow->GetSizeInScreen() - MainWindow->GetClientSizeInScreen());
+            return WindowPosition;
+        }
+
+        // Se a janela não estiver disponível, retorna um vetor nulo
+        return FVector2D::ZeroVector;
+    }
+    
+    template<typename T>
+    static void LoadAssetAsync(TSoftObjectPtr<T> AssetPtr, TFunction<void(T*)> OnLoaded);
+    
+
 };
+
+template<typename T>
+inline void UBetterUtilities::LoadAssetAsync(TSoftObjectPtr<T> AssetPtr, TFunction<void(T*)> OnLoaded)
+{
+    if (AssetPtr.IsValid())
+    {
+        // Se o asset já estiver carregado, executa a função imediatamente
+        OnLoaded(AssetPtr.Get());
+        return;
+    }
+
+    // Obtém o StreamableManager para gerenciar o carregamento assíncrono
+    FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
+    // Carrega o asset assíncronamente
+    Streamable.RequestAsyncLoad(AssetPtr.ToSoftObjectPath(), [AssetPtr, OnLoaded]()
+        {
+            // Verifica se o asset foi carregado com sucesso
+            if (AssetPtr.IsValid())
+            {
+                UBetterUtilities::DebugLog(FString::Format(TEXT("Asset Loaded: {0}"), { AssetPtr.GetAssetName()}), EEasylog::Log);
+
+                // Executa o lambda passando o asset carregado
+                OnLoaded(AssetPtr.Get());
+            }
+            else
+            {
+                UBetterUtilities::DebugLog(TEXT("Failed to load asset."), EEasylog::Warning);
+            }
+        });
+}

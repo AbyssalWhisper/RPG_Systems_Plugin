@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "DefaultMovementSet/CharacterMoverComponent.h"
+#include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
 #include "RPG_CharacterMoverComponent.generated.h"
+
 
 /**
  * 
@@ -17,10 +19,18 @@ class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UCharacterMoverCompo
 public:
 
 	URPG_CharacterMoverComponent();
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	ARPG_BaseMoverCharacter* Character;
+
+
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	virtual TObjectPtr<UBaseMovementMode> GetCurrentMovementMode();
 
 
 	UFUNCTION(BlueprintPure, Category = Mover)
-	virtual bool IsSwimming() const;
-	UFUNCTION(BlueprintPure, Category = Mover)
-	virtual bool IsFlying() const;
+	virtual bool IsClimbing() const;
+
+  
 };

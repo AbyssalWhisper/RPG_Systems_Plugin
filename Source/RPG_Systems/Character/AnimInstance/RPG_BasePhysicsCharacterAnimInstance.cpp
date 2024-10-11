@@ -3,13 +3,10 @@
 
 #include "RPG_Systems/Character/AnimInstance/RPG_BasePhysicsCharacterAnimInstance.h"
 
-#include "RPG_Systems/Mover/RPG_BasePhysicsCharacter.h"
-
-#include "RPG_Systems/Mover/RPG_CharacterMoverComponent.h"
-
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "RPG_Systems/Character/RPG_CharacterDataAsset.h"
+#include "RPG_Systems/Mover/MovementComponents/RPG_CharacterMoverComponent.h"
 
 
 void URPG_BasePhysicsCharacterAnimInstance::NativeInitializeAnimation() {
@@ -109,7 +106,7 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 
 void URPG_BasePhysicsCharacterAnimInstance::GetCharacter()
 {
-	RefCharacter = Cast<ARPG_BasePhysicsCharacter>(TryGetPawnOwner());
+	RefCharacter = Cast<ARPG_BaseMoverCharacter>(TryGetPawnOwner());
 }
 
 

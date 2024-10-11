@@ -20,11 +20,12 @@ struct FMeshLayerPreset
 	FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules::SnapToTargetIncludingScale;
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FVector LocationOffSet;
+	FVector LocationOffSet = FVector(0, 0, 0);
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	bool UsePoseMaster = false;
 	FMeshLayerPreset()
 	{
+		
 	}
 };
 
@@ -56,10 +57,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* AddStaticMeshLayer(UMeshComponent* OwnerMesh,UStaticMesh* Mesh,FGameplayTag LayerTag,FMeshLayerPreset Preset);
 	UFUNCTION(BlueprintCallable)
-	USkeletalMeshComponent* AddSkeletalMeshLayer(UMeshComponent* OwnerMesh, USkeletalMesh* Mesh, FGameplayTag LayerTag,
-	                                        FMeshLayerPreset Preset);
+	UStaticMeshComponent* AddStaticMeshLayerFromSoftObject(UMeshComponent* OwnerMesh, TSoftObjectPtr <UStaticMesh> Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset);
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* AddSkeletalMeshLayer(UMeshComponent* OwnerMesh, USkeletalMesh* Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset);
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* AddSkeletalMeshLayerFromSoftObject(UMeshComponent* OwnerMesh, TSoftObjectPtr<USkeletalMesh> Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset);
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* AddAsycSoftSkeletalMeshLayer(UMeshComponent* OwnerMesh, TSoftObjectPtr<USkeletalMesh> Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset);
 	UFUNCTION(BlueprintCallable)
 	void RemoveMeshLayer(UMeshComponent* OwnerMesh,FGameplayTag LayerTag);
+	UFUNCTION(BlueprintCallable)
+	void RemoveAllMeshLayers(UMeshComponent* OwnerMesh);
 	
 		
 };

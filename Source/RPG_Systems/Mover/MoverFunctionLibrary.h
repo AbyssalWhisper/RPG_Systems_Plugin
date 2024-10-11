@@ -6,6 +6,13 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "MoverFunctionLibrary.generated.h"
 
+namespace RPG_MovementModes
+{
+	const FName Climbing = TEXT("Climbing");
+	const FName Crouch = TEXT("Crouch");
+}
+
+
 /**
  * 
  */
@@ -14,6 +21,10 @@ class RPG_SYSTEMS_API UMoverFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
+
+	
+
+
 	UFUNCTION(BlueprintCallable)
 	static void SetTransforms_WorldSpace(UPARAM(ref) FMoverTickEndData& OutputState, FVector WorldLocation, FRotator WorldOrient, FVector WorldVelocity, UPrimitiveComponent* Base=nullptr, FName BaseBone = NAME_None);
 	UFUNCTION(BlueprintCallable)

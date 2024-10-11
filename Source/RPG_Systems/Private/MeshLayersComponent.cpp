@@ -2,6 +2,7 @@
 
 
 #include "MeshLayersComponent.h"
+#include "BetterUtilitiesBPLibrary.h"
 
 // Sets default values for this component's properties
 UMeshLayersComponent::UMeshLayersComponent()
@@ -34,11 +35,15 @@ void UMeshLayersComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 UStaticMeshComponent* UMeshLayersComponent::AddStaticMeshLayer(UMeshComponent* OwnerMesh,UStaticMesh* Mesh,FGameplayTag LayerTag,FMeshLayerPreset Preset)
 {
+
+
 	if (OwnerMesh && Mesh)
 	{
 		//rever
+
+
 		
-		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
+		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(OwnerMesh);
 		
 		MeshComponent->RegisterComponent();
 		MeshComponent->SetStaticMesh(Mesh);
@@ -46,16 +51,6 @@ UStaticMeshComponent* UMeshLayersComponent::AddStaticMeshLayer(UMeshComponent* O
 		
 		if (MeshLayersList.Contains(LayerTag))
 		{
-			/*
-			UMeshComponent** ref = MeshLayersList.Find(LayerTag);
-			if (ref && *ref)
-			{
-				GEngine->AddOnScreenDebugMessage(-1,2,FColor::Red,"aa");
-			
-				(*ref)->DestroyComponent();
-				(*ref) = MeshComponent;
-			}
-			*/
 
 			UMeshComponent*& ref = MeshLayersList.FindChecked(LayerTag);
 			if (ref)
@@ -67,7 +62,6 @@ UStaticMeshComponent* UMeshLayersComponent::AddStaticMeshLayer(UMeshComponent* O
 		else
 		{
 			MeshLayersList.Add(LayerTag,MeshComponent);
-			GEngine->AddOnScreenDebugMessage(-1,2,FColor::Red,"hhh");
 			
 		}
 		MeshComponent->AttachToComponent(OwnerMesh,Preset.AttachmentTransformRules,Preset.Socket);
@@ -77,11 +71,16 @@ UStaticMeshComponent* UMeshLayersComponent::AddStaticMeshLayer(UMeshComponent* O
 	return nullptr;
 }
 
+UStaticMeshComponent* UMeshLayersComponent::AddStaticMeshLayerFromSoftObject(UMeshComponent* OwnerMesh, TSoftObjectPtr<UStaticMesh> Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset)
+{
+	return AddStaticMeshLayer(OwnerMesh,Mesh.LoadSynchronous(),LayerTag,Preset);
+}
+
 USkeletalMeshComponent* UMeshLayersComponent::AddSkeletalMeshLayer(UMeshComponent* OwnerMesh, USkeletalMesh* Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset)
 {
 	if (OwnerMesh && Mesh)
 	{
-		USkeletalMeshComponent* MeshComponent = NewObject<USkeletalMeshComponent>(this);
+		USkeletalMeshComponent* MeshComponent = NewObject<USkeletalMeshComponent>(OwnerMesh);
 
 		if (MeshComponent)
 		{
@@ -134,6 +133,28 @@ USkeletalMeshComponent* UMeshLayersComponent::AddSkeletalMeshLayer(UMeshComponen
 	return nullptr;
 }
 
+USkeletalMeshComponent* UMeshLayersComponent::AddSkeletalMeshLayerFromSoftObject(UMeshComponent* OwnerMesh, TSoftObjectPtr<USkeletalMesh> Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset)
+{
+	return AddSkeletalMeshLayer(OwnerMesh,Mesh.LoadSynchronous(),LayerTag,Preset);
+}
+
+USkeletalMeshComponent* UMeshLayersComponent::AddAsycSoftSkeletalMeshLayer(UMeshComponent* OwnerMesh, TSoftObjectPtr<USkeletalMesh> Mesh, FGameplayTag LayerTag, FMeshLayerPreset Preset)
+{
+	TWeakObjectPtr<UMeshLayersComponent> WeakMeshLayersComponent = this;
+	UBetterUtilities::LoadAssetAsync<USkeletalMesh>(Mesh, [WeakMeshLayersComponent,OwnerMesh,Mesh,LayerTag,Preset](USkeletalMesh* LoadedMesh)
+		{
+			if (!WeakMeshLayersComponent.IsValid())return;
+			if (LoadedMesh)
+			{
+				
+				// Execute aqui o código após o asset ser carregado 
+				WeakMeshLayersComponent->AddSkeletalMeshLayer(OwnerMesh, LoadedMesh, LayerTag, Preset);
+
+			}
+		});
+	return nullptr;
+}
+
 void UMeshLayersComponent::RemoveMeshLayer(UMeshComponent* OwnerMesh, FGameplayTag LayerTag)
 {
 	if (!OwnerMesh) return;
@@ -144,6 +165,19 @@ void UMeshLayersComponent::RemoveMeshLayer(UMeshComponent* OwnerMesh, FGameplayT
 		if(Mesh) Mesh->DestroyComponent();
 		ref->MeshLayersList.Remove(LayerTag);
 	}
+}
+
+void UMeshLayersComponent::RemoveAllMeshLayers(UMeshComponent* OwnerMesh)
+{
+	if (!OwnerMesh) return;
+	FMeshLayers* ref = Meshs.Find(OwnerMesh);
+	if (!ref)return;
+	for (auto var : ref->MeshLayersList)
+	{
+		if (var.Value) var.Value->DestroyComponent();
+		ref->MeshLayersList.Remove(var.Key);
+	}
+	Meshs.Remove(OwnerMesh);
 }
 
 

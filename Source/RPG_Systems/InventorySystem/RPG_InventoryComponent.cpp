@@ -27,6 +27,8 @@ URPG_InventoryComponent::URPG_InventoryComponent()
 	{
 		Item_DT.DataTable = DatatableRef.Object;
 	}*/
+
+	
 }
 
 

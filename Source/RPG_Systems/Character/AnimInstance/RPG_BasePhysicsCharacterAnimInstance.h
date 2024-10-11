@@ -21,7 +21,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	virtual void GetCharacter();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		ARPG_BasePhysicsCharacter* RefCharacter;
+		class ARPG_BaseMoverCharacter* RefCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bUseScalePlayRate = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -4,10 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AttributeSet.h"
-#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
-#include "GameplayTagContainer.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "ItemExecuteCode/RPG_ExecuteItemCodeComponent.h"
 #include "RPG_Systems/InventorySystem/RPG_ItemStruct.h"
