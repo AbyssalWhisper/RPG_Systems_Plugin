@@ -34,9 +34,5 @@ void UMoverPhysicsLiaisonComponent::TickComponent(float DeltaTime, ELevelTick Ti
 	// ...
 }
 
-EDataValidationResult UMoverPhysicsLiaisonComponent::ValidateData(FDataValidationContext& Context,
-	const UMoverComponent& ValidationMoverComp) const
-{
-	return EDataValidationResult::Valid;
-}
+
 

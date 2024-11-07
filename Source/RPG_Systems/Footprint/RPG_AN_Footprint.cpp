@@ -7,6 +7,7 @@
 
 URPG_AN_Footprint::URPG_AN_Footprint()
 {
+	NotifyColor = FColor::Magenta;
 }
 
 void URPG_AN_Footprint::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

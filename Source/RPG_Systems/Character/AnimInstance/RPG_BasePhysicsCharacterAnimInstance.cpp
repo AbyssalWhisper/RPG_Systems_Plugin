@@ -32,9 +32,9 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 	//bIsStunned = RefCharacter->GetAbilitySystemComponent()->HasMatchingGameplayTag(RefCharacter->StunTag);
 	
 	bIsFalling = RefCharacter->GetMoverComponent()->IsFalling();
-	bIsSwimming = RefCharacter->GetMoverComponent()->IsSwimming();
+	//bIsSwimming = RefCharacter->GetMoverComponent()->IsSwimming();
 	bIsJumping = RefCharacter->GetMoverComponent()->IsFalling();
-	bIsFlying = RefCharacter->GetMoverComponent()->IsFlying();
+	//bIsFlying = RefCharacter->GetMoverComponent()->IsFlying();
 	bIsOnGround = RefCharacter->GetMoverComponent()->IsOnGround();
 	
 	if (bIsFalling) FallingVelocity = RefCharacter->GetMoverComponent()->GetVelocity().Z;
