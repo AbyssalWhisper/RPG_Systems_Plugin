@@ -17,13 +17,13 @@
 #include "RPG_Systems/Character/RPG_CharacterDataAsset.h"
 #include "GameplayEffect.h"
 #include "RPG_Systems/GameplayEffects/GE_FoodDamage.h"
-
+#include "RPG_Systems/RPG_AbilitySystemComponent.h"
 // Sets default values
 ARPG_BaseCharacter::ARPG_BaseCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<URPG_CharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	AbilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComp");
+	AbilitySystemComp = CreateDefaultSubobject<URPG_AbilitySystemComponent>("AbilitySystemComp");
 	AbilitySystemComp->SetIsReplicated(true);
 	AttributesSet = CreateDefaultSubobject<URPG_BaseAttributeSet>("PlayerAttributes");
 
@@ -59,7 +59,7 @@ void ARPG_BaseCharacter::BeginPlay()
 		if (StartupAbility)
 		{
 			AbilitySystemComp->GiveAbility(
-				FGameplayAbilitySpec(StartupAbility, 1, static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInput), this));
+				FGameplayAbilitySpec(StartupAbility, 1));
 		}
 	}
 
@@ -85,7 +85,7 @@ void ARPG_BaseCharacter::BeginPlay()
 		if (StartupAbility)
 		{
 			AbilitySystemComp->GiveAbility(
-				FGameplayAbilitySpec(StartupAbility, 1, static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInput), this));
+				FGameplayAbilitySpec(StartupAbility, 1));
 		}
 	}
 
@@ -230,7 +230,7 @@ void ARPG_BaseCharacter::SetMovementState(const E_WalkMovementStates SetMovement
 void ARPG_BaseCharacter::GiveAbility(TSubclassOf<URPG_GameplayAbility> Ability)
 {
 	AbilitySystemComp->GiveAbility(
-		FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInput), this));
+		FGameplayAbilitySpec(Ability, 1));
 }
 
 void ARPG_BaseCharacter::Landed(const FHitResult& Hit)

@@ -35,9 +35,9 @@ class RPG_SYSTEMS_API UANS_TraceHit : public UAnimNotifyState
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace")
 	TEnumAsByte<ETraceType> TraceType = ETraceType::SphereTrace;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==ETraceType::SphereTrace"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==ETraceType::SphereTrace",EditConditionHides))
 	float Radius = 5.0f;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==ETraceType::BoxTrace"))
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==ETraceType::BoxTrace",EditConditionHides))
 	FVector BoxExtend = FVector(10.0f, 10.0f, 10.0f);
 	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
 	FVector OffSetLocation = FVector(0.0f, 0.0f, 0.0f);

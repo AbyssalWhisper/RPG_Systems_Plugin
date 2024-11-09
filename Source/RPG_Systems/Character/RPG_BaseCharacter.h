@@ -16,6 +16,7 @@
 class URPG_CharacterDataAsset;
 class URPG_BaseAttributeSet;
 class URPG_GameplayAbility;
+class URPG_AbilitySystemComponent;
 UCLASS()
 class RPG_SYSTEMS_API ARPG_BaseCharacter : public ACharacter , public IAbilitySystemInterface , public IRPG_CancelWindowsInterfaces , public IRPG_Attributes_Interface
 {
@@ -26,7 +27,7 @@ public:
 	ARPG_BaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		UAbilitySystemComponent* AbilitySystemComp;
+		URPG_AbilitySystemComponent* AbilitySystemComp;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		URPG_BaseAttributeSet* AttributesSet;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "0 - CharacterData")

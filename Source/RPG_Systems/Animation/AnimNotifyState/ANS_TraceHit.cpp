@@ -4,7 +4,6 @@
 #include "ANS_TraceHit.h"
 
 #include "Kismet/KismetMathLibrary.h"
-#include "RPG_Systems/TraceHit/BaseTraceHit.h"
 
 UANS_TraceHit::UANS_TraceHit()
 {
