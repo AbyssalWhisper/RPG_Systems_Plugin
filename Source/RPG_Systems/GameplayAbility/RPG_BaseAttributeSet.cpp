@@ -9,9 +9,7 @@
 #include "RPG_Systems/General_Interfaces/RPG_Attributes_Interface.h"
 
 URPG_BaseAttributeSet::URPG_BaseAttributeSet() :
-	Health(100.f),
-	MaxHealth(100),
-	HealthRegenRate(1),
+	
 	Oxygen(100.f),
 	MaxOxygen(100),
 	OxygenRegenRate(1),
@@ -103,24 +101,7 @@ void URPG_BaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCa
 	ARPG_BaseCharacter* BaseCharacter = Cast<ARPG_BaseCharacter>(GetOwningActor());
 	AActor* Owner = Cast<AActor>(GetOwningActor());
 
-	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(URPG_BaseAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_BaseAttributeSet, Health)))
-	{
-		if (BaseCharacter)
-		{
-			
-			if (GetHealth() == GetMaxHealth())
-			{
-				BaseCharacter->AddGameplayTag(BaseCharacter->FullHealthTag);
-				 
-			}
-			else
-			{
-				BaseCharacter->RemoveGameplayTag(BaseCharacter->FullHealthTag);
-			}
 
-		}
-		return;
-	}
 
 	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(URPG_BaseAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_BaseAttributeSet, Stamina)))
 	{
@@ -189,11 +170,7 @@ void URPG_BaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue); 
 
-	if (GetHealthAttribute() == Attribute)
-	{
-		CalculateHealth(NewValue);
-		return;
-	}
+	
 	if (GetStaminaAttribute() == Attribute)
 	{
 		CalculateStamina(NewValue);
@@ -216,28 +193,7 @@ void URPG_BaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 	}
 }
 
-void URPG_BaseAttributeSet::CalculateHealth(float& HealthValue)
-{
-	if (HealthValue >= GetMaxHealth())
-	{
-		HealthValue = GetMaxHealth();
-	}
-	if (HealthValue <= 0)
-	{
-		HealthValue = 0;
-		if (GetOwningActor()->GetClass()->ImplementsInterface(URPG_Attributes_Interface::StaticClass()))
-		{
-			//Server_Interact(InteractTarget);
-			IRPG_Attributes_Interface::Execute_OnHealthEmpty(GetOwningActor());
-		}
-	}
 
-	if (GetOwningActor()->GetClass()->ImplementsInterface(URPG_Attributes_Interface::StaticClass()))
-	{
-		//Server_Interact(InteractTarget);
-		IRPG_Attributes_Interface::Execute_OnHealthChanged(GetOwningActor(), GetHealth());
-	}
-}
 
 void URPG_BaseAttributeSet::CalculateStamina(float& StaminaValue)
 {
@@ -331,10 +287,7 @@ void URPG_BaseAttributeSet::CalculateOxygen(float& OxygenValue)
 void URPG_BaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, Health, COND_None, REPNOTIFY_OnChanged);
-	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, MaxHealth, COND_None, REPNOTIFY_OnChanged);
-	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet,  HealthRegenRate, COND_None, REPNOTIFY_OnChanged);
-
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, Oxygen, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, MaxOxygen, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, OxygenRegenRate, COND_None, REPNOTIFY_OnChanged);
@@ -371,20 +324,7 @@ void URPG_BaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 }
 
-void URPG_BaseAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, Health, OldHealth);
-}
 
-void URPG_BaseAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, MaxHealth, OldMaxHealth);
-}
-
-void URPG_BaseAttributeSet::OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, HealthRegenRate, OldHealthRegenRate);
-}
 
 void URPG_BaseAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor)
 {

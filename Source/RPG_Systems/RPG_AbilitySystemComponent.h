@@ -14,6 +14,8 @@ class RPG_SYSTEMS_API URPG_AbilitySystemComponent : public UAbilitySystemCompone
 {
 	GENERATED_BODY()
 public:
+	URPG_AbilitySystemComponent();
+	
 	UFUNCTION(blueprintCallable, Category = "Ability")
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void ProcessAbilityInput();
@@ -24,4 +26,14 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 		FActorComponentTickFunction* ThisTickFunction) override;
+	const UAttributeSet* GetOrCreateAttributeSet(const TSubclassOf<UAttributeSet>& InAttributeSet);
+	virtual void BeginPlay() override;
+
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	void AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass);
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+
+	void SetAttributeBaseValue(FGameplayAttribute Attribute, float BaseValue);
+	
 };

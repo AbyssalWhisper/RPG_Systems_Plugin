@@ -31,8 +31,7 @@ public:
 		FGameplayTag Breed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TEnumAsByte<E_Diet> Diet;
-	UPROPERTY(EditDefaultsOnly,Instanced, BlueprintReadOnly, meta = (ShowOnlyInnerProperties, DisplayPriority = 0))
-	TObjectPtr<URPG_BaseItemType> ItemType;
+
 #pragma region Attributes
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|Health")

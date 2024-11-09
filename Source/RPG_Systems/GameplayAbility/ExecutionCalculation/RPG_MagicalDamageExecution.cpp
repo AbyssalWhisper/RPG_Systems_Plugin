@@ -3,6 +3,7 @@
 
 #include "RPG_Systems/GameplayAbility/ExecutionCalculation/RPG_MagicalDamageExecution.h"
 #include "RPG_Systems/GameplayAbility/RPG_BaseAttributeSet.h"
+#include "RPG_Systems/GameplayAbility/RPG_HealthAttributeSet.h"
 
 struct EffectsAttributes
 {
@@ -11,7 +12,7 @@ struct EffectsAttributes
 	EffectsAttributes()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_BaseAttributeSet, Armor, Target, true)
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_BaseAttributeSet, Health, Target, true)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_HealthAttributeSet, Health, Target, true)
 	}
 
 };
@@ -23,7 +24,7 @@ static EffectsAttributes& GetEffectsAttributes()
 }
 
 URPG_MagicalDamageExecution::URPG_MagicalDamageExecution() {
-	HealthProperty = FindFieldChecked<FProperty>(URPG_BaseAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_BaseAttributeSet, Health));
+	HealthProperty = FindFieldChecked<FProperty>(URPG_HealthAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_HealthAttributeSet, Health));
 	RelevantAttributesToCapture.Add(GetEffectsAttributes().HealthDef);
 //	RelevantAttributesToCapture.Add(GetEffectsAttributes().AttackDef);
 	RelevantAttributesToCapture.Add(GetEffectsAttributes().ArmorDef);

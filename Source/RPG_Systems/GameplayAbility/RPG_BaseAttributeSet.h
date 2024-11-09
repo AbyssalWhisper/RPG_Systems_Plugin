@@ -28,16 +28,6 @@ public:
 		URPG_BaseAttributeSet();
 
 
-		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_Health)
-		FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, Health)
-
-		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_MaxHealth)
-		FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, MaxHealth)
-		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_HealthRegenRate)
-		FGameplayAttributeData HealthRegenRate;
-	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, HealthRegenRate)
 
 	UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_Oxygen)
 		FGameplayAttributeData Oxygen;
@@ -99,8 +89,6 @@ public:
 		FGameplayAttributeData ManaRegenRate;
 	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, ManaRegenRate)
 
-
-		void CalculateHealth(float& HealthValue);
 		void CalculateStamina(float& StaminaValue);
 		void CalculateFood(float& FoodValue);
 		void CalculateThirst(float& ThirstValue);
@@ -185,13 +173,7 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION()
-		virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
-
-	UFUNCTION()
-		virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
-	UFUNCTION()
-		virtual void OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate);
+	
 	UFUNCTION()
 		virtual void OnRep_Armor(const FGameplayAttributeData& OldArmor);
 

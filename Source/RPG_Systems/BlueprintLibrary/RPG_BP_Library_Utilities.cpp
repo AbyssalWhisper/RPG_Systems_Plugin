@@ -9,6 +9,7 @@
 #include "RPG_Systems/InventorySystem/RPG_ItemData.h"
 
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "RPG_Systems/GameplayAbility/RPG_HealthAttributeSet.h"
 #include "UObject/SavePackage.h"
 
 FSTR_RPG_ItemData URPG_BP_Library_Utilities::GetItemDataFromSlot(FSTR_RPG_ItemSlot Item) {
@@ -72,17 +73,17 @@ bool URPG_BP_Library_Utilities::InitStatsByCharacterData(UAbilitySystemComponent
 		FGameplayModifierInfo ModifierInfo;
 		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->MaxHealth);
 		ModifierInfo.ModifierOp = EGameplayModOp::Override;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetMaxHealthAttribute();
+		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetMaxHealthAttribute();
 		GE_Stats->Modifiers[0] = ModifierInfo;
 
 		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->MaxHealth);
 		ModifierInfo.ModifierOp = EGameplayModOp::Override;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetHealthAttribute();
+		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
 		GE_Stats->Modifiers[1] = ModifierInfo;
 
 		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->HealthRegenRate);
 		ModifierInfo.ModifierOp = EGameplayModOp::Override;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetHealthRegenRateAttribute();
+		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthRegenRateAttribute();
 		GE_Stats->Modifiers[2] = ModifierInfo;
  
 		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->MaxOxygen);

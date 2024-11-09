@@ -14,10 +14,12 @@
 #include "GameplayAbilitySpec.h"
 #include "RPG_Systems/GameplayAbility/RPG_GameplayAbility.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "EnhancedInputSubsystems.h"
 #include "RPG_Systems/Character/RPG_CharacterDataAsset.h"
 #include "GameplayEffect.h"
 #include "RPG_Systems/GameplayEffects/GE_FoodDamage.h"
 #include "RPG_Systems/RPG_AbilitySystemComponent.h"
+#include "RPG_Systems/GameplayAbility/RPG_HealthAttributeSet.h"
 // Sets default values
 ARPG_BaseCharacter::ARPG_BaseCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<URPG_CharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
@@ -100,13 +102,7 @@ void ARPG_BaseCharacter::Tick(float DeltaTime)
 	}
 }
 
-// Called to bind functionality to input
-void ARPG_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	 
-	BindASCInput(PlayerInputComponent);
-}
+
 
 void ARPG_BaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -174,11 +170,11 @@ void ARPG_BaseCharacter::InitStats()
 	ModifierInfo.Attribute = URPG_BaseAttributeSet::GetThirstAttribute();
 	GE_RegenRates->Modifiers[1] = ModifierInfo;
 
-	AttributeBased.BackingAttribute = FGameplayEffectAttributeCaptureDefinition(URPG_BaseAttributeSet::GetHealthRegenRateAttribute(), EGameplayEffectAttributeCaptureSource::Source, false);
+	AttributeBased.BackingAttribute = FGameplayEffectAttributeCaptureDefinition(URPG_HealthAttributeSet::GetHealthRegenRateAttribute(), EGameplayEffectAttributeCaptureSource::Source, false);
 	AttributeBased.AttributeCalculationType = EAttributeBasedFloatCalculationType::AttributeMagnitude;
 	ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(AttributeBased);
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-	ModifierInfo.Attribute = URPG_BaseAttributeSet::GetHealthAttribute();
+	ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
 	GE_RegenRates->Modifiers[2] = ModifierInfo;
 
 	if (DeadTag.IsValid())
@@ -252,7 +248,7 @@ void ARPG_BaseCharacter::Landed(const FHitResult& Hit)
 		FGameplayModifierInfo ModifierInfo;
 		ModifierInfo.ModifierMagnitude = FScalableFloat(((FallVelocity / 100) * CharacterData->FallDamage_Multiplier));
 		ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetHealthAttribute();
+		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
 		GE_Landed->Modifiers[0] = ModifierInfo;
 		
 		AbilitySystemComp->ApplyGameplayEffectToSelf(GE_Landed, 1, AbilitySystemComp->MakeEffectContext());
@@ -508,7 +504,7 @@ void ARPG_BaseCharacter::OnFoodEmpty_Implementation()
 			GE_FoodDamage->OngoingTagRequirements.IgnoreTags.AddTag(GodModeTag);
 		}
 
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetHealthAttribute();
+		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
 		GE_FoodDamage->Modifiers[0] = ModifierInfo;
 		FoodDamageHandle = AbilitySystemComp->ApplyGameplayEffectToSelf(GE_FoodDamage, 1, AbilitySystemComp->MakeEffectContext());
 		bEmptyFood = true;
@@ -532,7 +528,7 @@ void ARPG_BaseCharacter::OnThirstEmpty_Implementation()
 		{
 			GE_ThirstDamage->OngoingTagRequirements.IgnoreTags.AddTag(GodModeTag);
 		}
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetHealthAttribute();
+		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
 		GE_ThirstDamage->Modifiers[0] = ModifierInfo;
 		FoodDamageHandle = AbilitySystemComp->ApplyGameplayEffectToSelf(GE_ThirstDamage, 1, AbilitySystemComp->MakeEffectContext());
 		bEmptyThirst = true;
@@ -567,4 +563,33 @@ void ARPG_BaseCharacter::OnDie()
 	BP_OnDie();
 	AddGameplayTag(DeadTag);
 }
- 
+
+void ARPG_BaseCharacter::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	if (Controller)
+	{
+		if (auto PlayerController = Cast<APlayerController>(Controller))
+		{
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+			{
+				Subsystem->ClearAllMappings();
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+		}
+	}
+}
+
+#pragma region Input
+
+
+// Called to bind functionality to input
+void ARPG_BaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	 
+	BindASCInput(PlayerInputComponent);
+}
+
+#pragma endregion

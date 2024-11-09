@@ -3,6 +3,14 @@
 
 #include "RPG_AbilitySystemComponent.h"
 
+URPG_AbilitySystemComponent::URPG_AbilitySystemComponent()
+{
+	// Sets the Ability System Component to use "Mixed" replication mode. This will replicate minimal Gameplay Effects to Simulated Proxies and full info to everyone else.
+	ReplicationMode = EGameplayEffectReplicationMode::Mixed;
+	// Explicitly set the Ability System Component to replicate.
+	SetIsReplicatedByDefault(true);
+}
+
 void URPG_AbilitySystemComponent::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	if (InputTag.IsValid())
@@ -67,4 +75,34 @@ void URPG_AbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	ProcessAbilityInput();
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+const UAttributeSet* URPG_AbilitySystemComponent::GetOrCreateAttributeSet(const TSubclassOf<UAttributeSet>& InAttributeSet)
+{
+	return GetOrCreateAttributeSubobject(InAttributeSet);
+}
+
+void URPG_AbilitySystemComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void URPG_AbilitySystemComponent::AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass)
+{
+	if (GetOwnerActor()->HasAuthority())
+	{
+		// Grant Attribute Sets if the array isn't empty.
+		if (AttributeClass)
+		{
+			GetOrCreateAttributeSet(AttributeClass);
+		}
+	}
+}
+
+void URPG_AbilitySystemComponent::SetAttributeBaseValue(FGameplayAttribute Attribute, float BaseValue)
+{
+	if (HasAttributeSetForAttribute(Attribute))
+	{
+		SetNumericAttributeBase(Attribute, BaseValue);
+	}
 }

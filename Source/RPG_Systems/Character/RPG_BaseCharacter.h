@@ -125,9 +125,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
@@ -238,6 +236,20 @@ public:
 
 #pragma endregion GameplayAbilites
 
+	virtual void PawnClientRestart() override;
+
+#pragma region Input
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputMappingContext* DefaultMappingContext;
+
+	
+#pragma endregion
+
+	
 	void PossessedBy(AController* NewController) override;
 
 	virtual void UnPossessed() override;

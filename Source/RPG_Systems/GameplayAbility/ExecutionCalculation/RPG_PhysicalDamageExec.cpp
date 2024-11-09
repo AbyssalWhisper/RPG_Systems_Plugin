@@ -3,6 +3,7 @@
 
 #include "RPG_Systems/GameplayAbility/ExecutionCalculation/RPG_PhysicalDamageExec.h"
 #include "RPG_Systems/GameplayAbility/RPG_BaseAttributeSet.h"
+#include "RPG_Systems/GameplayAbility/RPG_HealthAttributeSet.h"
 
 struct  Damage
 {
@@ -11,7 +12,7 @@ struct  Damage
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor)
 	Damage()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_BaseAttributeSet, Health, Target, false)
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_HealthAttributeSet, Health, Target, false)
 			DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_BaseAttributeSet, Attack, Source, false)
 			DEFINE_ATTRIBUTE_CAPTUREDEF(URPG_BaseAttributeSet, Armor, Target, false)
 	}
@@ -26,7 +27,7 @@ static Damage& GetDamageStats()
 
 URPG_PhysicalDamageExec::URPG_PhysicalDamageExec()
 {
-	HealthProperty = FindFieldChecked<FProperty>(URPG_BaseAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_BaseAttributeSet, Health));
+	HealthProperty = FindFieldChecked<FProperty>(URPG_HealthAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_HealthAttributeSet, Health));
 	RelevantAttributesToCapture.Add(GetDamageStats().HealthDef);
 	RelevantAttributesToCapture.Add(GetDamageStats().AttackDef);
 	RelevantAttributesToCapture.Add(GetDamageStats().ArmorDef);
