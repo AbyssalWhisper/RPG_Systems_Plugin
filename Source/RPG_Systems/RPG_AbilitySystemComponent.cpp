@@ -85,6 +85,15 @@ const UAttributeSet* URPG_AbilitySystemComponent::GetOrCreateAttributeSet(const 
 void URPG_AbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (auto Element : AttributeSetsClass)
+	{
+		AddAttributeSet(Element);
+	}
+	for (auto Element : AttributeBaseValues)
+	{
+		SetAttributeBaseValue(Element.Key,Element.Value);
+	}
 }
 
 void URPG_AbilitySystemComponent::AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass)

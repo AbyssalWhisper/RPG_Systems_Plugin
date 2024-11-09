@@ -67,7 +67,7 @@ void ARPG_BaseCharacter::BeginPlay()
 
 	if (!CharacterData)return;
 
-	InitStats();
+	//InitStats();
 
 	for (TSubclassOf<class UGameplayEffect>& StartupEffects : CharacterData->Effects)
 	{
@@ -144,6 +144,7 @@ float ARPG_BaseCharacter::GetMoveSpeed()
 
 void ARPG_BaseCharacter::InitStats()
 {
+	
 	URPG_BP_Library_Utilities::InitStatsByCharacterData(AbilitySystemComp, CharacterData);
 	{
 	//InitRegenEffects

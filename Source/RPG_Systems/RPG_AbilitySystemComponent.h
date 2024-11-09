@@ -29,6 +29,10 @@ public:
 	const UAttributeSet* GetOrCreateAttributeSet(const TSubclassOf<UAttributeSet>& InAttributeSet);
 	virtual void BeginPlay() override;
 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Attributes")
+	TArray<TSubclassOf<UAttributeSet>> AttributeSetsClass;
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Attributes")
+	TMap<FGameplayAttribute, float> AttributeBaseValues;
 
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	void AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass);
