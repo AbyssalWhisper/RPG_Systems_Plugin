@@ -18,7 +18,9 @@ enum class ERPG_AbilityActivationPolicy : uint8
 	// Try to activate the ability when the input is triggered.
 	OnInputTriggered,
 	// Try to activate the ability when an avatar is assigned.
-	OnAbilityOnGranted
+	OnAbilityOnGranted,
+	
+	None
 };
 
 
@@ -31,7 +33,7 @@ public:
 	URPG_GameplayAbility();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category = "Input")
-	ERPG_AbilityActivationPolicy ActivationPolicy;
+	ERPG_AbilityActivationPolicy ActivationPolicy = ERPG_AbilityActivationPolicy::None;
 
 	// Which Input Action to bind the activation event to.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Input",meta=(EditCondition="ActivationPolicy==ERPG_AbilityActivationPolicy::OnInputTriggered",EditConditionHides))

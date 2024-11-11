@@ -13,9 +13,6 @@ URPG_BaseAttributeSet::URPG_BaseAttributeSet() :
 	Oxygen(100.f),
 	MaxOxygen(100),
 	OxygenRegenRate(1),
-	Food(100.f),
-	MaxFood(100),
-	FoodRegenRate(1),
 	Thirst(100.f),
 	MaxThirst(100),
 	ThirstRegenRate(1),
@@ -118,21 +115,7 @@ void URPG_BaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCa
 		} 
 		return;
 	}
-	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(URPG_BaseAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_BaseAttributeSet, Food)))
-	{
-		if (BaseCharacter)
-		{
-			if (GetFood() == GetMaxFood())
-			{ 
-				BaseCharacter->AddGameplayTag(BaseCharacter->FullFoodTag);
-			}
-			else
-			{
-				BaseCharacter->RemoveGameplayTag(BaseCharacter->FullFoodTag);
-			} 
-		} 
-		return;
-	}
+	
 	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(URPG_BaseAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(URPG_BaseAttributeSet, Thirst)))
 	{
 		if (BaseCharacter)
@@ -176,11 +159,7 @@ void URPG_BaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 		CalculateStamina(NewValue);
 		return;
 	}
-	if (GetFoodAttribute() == Attribute)
-	{
-		CalculateFood(NewValue);
-		return;
-	}
+	
 	if (GetThirstAttribute() == Attribute)
 	{
 		CalculateThirst(NewValue);
@@ -218,27 +197,6 @@ void URPG_BaseAttributeSet::CalculateStamina(float& StaminaValue)
 	}
 }
 
-void URPG_BaseAttributeSet::CalculateFood(float& FoodValue)
-{
-	if (FoodValue >= GetMaxFood())
-	{
-		FoodValue = GetMaxFood();
-	}
-	if (FoodValue <= 0)
-	{
-		FoodValue = 0;
-		if (GetOwningActor()->GetClass()->ImplementsInterface(URPG_Attributes_Interface::StaticClass()))
-		{
-			 
-			IRPG_Attributes_Interface::Execute_OnFoodEmpty(GetOwningActor());
-		}
-	}
-
-	if (GetOwningActor()->GetClass()->ImplementsInterface(URPG_Attributes_Interface::StaticClass()))
-	{ 
-		IRPG_Attributes_Interface::Execute_OnFoodChanged(GetOwningActor(), GetFood());
-	}
-}
 
 void URPG_BaseAttributeSet::CalculateThirst(float& ThirstValue)
 {
@@ -291,9 +249,7 @@ void URPG_BaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, Oxygen, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, MaxOxygen, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, OxygenRegenRate, COND_None, REPNOTIFY_OnChanged);
-	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, Food, COND_None, REPNOTIFY_OnChanged);
-	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, MaxFood, COND_None, REPNOTIFY_OnChanged);
-	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, FoodRegenRate, COND_None, REPNOTIFY_OnChanged);
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, Thirst, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, MaxThirst, COND_None, REPNOTIFY_OnChanged);
 	DOREPLIFETIME_CONDITION_NOTIFY(URPG_BaseAttributeSet, ThirstRegenRate, COND_None, REPNOTIFY_OnChanged);
@@ -435,20 +391,7 @@ void URPG_BaseAttributeSet::OnRep_OxygenRegenRate(const FGameplayAttributeData& 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, OxygenRegenRate, OldOxygenRegenRate);
 }
 
-void URPG_BaseAttributeSet::OnRep_Food(const FGameplayAttributeData& OldFood)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, Food, OldFood);
-}
 
-void URPG_BaseAttributeSet::OnRep_MaxFood(const FGameplayAttributeData& OldMaxFood)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, MaxFood, OldMaxFood);
-}
-
-void URPG_BaseAttributeSet::OnRep_FoodRegenRate(const FGameplayAttributeData& OldFoodRegenRate)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(URPG_BaseAttributeSet, FoodRegenRate, OldFoodRegenRate);
-}
 
 void URPG_BaseAttributeSet::OnRep_Thirst(const FGameplayAttributeData& OldThirst)
 {

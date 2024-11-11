@@ -39,15 +39,7 @@ public:
 		FGameplayAttributeData OxygenRegenRate;
 	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, OxygenRegenRate)
 
-		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_Food)
-		FGameplayAttributeData 	Food;
-	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, Food)
-		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_MaxFood)
-		FGameplayAttributeData MaxFood;
-	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, MaxFood)
-		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_FoodRegenRate)
-		FGameplayAttributeData FoodRegenRate;
-	ATTRIBUTE_ACCESSORS(URPG_BaseAttributeSet, FoodRegenRate)
+		
 
 		UPROPERTY(BlueprintReadOnly, Category = "AttributeSet", ReplicatedUsing = OnRep_Thirst)
 		FGameplayAttributeData 	Thirst;
@@ -208,13 +200,7 @@ public:
 		virtual void OnRep_OxygenRegenRate(const FGameplayAttributeData& OldOxygenRegenRate);
 
 
-	UFUNCTION()
-		virtual void OnRep_Food(const FGameplayAttributeData& OldHunger);
-	UFUNCTION()
-		virtual void OnRep_MaxFood(const FGameplayAttributeData& OldMaxHunger);
-	UFUNCTION()
-		virtual void OnRep_FoodRegenRate(const FGameplayAttributeData& OldHungerRegenRate);
-
+	
 	UFUNCTION()
 		virtual void OnRep_Thirst(const FGameplayAttributeData& OldThirsty);
 	UFUNCTION()
