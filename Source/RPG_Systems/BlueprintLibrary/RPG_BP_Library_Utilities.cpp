@@ -101,20 +101,8 @@ bool URPG_BP_Library_Utilities::InitStatsByCharacterData(UAbilitySystemComponent
 		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetOxygenRegenRateAttribute();
 		GE_Stats->Modifiers[5] = ModifierInfo;
 
-		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->MaxFood);
-		ModifierInfo.ModifierOp = EGameplayModOp::Override;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetMaxFoodAttribute();
-		GE_Stats->Modifiers[6] = ModifierInfo;
-
-		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->MaxFood);
-		ModifierInfo.ModifierOp = EGameplayModOp::Override;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetFoodAttribute();
-		GE_Stats->Modifiers[7] = ModifierInfo;
-
-		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->FoodRegenRate);
-		ModifierInfo.ModifierOp = EGameplayModOp::Override;
-		ModifierInfo.Attribute = URPG_BaseAttributeSet::GetFoodRegenRateAttribute();
-		GE_Stats->Modifiers[8] = ModifierInfo;
+		 
+ 
 
 		ModifierInfo.ModifierMagnitude = FScalableFloat(CharacterData->MaxThirst);
 		ModifierInfo.ModifierOp = EGameplayModOp::Override;
