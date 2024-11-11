@@ -121,7 +121,7 @@ UAbilitySystemComponent* ARPG_BaseCharacter::GetAbilitySystemComponent() const
 float ARPG_BaseCharacter::GetMoveSpeed()
 {
 	if (!CharacterData)return 100;
-	
+
 	switch (MovementStates)
 	{
 	case SlowWalk:
