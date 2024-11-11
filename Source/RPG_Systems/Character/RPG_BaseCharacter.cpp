@@ -156,13 +156,7 @@ void ARPG_BaseCharacter::InitStats()
 	FGameplayModifierInfo ModifierInfo;
 	FAttributeBasedFloat AttributeBased;
 
-	AttributeBased.BackingAttribute = FGameplayEffectAttributeCaptureDefinition(URPG_BaseAttributeSet::GetFoodRegenRateAttribute(), EGameplayEffectAttributeCaptureSource::Source, false);
-	AttributeBased.AttributeCalculationType = EAttributeBasedFloatCalculationType::AttributeMagnitude;
- 
-	ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(AttributeBased);
-	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-	ModifierInfo.Attribute = URPG_BaseAttributeSet::GetFoodAttribute();
-	GE_RegenRates->Modifiers[0] = ModifierInfo;
+
 
 	AttributeBased.BackingAttribute = FGameplayEffectAttributeCaptureDefinition(URPG_BaseAttributeSet::GetThirstRegenRateAttribute(), EGameplayEffectAttributeCaptureSource::Source, false);
 	AttributeBased.AttributeCalculationType = EAttributeBasedFloatCalculationType::AttributeMagnitude;
