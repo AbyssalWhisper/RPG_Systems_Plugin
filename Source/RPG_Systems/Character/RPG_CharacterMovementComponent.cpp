@@ -16,6 +16,8 @@ void URPG_CharacterMovementComponent::BeginPlay()
 float URPG_CharacterMovementComponent::GetMaxSpeed() const
 {
 	//
+	return Super::GetMaxSpeed();
+	/*
 	if (!OwnerCharacter)
 	{
 		return Super::GetMaxSpeed();
@@ -24,9 +26,8 @@ float URPG_CharacterMovementComponent::GetMaxSpeed() const
 	if (!OwnerCharacter->GetAbilitySystemComponent() || OwnerCharacter->GetAbilitySystemComponent()->HasMatchingGameplayTag(OwnerCharacter->StunTag))
 	{
 		return 0;
-	}
-
-	return OwnerCharacter->GetMoveSpeed();
+	}*/
+	//return OwnerCharacter->GetMoveSpeed();
 }
 /*
 void URPG_CharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
