@@ -403,7 +403,7 @@ public:
     static FVector GetRandomPointInSphereCollision(class USphereComponent* SphereCollision);
     
     UFUNCTION(BlueprintCallable)
-    static void DebugLog(FString LogMessage,EEasylog LogVerbosity);
+    static void DebugLog(FString LogMessage,EEasylog LogVerbosity = EEasylog::Log);
 
     UFUNCTION(BlueprintCallable, BlueprintPure)
     static float GetDeltaSecondsFromStepMs(const float& StepMs);
