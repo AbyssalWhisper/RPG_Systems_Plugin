@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "InputAction.h"
+#include "GameplayAbility/RPG_GameplayAbility.h"
 #include "RPG_AbilitySystemComponent.generated.h"
 
 /**
@@ -18,7 +20,8 @@ public:
 	
 	UFUNCTION(blueprintCallable, Category = "Ability")
 	void AbilityInputTagPressed(FGameplayTag InputTag);
-	void ProcessAbilityInput();
+	UFUNCTION(blueprintCallable, Category = "Ability")
+	void AbilityInputTagReleased(FGameplayTag InputTag);
 
 	TArray<FGameplayAbilitySpecHandle> AbilitiesToActivate;
 	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;
@@ -40,4 +43,7 @@ public:
 
 	void SetAttributeBaseValue(FGameplayAttribute Attribute, float BaseValue);
 	
+	//Use this function together with AbilityInputTagPressed
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	void GiveAbilityAndTagAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass, FGameplayTag GameplayTag);
 };
