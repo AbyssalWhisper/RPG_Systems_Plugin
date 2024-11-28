@@ -19,11 +19,11 @@ FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickPa
 	const FCharacterDefaultInputs* CharacterInputs = Params.StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>();
 	
 	if (CharacterInputs->GetMoveInput().IsNearlyZero())return Transition.NoTransition;
-	APawn* pawn = Cast<APawn>(Params.MoverComponent->GetOwner());
+	APawn* pawn = Cast<APawn>(Params.MovingComps.MoverComponent->GetOwner());
 	UCapsuleComponent*Capsule = pawn->GetComponentByClass<UCapsuleComponent>();
 	if (pawn && pawn->IsLocallyControlled())
 	{
-		if (Params.MoverComponent->GetVelocity().Length() <= 50)
+		if (Params.MovingComps.MoverComponent->GetVelocity().Length() <= 50)
 		{
 			FHitResult Hit;
 			TArray<AActor*> a;

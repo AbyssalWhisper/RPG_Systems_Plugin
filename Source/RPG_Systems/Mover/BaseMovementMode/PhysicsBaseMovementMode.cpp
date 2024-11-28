@@ -64,8 +64,8 @@ void UPhysicsBaseMovementMode::OnSimulationTick(const FSimulationTickParams& Par
  
 
 	const FMoverTickStartData& StartState = Params.StartState;
-	auto UpdatedComponent = Params.UpdatedComponent;
-	auto UpdatedPrimitive = Params.UpdatedPrimitive;
+	auto UpdatedComponent = Params.MovingComps.UpdatedComponent;
+	auto UpdatedPrimitive = Params.MovingComps.UpdatedPrimitive;
 	FProposedMove ProposedMove = Params.ProposedMove;
 
 	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();

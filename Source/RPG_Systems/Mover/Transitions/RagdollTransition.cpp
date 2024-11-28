@@ -15,7 +15,7 @@ FTransitionEvalResult URagdollTransition::OnEvaluate(const FSimulationTickParams
 		if (AbilityInputs->bWantsToRagdoll)
 		{
 			 
-			auto Character = Cast<ARPG_BaseMoverCharacter>(Params.UpdatedComponent->GetOwner());
+			auto Character = Cast<ARPG_BaseMoverCharacter>(Params.MovingComps.UpdatedComponent->GetOwner());
 			if(!Character || !Character->bCanRagdoll) 	return EvalResult;
 
 			if (Params.StartState.SyncState.MovementMode != "Ragdoll")
