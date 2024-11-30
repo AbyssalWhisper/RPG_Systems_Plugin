@@ -30,17 +30,17 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 public:	
-	ACharacter* OwnerCharacter;
+	USkeletalMeshComponent* OwnerSkeletalMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		URPG_FootprintData* Footprint;
+	URPG_FootprintData* Footprint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ARPG_FootprintActor> FootprintActorClass;
 	UPROPERTY()
-		TArray<ARPG_FootprintActor*> FootprintActors;
+	TArray<ARPG_FootprintActor*> FootprintActors;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int MaxFootprints = 30;
+	int MaxFootprints = 30;
 	UFUNCTION(BlueprintCallable)
-		void TrySpawnFootprint(URPG_FootprintData* Footprint_,FName Socket);
+	void TrySpawnFootprint(URPG_FootprintData* Footprint_,FName Socket);
 	void SpawnFootprint(URPG_FootprintData* Footprint_,TEnumAsByte<EPhysicalSurface> Surface, const FHitResult& hit);
 		
 };

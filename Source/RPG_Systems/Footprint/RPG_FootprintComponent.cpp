@@ -31,18 +31,18 @@ void URPG_FootprintComponent::BeginPlay()
 	Super::BeginPlay();
 
  
-	OwnerCharacter = Cast<ACharacter>(GetOwner());
+	SkeletalMeshComponent = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 }
 
 void URPG_FootprintComponent::TrySpawnFootprint(URPG_FootprintData* Footprint_,FName Socket)
 {
-	if (!UKismetSystemLibrary::IsDedicatedServer(this) && OwnerCharacter)
+	if (!UKismetSystemLibrary::IsDedicatedServer(this) && SkeletalMeshComponent)
 	{
 
 		FHitResult hit;
-		FVector Start = OwnerCharacter->GetMesh()->GetSocketLocation(Socket);
+		FVector Start = SkeletalMeshComponent->GetSocketLocation(Socket);
 		Start.Z += 50;
-		FVector End = OwnerCharacter->GetMesh()->GetSocketLocation(Socket);
+		FVector End = SkeletalMeshComponent->GetSocketLocation(Socket);
 		End.Z -= 50;
 		
 		FCollisionQueryParams QueryParams;
@@ -82,7 +82,7 @@ void URPG_FootprintComponent::SpawnFootprint(URPG_FootprintData* Footprint_,TEnu
 		ref->SetActorLocation(hit.Location);
 		ref->SetActorScale3D(FVector(Footprint_->OffSetScale));
 		ref->SetActorRotation(UKismetMathLibrary::MakeRotFromZX(hit.ImpactNormal,
-			OwnerCharacter->GetActorForwardVector()));
+			SkeletalMeshComponent->GetOwner()->GetActorForwardVector()));
 	}
 	else
 	{
@@ -100,7 +100,7 @@ void URPG_FootprintComponent::SpawnFootprint(URPG_FootprintData* Footprint_,TEnu
 	
 		FootprintActor->SetActorScale3D(FVector(Footprint_->OffSetScale));
 		FootprintActor->SetActorRotation(UKismetMathLibrary::MakeRotFromZX(hit.ImpactNormal,
-			OwnerCharacter->GetActorForwardVector()));
+			SkeletalMeshComponent->GetOwner()->GetActorForwardVector()));
 		 FootprintActors.Add(FootprintActor);
 	}
 	
