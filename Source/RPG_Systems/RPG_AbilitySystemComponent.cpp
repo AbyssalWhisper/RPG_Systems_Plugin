@@ -121,8 +121,26 @@ void URPG_AbilitySystemComponent::SetAttributeBaseValue(FGameplayAttribute Attri
 	}
 }
 
+void URPG_AbilitySystemComponent::RemoveAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass)
+{
+	if(!GetOwner()->HasAuthority())return;
+	
+	if (AbilityClass)
+	{
+		for (FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+		{
+			if (AbilityClass == AbilitySpec.Ability.GetClass())
+			{
+				ClearAbility(AbilitySpec.Handle);
+				UBetterUtilities::DebugLog("Ability removed");
+				break;
+			}
+		}
+	}
+}
+
 void URPG_AbilitySystemComponent::GiveAbilityAndTagAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass,
-                                                       FGameplayTag GameplayTag)
+                                                           FGameplayTag GameplayTag)
 {
 	if (AbilityClass && GameplayTag.IsValid())
 	{
@@ -135,4 +153,6 @@ void URPG_AbilitySystemComponent::GiveAbilityAndTagAbility(TSubclassOf<URPG_Game
 			abilityspec->DynamicAbilityTags.AddTag(GameplayTag);
 		}
 	}
+
+	
 }

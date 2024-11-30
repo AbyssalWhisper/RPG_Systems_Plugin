@@ -45,5 +45,9 @@ public:
 	
 	//Use this function together with AbilityInputTagPressed
 	UFUNCTION(BlueprintCallable, Category = "Ability")
+	void RemoveAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass);
+	UFUNCTION(BlueprintCallable, Category = "Ability")
 	void GiveAbilityAndTagAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass, FGameplayTag GameplayTag);
+
+
 };
