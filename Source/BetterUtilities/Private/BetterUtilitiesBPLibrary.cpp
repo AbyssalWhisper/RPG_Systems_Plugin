@@ -62,7 +62,21 @@ EPlatform UBetterUtilities::GetPlatformEnum()
         return EPlatform::Other;
     }
 }
- 
+
+ERotationDirection UBetterUtilities::YawRotationDirection(FRotator BaseRotation, FRotator TargetRotation, float Angle)
+{
+    FRotator rotation = UKismetMathLibrary::NormalizedDeltaRotator(BaseRotation, TargetRotation);
+    if (rotation.Yaw > Angle)
+    {
+        return ERotationDirection::Left;
+    }
+    if (rotation.Yaw < -Angle)
+    {
+        return ERotationDirection::Right;
+    }
+    return ERotationDirection::Center;
+}
+
 
 void UBetterUtilities::ClearWidget(UUserWidget*& Widget)
 {

@@ -96,6 +96,16 @@ enum class ETrueFalse : uint8
     False_
 };
 
+UENUM(BlueprintType)
+enum class ERotationDirection : uint8
+{
+    Left, 
+    Center,
+    Right 
+    
+};
+
+
 UCLASS()
 class BETTERUTILITIES_API UBetterUtilities : public UBlueprintFunctionLibrary
 {
@@ -110,6 +120,10 @@ public:
     UFUNCTION(BlueprintCallable,BlueprintPure)
     static EPlatform GetPlatformEnum();
 
+    UFUNCTION(BlueprintCallable,BlueprintPure)
+    static ERotationDirection YawRotationDirection(FRotator BaseRotation, FRotator TargetRotation, float Angle);
+
+    
     UFUNCTION(BlueprintCallable,meta = (ExpandEnumAsExecs = "TrueFalse"))
     static void RunInEditor(ETrueFalse& TrueFalse);
     UFUNCTION(BlueprintCallable,BlueprintPure)
