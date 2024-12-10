@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RPG_BaseMoverCharacter.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "MoverFunctionLibrary.generated.h"
 
@@ -12,7 +13,99 @@ namespace RPG_MovementModes
 	const FName Crouch = TEXT("Crouch");
 }
 
+USTRUCT(BlueprintType)
+struct RPG_SYSTEMS_API FRPG_MoverInputTags : public FMoverDataStructBase
+{
+	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(BlueprintReadWrite, Category = Mover)
+	FGameplayTagContainer Tags = FGameplayTagContainer();
+
+
+	// @return newly allocated copy of this FMoverExampleAbilityInputs. Must be overridden by child classes
+	virtual FMoverDataStructBase* Clone() const override
+	{
+		// TODO: ensure that this memory allocation jives with deletion method
+		FRPG_MoverInputTags* CopyPtr = new FRPG_MoverInputTags(*this);
+		return CopyPtr;
+	}
+
+	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess) override
+	{
+		Super::NetSerialize(Ar, Map, bOutSuccess);
+
+		Tags.NetSerialize(Ar, Map, bOutSuccess);
+
+		bOutSuccess = true;
+		return true;
+	}
+
+	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
+
+	virtual void ToString(FAnsiStringBuilderBase& Out) const override
+	{
+		Super::ToString(Out);
+	}
+
+	virtual void AddReferencedObjects(FReferenceCollector& Collector) override { Super::AddReferencedObjects(Collector); }
+};
+
+template<>
+struct TStructOpsTypeTraits<FRPG_MoverInputTags> : public TStructOpsTypeTraitsBase2< FRPG_MoverInputTags >
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithCopy = true
+	};
+};
+
+USTRUCT(BlueprintType)
+struct RPG_SYSTEMS_API FRPG_RawInput : public FMoverDataStructBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, Category = Mover)
+	FVector MoveInput = FVector();
+
+
+	// @return newly allocated copy of this FMoverExampleAbilityInputs. Must be overridden by child classes
+	virtual FMoverDataStructBase* Clone() const override
+	{
+		// TODO: ensure that this memory allocation jives with deletion method
+		FRPG_RawInput* CopyPtr = new FRPG_RawInput(*this);
+		return CopyPtr;
+	}
+
+	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess) override
+	{
+		Super::NetSerialize(Ar, Map, bOutSuccess);
+
+		MoveInput.NetSerialize(Ar, Map, bOutSuccess);
+
+		bOutSuccess = true;
+		return true;
+	}
+
+	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
+
+	virtual void ToString(FAnsiStringBuilderBase& Out) const override
+	{
+		Super::ToString(Out);
+	}
+
+	virtual void AddReferencedObjects(FReferenceCollector& Collector) override { Super::AddReferencedObjects(Collector); }
+};
+
+template<>
+struct TStructOpsTypeTraits<FRPG_RawInput> : public TStructOpsTypeTraitsBase2< FRPG_RawInput >
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithCopy = true
+	};
+};
 /**
  * 
  */
@@ -45,5 +138,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ChaosDrawDebugPoint(FVector const& Position, FLinearColor DrawColor = FLinearColor::Red, bool bPersistentLines = false, float DrawTime = 1.0f, uint8 DepthPriority = 0, float Thickness = 1.0f);
 
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	static bool IsMovementMode(UMoverComponent* Target,FName CompareName);
+	UFUNCTION(BlueprintCallable)
+	static void AddInputTags(UPARAM(Ref) FMoverDataCollection& Collection,FGameplayTagContainer InputTags);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	static bool HasInputTag(UPARAM(Ref) FMoverDataCollection& Collection, FGameplayTag InputTag);
+	UFUNCTION(BlueprintCallable)
+	static void AddRawInput(UPARAM(Ref) FMoverDataCollection& Collection,FRPG_RawInput RawInput);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	static FRPG_RawInput GetRawInput(UPARAM(Ref) FMoverDataCollection& Collection);
 
 };

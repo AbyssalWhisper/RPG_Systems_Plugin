@@ -42,3 +42,4 @@ FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickPa
 	return Transition.NoTransition;
 	//return FTransitionEvalResult();
 }
+

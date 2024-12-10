@@ -11,9 +11,10 @@
 #include "Chaos/PhysicsObjectInternalInterface.h"
 
 #include "Chaos/DebugDrawQueue.h"
+#include "MoverComponent.h"
 
 void UMoverFunctionLibrary::SetTransforms_WorldSpace(FMoverTickEndData& OutputState, FVector WorldLocation,
-	FRotator WorldOrient, FVector WorldVelocity, UPrimitiveComponent* Base, FName BaseBone)
+                                                     FRotator WorldOrient, FVector WorldVelocity, UPrimitiveComponent* Base, FName BaseBone)
 {
 	FMoverDefaultSyncState& OutputSyncState = OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FMoverDefaultSyncState>();
 	OutputSyncState.SetTransforms_WorldSpace( WorldLocation,WorldOrient,WorldVelocity);
@@ -96,4 +97,49 @@ void UMoverFunctionLibrary::ChaosDrawDebugPoint(FVector const& Position, FLinear
 	// Chama a função para desenhar o ponto no mundo usando Chaos Debug
 	Chaos::FDebugDrawQueue::GetInstance().DrawDebugPoint(Position, DebugColor, bPersistentLines, DrawTime, DepthPriority, Thickness);
 #endif
+}
+
+bool UMoverFunctionLibrary::IsMovementMode(UMoverComponent* Target, FName CompareName)
+{
+	if (!Target)return false;
+	return Target->GetMovementModeName() == CompareName;
+}
+
+void UMoverFunctionLibrary::AddInputTags(FMoverDataCollection& Collection, FGameplayTagContainer InputTags)
+{
+	if (InputTags.Num() <= 0)return;
+	FRPG_MoverInputTags& inputTagsData = Collection.FindOrAddMutableDataByType<FRPG_MoverInputTags>();
+	inputTagsData.Tags = InputTags;
+	//UBetterUtilities::DebugLog("Add Tag",EEasylog::Log);
+}
+
+bool UMoverFunctionLibrary::HasInputTag(FMoverDataCollection& Collection, FGameplayTag InputTag)
+{
+	if (InputTag.IsValid())
+	{
+		const FRPG_MoverInputTags* InputTags = Collection.FindDataByType<FRPG_MoverInputTags>();
+		if (!InputTags)return false;
+		//UBetterUtilities::DebugLog("Has Tag",EEasylog::Log);
+
+		return InputTags->Tags.HasTag(InputTag);
+		
+	}
+	return false;
+}
+
+void UMoverFunctionLibrary::AddRawInput(FMoverDataCollection& Collection, FRPG_RawInput RawInput)
+{
+	FRPG_RawInput& input= Collection.FindOrAddMutableDataByType<FRPG_RawInput>();
+	input = RawInput;
+	
+}
+
+FRPG_RawInput UMoverFunctionLibrary::GetRawInput(FMoverDataCollection& Collection)
+{
+	const FRPG_RawInput* Input = Collection.FindDataByType<FRPG_RawInput>();
+	if (Input)
+	{
+		return *Input;
+	}
+	return FRPG_RawInput();
 }

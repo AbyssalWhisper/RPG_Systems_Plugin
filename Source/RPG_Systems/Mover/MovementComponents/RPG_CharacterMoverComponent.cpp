@@ -43,6 +43,11 @@ TObjectPtr<UBaseMovementMode> URPG_CharacterMoverComponent::GetCurrentMovementMo
 	return nullptr;
 }
 
+bool URPG_CharacterMoverComponent::BP_HasGameplayTag(FGameplayTag Tag, bool bExactMatch) const
+{
+	return HasGameplayTag(Tag,bExactMatch);
+}
+
 
 bool URPG_CharacterMoverComponent::IsClimbing() const
 {

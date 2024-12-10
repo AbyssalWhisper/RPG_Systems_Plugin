@@ -40,12 +40,12 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 	if (bIsFalling) FallingVelocity = RefCharacter->GetMoverComponent()->GetVelocity().Z;
 
 	if (bIsOnGround) {
-		MoveSpeed = FVector(RefCharacter->GetVelocity().X,
-			RefCharacter->GetVelocity().Y, 0.f).Size();
+		MoveSpeed = FVector(RefCharacter->GetMoverComponent()->GetVelocity().X,
+			RefCharacter->GetMoverComponent()->GetVelocity().Y, 0.f).Size();
 	}
 	else
 	{
-		MoveSpeed = RefCharacter->GetVelocity().Size();
+		MoveSpeed = RefCharacter->GetMoverComponent()->GetVelocity().Size();
 	}
 
 	bIsMoving = MoveSpeed >= IsMovingStartVelocity;

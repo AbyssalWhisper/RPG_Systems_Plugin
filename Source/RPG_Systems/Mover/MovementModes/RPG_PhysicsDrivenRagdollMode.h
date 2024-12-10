@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RPG_Systems/Mover/BaseMovementMode/PhysicsBaseMovementMode.h"
+#include "RPG_Systems/Mover/BaseMovementMode/RPG_BaseMovementMode.h"
 #include "RPG_PhysicsDrivenRagdollMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RPG_SYSTEMS_API URPG_PhysicsDrivenRagdollMode : public UPhysicsBaseMovementMode
+class RPG_SYSTEMS_API URPG_PhysicsDrivenRagdollMode : public URPG_BaseMovementMode
 {
 	GENERATED_BODY()
 public:

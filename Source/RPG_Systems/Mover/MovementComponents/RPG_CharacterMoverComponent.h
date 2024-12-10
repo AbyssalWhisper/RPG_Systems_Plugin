@@ -29,8 +29,10 @@ public:
 	virtual TObjectPtr<UBaseMovementMode> GetCurrentMovementMode();
 
 
+	UFUNCTION(BlueprintCallable,BlueprintPure,DisplayName="HasGameplayTag", Category = Mover)
+	bool BP_HasGameplayTag(FGameplayTag Tag, bool bExactMatch)const;
+
 	UFUNCTION(BlueprintPure, Category = Mover)
 	virtual bool IsClimbing() const;
 
-  
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MovementModeTransition.h"
+#include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
 #include "GroundClimbTransition.generated.h"
 
 /**

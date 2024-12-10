@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable,meta=(BlueprintSpawnableComponent))
 class RPG_SYSTEMS_API URPG_AbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
