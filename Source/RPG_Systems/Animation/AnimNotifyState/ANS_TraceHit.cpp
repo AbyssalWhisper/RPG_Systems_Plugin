@@ -7,7 +7,9 @@
 
 UANS_TraceHit::UANS_TraceHit()
 {
+#if WITH_EDITOR
 	NotifyColor = FColor::Red;
+#endif
 }
 
 void UANS_TraceHit::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
