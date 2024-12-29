@@ -33,6 +33,30 @@ void URPG_CharacterMoverComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	
 }
 
+bool URPG_CharacterMoverComponent::TeleportImmediately(const FVector& Location, const FRotator& Orientation,
+	const FVector& Velocity)
+{
+	bool bSuccessfullyWrote = false;
+	FMoverSyncState PendingSyncState;
+
+	if (BackendLiaisonComp->ReadPendingSyncState(OUT PendingSyncState))
+	{
+		if (FMoverDefaultSyncState* DefaultSyncState = PendingSyncState.SyncStateCollection.FindMutableDataByType<FMoverDefaultSyncState>())
+		{
+			// Move the character and reflect this in the official simulation state
+			UpdatedComponent->SetWorldLocationAndRotation(Location, Orientation);
+			UpdatedComponent->ComponentVelocity = Velocity;
+			DefaultSyncState->SetTransforms_WorldSpace(Location, Orientation, FVector::ZeroVector, nullptr);
+			bSuccessfullyWrote = (BackendLiaisonComp->WritePendingSyncState(PendingSyncState));
+			if (bSuccessfullyWrote)
+			{
+				FinalizeFrame(&PendingSyncState, &CachedLastAuxState);
+			}
+		}
+	}
+	return bSuccessfullyWrote;
+}
+
 TObjectPtr<UBaseMovementMode> URPG_CharacterMoverComponent::GetCurrentMovementMode()
 {
 	if (bHasValidCachedState)

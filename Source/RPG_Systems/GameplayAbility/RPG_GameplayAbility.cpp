@@ -3,8 +3,12 @@
 
 #include "RPG_Systems/GameplayAbility/RPG_GameplayAbility.h"
 
+#include "BetterUtilitiesBPLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "RPG_Systems/Character/RPG_BaseCharacter.h"
+
+#include "RPG_Systems/RPG_AbilitySystemComponent.h"
+#include "RPG_Systems/RPG_SystemsDeveloperSettings.h"
 
 void URPG_GameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -20,23 +24,31 @@ URPG_GameplayAbility::URPG_GameplayAbility()
 void URPG_GameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	Super::OnAvatarSet(ActorInfo, Spec);
-
+		
 	// Set the "Avatar Character" reference.
 	AvatarCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 
-	switch (ActivationPolicy) {
-	case ERPG_AbilityActivationPolicy::OnInputTriggered:
-		// Set up Bindings for Enhanced Input.
-		SetupEnhancedInputBindings(ActorInfo, Spec);
+	if (Spec.InputID>=0)
+	{
+		SetupEnhancedInputBindingsByInputAction(ActorInfo,Spec);
+	}
+	
+	switch (ActivationPolicy)
+	{
+	case ERPG_AbilityActivationPolicy::None:
+
 		break;
 	case ERPG_AbilityActivationPolicy::OnAbilityOnGranted:
 		// Try to Activate immediately if "Activate Ability On Granted" is true.
-		ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle);
+			ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle);
 		break;
 	}
+	
 }
 
-void URPG_GameplayAbility::SetupEnhancedInputBindings(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+
+void URPG_GameplayAbility::SetupEnhancedInputBindingsByInputAction(const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
 {
 	if (IsValid(ActorInfo->AvatarActor.Get()))
 	{
@@ -48,20 +60,20 @@ void URPG_GameplayAbility::SetupEnhancedInputBindings(const FGameplayAbilityActo
 				{
 					if (URPG_GameplayAbility* AbilityInstance = Cast<URPG_GameplayAbility>(Spec.Ability.Get()))
 					{
+						UInputAction* InputAction = FindInputActionFromSettings(Spec);
 						// Check to see if the "Activation Input Action" is valid.
-						if (IsValid(AbilityInstance->ActivationInputAction))
+						if (InputAction)
 						{
-							// If we have a valid "Input Pressed Trigger" type bind the pressed event.
-							if (InputPressedTriggerType != ETriggerEvent::None)
-							{
-								EnhancedInputComponent->BindAction(AbilityInstance->ActivationInputAction, AbilityInstance->InputPressedTriggerType, AbilityInstance, &ThisClass::HandleInputPressedEvent, ActorInfo, Spec.Handle);
-							}
 
-							// If we have a valid "Input Released Trigger" type bind the released event.
-							if (InputReleasedTriggerType != ETriggerEvent::None)
-							{
-								EnhancedInputComponent->BindAction(AbilityInstance->ActivationInputAction, AbilityInstance->InputReleasedTriggerType, AbilityInstance, &ThisClass::HandleInputReleasedEvent, ActorInfo, Spec.Handle);
-							}
+							EnhancedInputComponent->BindAction(InputAction,ETriggerEvent::Started, GetAbilitySystemComponentFromActorInfo(), &UAbilitySystemComponent::AbilityLocalInputPressed,Spec.InputID);
+							EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Completed,GetAbilitySystemComponentFromActorInfo(), &UAbilitySystemComponent::AbilityLocalInputReleased,Spec.InputID);
+
+							EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Started, this, &URPG_GameplayAbility::OnInputStarted);
+							EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Triggered, this, &URPG_GameplayAbility::OnInputTriggered);
+							EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Ongoing, this, &URPG_GameplayAbility::OnInputOngoing);
+							EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Canceled, this, &URPG_GameplayAbility::OnInputCanceled);
+							EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &URPG_GameplayAbility::OnInputCompleted);
+							
 						}
 					}
 				}
@@ -70,60 +82,78 @@ void URPG_GameplayAbility::SetupEnhancedInputBindings(const FGameplayAbilityActo
 	}
 }
 
-void URPG_GameplayAbility::HandleInputPressedEvent(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpecHandle SpecHandle)
+
+
+UInputAction* URPG_GameplayAbility::FindInputActionFromSettings(
+	const FGameplayAbilitySpec& Spec)
 {
-	// Find the Ability Spec based on the passed in information and set a reference.
-	if (FGameplayAbilitySpec* Spec = ActorInfo->AbilitySystemComponent->FindAbilitySpecFromHandle(SpecHandle))
-	{
-		if (UAbilitySystemComponent* AbilitySystemComponent = ActorInfo->AbilitySystemComponent.Get())
-		{
-			Spec->InputPressed = true;
-			
-			if (Spec->IsActive())
-			{
-				if (Spec->Ability.Get()->bReplicateInputDirectly && AbilitySystemComponent->IsOwnerActorAuthoritative() == false)
-				{
-					AbilitySystemComponent->ServerSetInputPressed(Spec->Ability.Get()->GetCurrentAbilitySpecHandle());
-				}
-
-				AbilitySystemComponent->AbilitySpecInputPressed(*Spec);
-
-				// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
-				AbilitySystemComponent->InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec->Handle, Spec->ActivationInfo.GetActivationPredictionKey());
-			}
-			else
-			{
-				// Ability is not active, so try to activate it
-				AbilitySystemComponent->TryActivateAbility(SpecHandle);
-			}
-		}
-	}
+	
+    const URPG_SystemsDeveloperSettings* Settings = GetDefault<URPG_SystemsDeveloperSettings>();
+    {
+    	auto FoundAction = Settings->AbilitiesInputActions.Array()[Spec.InputID];
+    	auto loadedAction = FoundAction.Get();
+    	if (loadedAction)
+    	{
+    		UBetterUtilities::DebugLog(GetPathName()+" Found Input Action: " + loadedAction->GetFName().ToString());
+    		return loadedAction;
+    	}
+    }
+	
+    return nullptr;
 }
 
-void URPG_GameplayAbility::HandleInputReleasedEvent(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpecHandle SpecHandle)
+ETriggerEvent URPG_GameplayAbility::GetInputPressedTriggerType(const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
 {
-	// Find the Ability Spec based on the passed in information and set a reference.
-	if (FGameplayAbilitySpec* Spec = ActorInfo->AbilitySystemComponent->FindAbilitySpecFromHandle(SpecHandle))
+	auto handle =  GetAbilitySystemComponentFromActorInfo()->FindAbilitySpecFromClass(GetClass());
+	for (const FGameplayTag& Tag : handle->GetDynamicSpecSourceTags())
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent = ActorInfo->AbilitySystemComponent.Get())
-		{
-			Spec->InputPressed = false;
-			
-			if (Spec && Spec->IsActive())
-			{
-				if (Spec->Ability.Get()->bReplicateInputDirectly && AbilitySystemComponent->IsOwnerActorAuthoritative() == false)
-				{
-					AbilitySystemComponent->ServerSetInputReleased(SpecHandle);
-				}
-
-				AbilitySystemComponent->AbilitySpecInputReleased(*Spec);
-
-				// Invoke the InputReleased event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
-				AbilitySystemComponent->InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, SpecHandle, Spec->ActivationInfo.GetActivationPredictionKey());
-			}
-		}
+		if (Tag == RPG_InputPressedTriggerTypeNone) return ETriggerEvent::None;
+		if (Tag == RPG_InputPressedTriggerTypeTriggered) return ETriggerEvent::Triggered;
+		if (Tag == RPG_InputPressedTriggerTypeStarted) return ETriggerEvent::Started;
+		if (Tag == RPG_InputPressedTriggerTypeOngoing) return ETriggerEvent::Ongoing;
+		if (Tag == RPG_InputPressedTriggerTypeCanceled) return ETriggerEvent::Canceled;
+		if (Tag == RPG_InputPressedTriggerTypeCompleted) return ETriggerEvent::Completed;
 	}
+	return ETriggerEvent::None;
 }
+
+ETriggerEvent URPG_GameplayAbility::GetInputReleasedTriggerType(const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
+{
+	auto handle =  GetAbilitySystemComponentFromActorInfo()->FindAbilitySpecFromClass(GetClass());
+	for (const FGameplayTag& Tag : handle->GetDynamicSpecSourceTags())
+	{
+		if (Tag == RPG_InputReleasedTriggerTypeNone) return ETriggerEvent::None;
+		if (Tag == RPG_InputReleasedTriggerTypeTriggered) return ETriggerEvent::Triggered;
+		if (Tag == RPG_InputReleasedTriggerTypeStarted) return ETriggerEvent::Started;
+		if (Tag == RPG_InputReleasedTriggerTypeOngoing) return ETriggerEvent::Ongoing;
+		if (Tag == RPG_InputReleasedTriggerTypeCanceled) return ETriggerEvent::Canceled;
+		if (Tag == RPG_InputReleasedTriggerTypeCompleted) return ETriggerEvent::Completed;
+	}
+	return ETriggerEvent::None;
+}
+
+void URPG_GameplayAbility::OnInputStarted_Implementation()
+{
+}
+
+void URPG_GameplayAbility::OnInputTriggered_Implementation()
+{
+}
+
+void URPG_GameplayAbility::OnInputOngoing_Implementation()
+{
+}
+
+void URPG_GameplayAbility::OnInputCanceled_Implementation()
+{
+}
+
+void URPG_GameplayAbility::OnInputCompleted_Implementation()
+{
+}
+
 
 void URPG_GameplayAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {

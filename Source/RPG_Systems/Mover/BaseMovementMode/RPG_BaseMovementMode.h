@@ -79,6 +79,8 @@ UFUNCTION(BlueprintCallable)
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static FCharacterDefaultInputs& GetDefaultInputs(const FMoverTickStartData& StartState);
 	UFUNCTION(BlueprintCallable,BlueprintPure)
+	static FCharacterDefaultInputs& GetDefaultInputsFromInputCmd(const FMoverInputCmdContext& InputCmd);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static FMoverDefaultSyncState& GetMoverDefaultSyncState(const FMoverTickStartData& StartState);
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static FVector GetVelocity_WorldSpace(const FMoverDefaultSyncState& MoverDefaultSyncState);

@@ -44,7 +44,7 @@ public class RPG_Systems : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore","DeveloperSettings"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

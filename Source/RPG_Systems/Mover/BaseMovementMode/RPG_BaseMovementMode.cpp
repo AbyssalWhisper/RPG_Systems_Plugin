@@ -3,30 +3,21 @@
 
 #include "RPG_Systems/Mover/BaseMovementMode/RPG_BaseMovementMode.h"
 
-#include "Chaos/Character/CharacterGroundConstraint.h"
-#include "Chaos/Character/CharacterGroundConstraintContainer.h"
 #include "Chaos/PhysicsObject.h"
-#include "Chaos/PhysicsObjectInternalInterface.h"
 
 #include "MoverComponent.h"
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
-#include "GameFramework/PhysicsVolume.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Math/UnitConversion.h"
 #include "MoveLibrary/AirMovementUtils.h"
 #include "PhysicsMover/PhysicsMoverSimulationTypes.h" 
 #include "HAL/IConsoleManager.h"
 #include "MoveLibrary/MovementUtils.h"
 
 #if WITH_EDITOR
-#include "Backends/MoverNetworkPhysicsLiaison.h"
 #include "Internationalization/Text.h"
-#include "Misc/DataValidation.h"
 #endif // WITH_EDITOR
 
 
 #if PHYSICSDRIVENMOTION_DEBUG_DRAW
-#include "Chaos/DebugDrawQueue.h"
 #endif
  
 #define LOCTEXT_NAMESPACE "RPG_BaseMovementMode"
@@ -237,7 +228,11 @@ FFreeMoveParams URPG_BaseMovementMode::MakeFreeMoveParams(EMoveInputType MoveInp
 FCharacterDefaultInputs& URPG_BaseMovementMode::GetDefaultInputs(const FMoverTickStartData& StartState)
 {
 	return *StartState.InputCmd.InputCollection.FindMutableDataByType<FCharacterDefaultInputs>();
-	
+}
+
+FCharacterDefaultInputs& URPG_BaseMovementMode::GetDefaultInputsFromInputCmd(const FMoverInputCmdContext& InputCmd)
+{
+	return *InputCmd.InputCollection.FindMutableDataByType<FCharacterDefaultInputs>();
 }
 
 FMoverDefaultSyncState& URPG_BaseMovementMode::GetMoverDefaultSyncState(const FMoverTickStartData& StartState)

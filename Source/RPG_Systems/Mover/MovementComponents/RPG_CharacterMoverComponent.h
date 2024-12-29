@@ -25,6 +25,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	bool TeleportImmediately(const FVector& Location, const FRotator& Orientation, const FVector& Velocity);
 	
 	virtual TObjectPtr<UBaseMovementMode> GetCurrentMovementMode();
 
@@ -34,5 +36,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = Mover)
 	virtual bool IsClimbing() const;
+
+#pragma region InstantMovementEffects
+	
+#pragma endregion 
 
 };

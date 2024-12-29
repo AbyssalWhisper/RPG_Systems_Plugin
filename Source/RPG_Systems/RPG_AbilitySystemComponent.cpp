@@ -4,6 +4,24 @@
 #include "RPG_AbilitySystemComponent.h"
 
 #include "BetterUtilitiesBPLibrary.h"
+#include "RPG_SystemsDeveloperSettings.h"
+
+
+UE_DEFINE_GAMEPLAY_TAG(RPG_OverrideInput, "RPG.OverrideInput");
+
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputPressedTriggerTypeNone, "RPG.InputPressedType.None");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputPressedTriggerTypeTriggered, "RPG.InputPressedType.Triggered");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputPressedTriggerTypeStarted, "RPG.InputPressedType.Started");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputPressedTriggerTypeOngoing, "RPG.InputPressedType.Ongoing");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputPressedTriggerTypeCanceled, "RPG.InputPressedType.Canceled");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputPressedTriggerTypeCompleted, "RPG.InputPressedType.Completed");
+
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputReleasedTriggerTypeNone, "RPG.InputReleaseType.None");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputReleasedTriggerTypeTriggered, "RPG.InputReleaseType.Triggered");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputReleasedTriggerTypeStarted, "RPG.InputReleaseType.Started");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputReleasedTriggerTypeOngoing, "RPG.InputReleaseType.Ongoing");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputReleasedTriggerTypeCanceled, "RPG.InputReleaseType.Canceled");
+UE_DEFINE_GAMEPLAY_TAG(RPG_InputReleasedTriggerTypeCompleted, "RPG.InputReleaseType.Completed");
 
 
 URPG_AbilitySystemComponent::URPG_AbilitySystemComponent()
@@ -13,6 +31,8 @@ URPG_AbilitySystemComponent::URPG_AbilitySystemComponent()
 	// Explicitly set the Ability System Component to replicate.
 	SetIsReplicatedByDefault(true);
 }
+
+/*
 
 void URPG_AbilitySystemComponent::AbilityInputTagPressed(FGameplayTag InputTag)
 {
@@ -64,9 +84,10 @@ void URPG_AbilitySystemComponent::AbilityInputTagReleased(FGameplayTag InputTag)
 					{
 						ServerSetInputReleased(AbilitySpec.Handle);
 					}
-
+					
 					AbilitySpecInputReleased(AbilitySpec);
 
+					UBetterUtilities::DebugLog("released input");
 					// Invoke the InputReleased event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
 					InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
 				}
@@ -75,6 +96,7 @@ void URPG_AbilitySystemComponent::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 }
 
+*/
 
 void URPG_AbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                                 FActorComponentTickFunction* ThisTickFunction)
@@ -139,20 +161,24 @@ void URPG_AbilitySystemComponent::RemoveAbility(TSubclassOf<URPG_GameplayAbility
 	}
 }
 
-void URPG_AbilitySystemComponent::GiveAbilityAndTagAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass,
-                                                           FGameplayTag GameplayTag)
-{
-	if (AbilityClass && GameplayTag.IsValid())
-	{
-		
-		FGameplayAbilitySpecHandle AbilityHandle = GiveAbility(FGameplayAbilitySpec(AbilityClass, 1));
-	
-		auto abilityspec = FindAbilitySpecFromHandle(AbilityHandle);
-		if (abilityspec)
-		{
-			abilityspec->DynamicAbilityTags.AddTag(GameplayTag);
-		}
-	}
 
-	
+void URPG_AbilitySystemComponent::GiveAbilityWithInputAction(TSubclassOf<URPG_GameplayAbility> AbilityClass,
+                                                             UInputAction* Input)
+{
+	if (!Input)return;
+	URPG_SystemsDeveloperSettings* Settings = GetMutableDefault<URPG_SystemsDeveloperSettings>();
+	auto InputId = Settings->AbilitiesInputActions.Array().Find(Input);
+	if (InputId == INDEX_NONE)
+	{
+		auto a = TSoftObjectPtr<UInputAction>(Input);
+		Settings->AbilitiesInputActions.Add(a);
+		InputId = Settings->AbilitiesInputActions.Array().Find(Input);
+		
+	}
+	if (AbilityClass && Input)
+	{
+		//UBetterUtilities::DebugLog("GiveAbilityWithInputAction: " + resultTag->GetTagName().ToString());
+		FGameplayAbilitySpecHandle AbilityHandle = GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, InputId));
+		
+	}
 }

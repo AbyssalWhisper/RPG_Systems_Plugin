@@ -15,8 +15,7 @@
 UENUM(BlueprintType)
 enum class ERPG_AbilityActivationPolicy : uint8
 {
-	// Try to activate the ability when the input is triggered.
-	OnInputTriggered,
+	
 	// Try to activate the ability when an avatar is assigned.
 	OnAbilityOnGranted,
 	
@@ -31,6 +30,8 @@ class RPG_SYSTEMS_API URPG_GameplayAbility : public UGameplayAbility
 	GENERATED_BODY()
 public:
 	URPG_GameplayAbility();
+
+	
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category = "Input")
 	ERPG_AbilityActivationPolicy ActivationPolicy = ERPG_AbilityActivationPolicy::None;
@@ -61,15 +62,31 @@ protected:
 	// Add logic here that should run when the Ability is first initialized.
 	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
+#pragma region Input
+
 	// Called to bind Input Pressed and Input Released events to the Avatar Actor's Enhanced Input Component if it is reachable. 
-	void SetupEnhancedInputBindings(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec);
+	void SetupEnhancedInputBindingsByInputAction(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec);
 
-	// Called when the "Activation Input Action" is triggered.
-	void HandleInputPressedEvent(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpecHandle SpecHandle);
+	UInputAction* FindInputActionFromSettings(const FGameplayAbilitySpec& Spec);
 
-	// Called when the "Activation Input Action" is completed.
-	void HandleInputReleasedEvent(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpecHandle SpecHandle);
+	ETriggerEvent GetInputPressedTriggerType(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec);
+	ETriggerEvent GetInputReleasedTriggerType(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec);
 
+	
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void OnInputStarted();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void OnInputTriggered();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void OnInputOngoing();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void OnInputCanceled();
+	UFUNCTION(BlueprintNativeEvent, Category = "Input")
+	void OnInputCompleted();
+	
+
+#pragma endregion
 	// Override "OnRemoveAbility" to clean up Enhanced Input Bindings.
 	virtual void OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
