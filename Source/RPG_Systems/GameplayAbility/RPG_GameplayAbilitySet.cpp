@@ -1,26 +1,26 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RPG_Systems/GameplayAbility/PlayerGameplayAbilitiesDataAsset.h"
+#include "RPG_Systems/GameplayAbility/RPG_GameplayAbilitySet.h"
 
 
-UPlayerGameplayAbilitiesDataAsset::UPlayerGameplayAbilitiesDataAsset(const FObjectInitializer& ObjectInitializer)
+URPG_GameplayAbilitySet::URPG_GameplayAbilitySet(const FObjectInitializer& ObjectInitializer)
  : Super(ObjectInitializer)
 {
 }
 
-const TSet<FGameplayInputAbilityInfo>& UPlayerGameplayAbilitiesDataAsset::GetInputAbilities() const
+const TSet<FGameplayInputAbilityInfo>& URPG_GameplayAbilitySet::GetInputAbilities() const
 {
 	return InputAbilities;
 }
 
 #if WITH_EDITOR
-void UPlayerGameplayAbilitiesDataAsset::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+void URPG_GameplayAbilitySet::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
 	const FProperty* Property = PropertyChangedEvent.Property;
-	if (Property && Property->GetFName() == GET_MEMBER_NAME_CHECKED(UPlayerGameplayAbilitiesDataAsset, InputAbilities) && !InputAbilities.IsEmpty())
+	if (Property && Property->GetFName() == GET_MEMBER_NAME_CHECKED(URPG_GameplayAbilitySet, InputAbilities) && !InputAbilities.IsEmpty())
 	{
 		TArray<FGameplayInputAbilityInfo> InputAbilitiesArray = InputAbilities.Array();
 

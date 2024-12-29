@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RPG_GameplayAbility.h"
 #include "Engine/DataAsset.h"
 #include "Abilities/GameplayAbility.h"
-#include "PlayerGameplayAbilitiesDataAsset.generated.h"
+#include "RPG_GameplayAbilitySet.generated.h"
 
+class URPG_GameplayAbility;
 class UInputAction;
 
 USTRUCT()
@@ -15,7 +17,7 @@ struct FGameplayInputAbilityInfo
 	GENERATED_USTRUCT_BODY()
  
 	UPROPERTY(EditAnywhere, Category = "GameplayInputAbilityInfo")
-	TSubclassOf<UGameplayAbility> GameplayAbilityClass;
+	TSubclassOf<URPG_GameplayAbility> GameplayAbilityClass;
 
 	UPROPERTY(EditAnywhere, Category = "GameplayInputAbilityInfo")
 	TObjectPtr<UInputAction> InputAction;
@@ -54,7 +56,7 @@ struct FGameplayInputAbilityInfo
  * 
  */
 UCLASS()
-class RPG_SYSTEMS_API UPlayerGameplayAbilitiesDataAsset : public UDataAsset
+class RPG_SYSTEMS_API URPG_GameplayAbilitySet : public UDataAsset
 {
 	GENERATED_UCLASS_BODY()
 

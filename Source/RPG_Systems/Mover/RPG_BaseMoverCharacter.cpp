@@ -30,7 +30,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "MovementComponents/RPG_CharacterMoverComponent.h"
-#include "RPG_Systems/GameplayAbility/PlayerGameplayAbilitiesDataAsset.h"
+#include "RPG_Systems/GameplayAbility/RPG_GameplayAbilitySet.h"
 
 void ARPG_BaseMoverCharacter::TryCrouch()
 {
@@ -187,16 +187,11 @@ void ARPG_BaseMoverCharacter::BeginPlay()
 	if (PlayerAbilitiesDataAsset)
 	{
 		const TSet<FGameplayInputAbilityInfo>& InputAbilities = PlayerAbilitiesDataAsset->GetInputAbilities();
-		constexpr int32 AbilityLevel = 1;
-  
-		for (const auto& It : InputAbilities)
+		for (auto Element : InputAbilities)
 		{
-			if (It.IsValid())
-			{
-				const FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(It.GameplayAbilityClass, AbilityLevel, It.InputID);
-				AbilitySystemComp->GiveAbility(AbilitySpec);
-			}
+			AbilitySystemComp->GiveAbilityWithInputAction(Element.GameplayAbilityClass,Element.InputAction);
 		}
+		
 	}
 
 	

@@ -21,7 +21,7 @@
  */
 
 
-class UPlayerGameplayAbilitiesDataAsset;
+class URPG_GameplayAbilitySet;
 class UCapsuleComponent;
 class UInputAction;
 class UCharacterMoverComponent;
@@ -50,7 +50,7 @@ public:
 	ARPG_BaseMoverCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "0 - CharacterData")
-	UPlayerGameplayAbilitiesDataAsset* PlayerAbilitiesDataAsset;
+	URPG_GameplayAbilitySet* PlayerAbilitiesDataAsset;
 	void OnAbilityInputPressed(int32 InputID);
 	void OnAbilityInputReleased(int32 InputID);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "0 - CharacterData")
