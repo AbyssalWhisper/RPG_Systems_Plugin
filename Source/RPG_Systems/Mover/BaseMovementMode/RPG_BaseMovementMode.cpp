@@ -19,8 +19,8 @@
 
 #if PHYSICSDRIVENMOTION_DEBUG_DRAW
 #endif
- 
-#define LOCTEXT_NAMESPACE "RPG_BaseMovementMode"
+
+
 
 /*
 void URPG_BaseMovementMode::UpdateConstraintSettings(Chaos::FCharacterGroundConstraint& Constraint) const

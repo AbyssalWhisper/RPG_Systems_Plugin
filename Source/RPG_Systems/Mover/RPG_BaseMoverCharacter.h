@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#define private public
 #include "MoverExamplesCharacter.h"
-#undef private
 #include "MoverSimulationTypes.h"
 #include "GameFramework/Pawn.h"
 

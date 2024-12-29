@@ -174,7 +174,7 @@ void ARPG_BaseCharacter::InitStats()
 
 	if (DeadTag.IsValid())
 	{
-		GE_RegenRates->OngoingTagRequirements.IgnoreTags.AddTag(DeadTag);
+		//GE_RegenRates->OngoingTagRequirements.IgnoreTags.AddTag(DeadTag);
 	}
 
 	AbilitySystemComp->ApplyGameplayEffectToSelf(GE_RegenRates, 1, AbilitySystemComp->MakeEffectContext());
@@ -191,15 +191,15 @@ void ARPG_BaseCharacter::InitStats()
 
 		if (RunningTag.IsValid())
 		{
-			GE_StaminaRegenRate->OngoingTagRequirements.IgnoreTags.AddTag(RunningTag);
+			//GE_StaminaRegenRate->OngoingTagRequirements.IgnoreTags.AddTag(RunningTag);
 		}
 		if (SprintingTag.IsValid())
 		{
-			GE_StaminaRegenRate->OngoingTagRequirements.IgnoreTags.AddTag(SprintingTag);
+			//GE_StaminaRegenRate->OngoingTagRequirements.IgnoreTags.AddTag(SprintingTag);
 		}
 		if (DeadTag.IsValid())
 		{
-			GE_StaminaRegenRate->OngoingTagRequirements.IgnoreTags.AddTag(DeadTag);
+			//GE_StaminaRegenRate->OngoingTagRequirements.IgnoreTags.AddTag(DeadTag);
 		}
 
 		AttributeBased.BackingAttribute = FGameplayEffectAttributeCaptureDefinition(URPG_BaseAttributeSet::GetStaminaRegenRateAttribute(), EGameplayEffectAttributeCaptureSource::Source, false);
@@ -237,7 +237,7 @@ void ARPG_BaseCharacter::Landed(const FHitResult& Hit)
 
 		if (GodModeTag.IsValid())
 		{
-			GE_Landed->ApplicationTagRequirements.IgnoreTags.AddTag(GodModeTag);
+			//GE_Landed->ApplicationTagRequirements.IgnoreTags.AddTag(GodModeTag);
 		}
 
 		FGameplayModifierInfo ModifierInfo;
@@ -265,7 +265,7 @@ void ARPG_BaseCharacter::BindASCInput(UInputComponent* InputComp)
 {
 	if (!ASCInputBound && AbilitySystemComp && InputComp)
 	{
-		AbilitySystemComp->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),FString("CancelTarget"), FString("ERPG_AbilityInputID"), static_cast<int32>(ERPG_AbilityInputID::Confirm), static_cast<int32>(ERPG_AbilityInputID::Cancel)));
+		//AbilitySystemComp->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),FString("CancelTarget"), FString("ERPG_AbilityInputID"), static_cast<int32>(ERPG_AbilityInputID::Confirm), static_cast<int32>(ERPG_AbilityInputID::Cancel)));
 		ASCInputBound = true;
 	}
 }
@@ -496,7 +496,7 @@ void ARPG_BaseCharacter::OnFoodEmpty_Implementation()
  
 		if (GodModeTag.IsValid())
 		{
-			GE_FoodDamage->OngoingTagRequirements.IgnoreTags.AddTag(GodModeTag);
+			//GE_FoodDamage->OngoingTagRequirements.IgnoreTags.AddTag(GodModeTag);
 		}
 
 		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
@@ -521,7 +521,7 @@ void ARPG_BaseCharacter::OnThirstEmpty_Implementation()
 		 
 		if (GodModeTag.IsValid())
 		{
-			GE_ThirstDamage->OngoingTagRequirements.IgnoreTags.AddTag(GodModeTag);
+			//GE_ThirstDamage->OngoingTagRequirements.IgnoreTags.AddTag(GodModeTag);
 		}
 		ModifierInfo.Attribute = URPG_HealthAttributeSet::GetHealthAttribute();
 		GE_ThirstDamage->Modifiers[0] = ModifierInfo;

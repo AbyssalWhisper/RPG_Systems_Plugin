@@ -9,6 +9,11 @@
 #include "MoveLibrary/AirMovementUtils.h"
 #include "RPG_Systems/Mover/MoverFunctionLibrary.h"
 
+
+URPG_BaseMovementModeTransition::URPG_BaseMovementModeTransition(const FObjectInitializer& ObjectInitializer)
+{
+}
+
 bool URPG_BaseMovementModeTransition::CapsuleTraceSingle(UObject* WorldContextObject, const FVector Start,
                                                          const FVector End, float Radius, float HalfHeight, const FRotator Orientation, ETraceTypeQuery TraceChannel,
                                                          bool bTraceComplex, const TArray<AActor*>& ActorsToIgnore, EDrawDebugTrace::Type DrawDebugType, FHitResult& OutHit,

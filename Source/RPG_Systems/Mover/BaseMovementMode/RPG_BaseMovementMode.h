@@ -6,9 +6,7 @@
 
 #include "PhysicsMover/PhysicsMoverSimulationTypes.h"
 
-#define private public
 #include "MovementMode.h"
-#undef private
 
 #include "RPG_BaseMovementMode.generated.h"
 

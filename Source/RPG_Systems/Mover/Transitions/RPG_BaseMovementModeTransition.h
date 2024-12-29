@@ -19,6 +19,7 @@ UCLASS()
 class RPG_SYSTEMS_API URPG_BaseMovementModeTransition : public UBaseMovementModeTransition
 {
 	GENERATED_BODY()
+	URPG_BaseMovementModeTransition(const FObjectInitializer& ObjectInitializer);
 public:
 	UFUNCTION(BlueprintCallable, Category = "Collision", meta = (bIgnoreSelf = "true", AutoCreateRefTerm = "ActorsToIgnore", DisplayName = "CapsuleTraceByChannelWithRotation", AdvancedDisplay = "TraceColor,TraceHitColor,DrawTime", Keywords = "sweep"))
 	static bool CapsuleTraceSingle(UObject* WorldContextObject, const FVector Start, const FVector End, float Radius, float HalfHeight, const FRotator Orientation, ETraceTypeQuery TraceChannel, bool bTraceComplex, const TArray<AActor*>& ActorsToIgnore, EDrawDebugTrace::Type DrawDebugType, FHitResult& OutHit, bool bIgnoreSelf, FLinearColor TraceColor = FLinearColor::Red, FLinearColor TraceHitColor = FLinearColor::Green, float DrawTime = 5.0f);
