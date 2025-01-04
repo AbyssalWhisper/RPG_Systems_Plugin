@@ -332,7 +332,7 @@ FVector UBetterUtilities::GetRandomPointInSphereCollision(USphereComponent* Sphe
     return RandomLocation;
 }
 
-void UBetterUtilities::DebugLog(FString LogMessage, EEasylog LogVerbosity)
+void UBetterUtilities::DebugLog(FString LogMessage, EEasylog LogVerbosity, bool PrintScreen)
 {
     FString FinalLogString = LogMessage;
     switch (LogVerbosity) {
@@ -352,7 +352,7 @@ void UBetterUtilities::DebugLog(FString LogMessage, EEasylog LogVerbosity)
         UE_LOG(LogRPG_Systems, Log, TEXT("%s"), *FinalLogString)
         break;
     }
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FinalLogString);
+    if (PrintScreen) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FinalLogString);
 }
 
 float UBetterUtilities::GetDeltaSecondsFromStepMs(const float& StepMs)

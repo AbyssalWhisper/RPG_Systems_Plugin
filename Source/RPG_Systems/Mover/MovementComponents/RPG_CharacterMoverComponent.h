@@ -21,7 +21,10 @@ public:
 	URPG_CharacterMoverComponent();
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	ARPG_BaseMoverCharacter* Character;
-
+	
+	/** Multiplies the impulse applied to physics objects on collisions to push them harder */
+	UPROPERTY(EditAnywhere, Category = "Mover", meta=(ClampMin=0))
+	float ImpactPhysicsForceMultiplier = 10.0f;
 
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -30,9 +33,8 @@ public:
 	
 	virtual TObjectPtr<UBaseMovementMode> GetCurrentMovementMode();
 
-
-	UFUNCTION(BlueprintCallable,BlueprintPure,DisplayName="HasGameplayTag", Category = Mover)
-	bool BP_HasGameplayTag(FGameplayTag Tag, bool bExactMatch)const;
+	/** Applies forces to physics objects on impact */
+	virtual void OnHandleImpact(const FMoverOnImpactParams& ImpactParams) override;
 
 	UFUNCTION(BlueprintPure, Category = Mover)
 	virtual bool IsClimbing() const;

@@ -13,6 +13,7 @@
  * 
  */
 // Gameplay tags
+
 RPG_SYSTEMS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RPG_OverrideInput);
 
 RPG_SYSTEMS_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RPG_InputPressedTriggerTypeNone);

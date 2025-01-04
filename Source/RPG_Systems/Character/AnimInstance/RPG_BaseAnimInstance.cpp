@@ -42,7 +42,7 @@ void URPG_BaseAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	MoveSpeed = FVector(RefCharacter->GetVelocity().X, RefCharacter->GetVelocity().Y, 0.f).Size();
 	Direction = FMath::FInterpTo(Direction, RefCharacter->GetCapsuleComponent()->GetPhysicsAngularVelocityInDegrees().Z, DeltaSeconds, RotationSpeed);
 	ForwardVelocity = UKismetMathLibrary::LessLess_VectorRotator(RefCharacter->GetVelocity(), RefCharacter->GetActorRotation()).X;
-	float L_Rate;
+	float L_Rate =1;
 
 	bIsMoving = MoveSpeed >= 10 ? true : false;
 	float L_AnimSlowWalkMoveSpeed = 0;

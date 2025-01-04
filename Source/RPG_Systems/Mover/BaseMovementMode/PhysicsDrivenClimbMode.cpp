@@ -41,7 +41,7 @@ void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartSta
 	}
 
 	
-	FRotator IntendedOrientation_WorldSpace;
+	FRotator IntendedOrientation_WorldSpace = FRotator::ZeroRotator;
 	
 	if (OwnerActor)
 	{

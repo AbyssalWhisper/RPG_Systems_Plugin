@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RPG_Systems/Mover/MovementComponents/RPG_CharacterMoverComponent.h"
+
+#include "BetterUtilitiesBPLibrary.h"
 #include "PhysicsMover/Modes/PhysicsDrivenWalkingMode.h"
 #include "PhysicsMover/Modes/PhysicsDrivenSwimmingMode.h"
 #include "Backends/MoverNetworkPhysicsLiaison.h"
@@ -67,9 +69,19 @@ TObjectPtr<UBaseMovementMode> URPG_CharacterMoverComponent::GetCurrentMovementMo
 	return nullptr;
 }
 
-bool URPG_CharacterMoverComponent::BP_HasGameplayTag(FGameplayTag Tag, bool bExactMatch) const
+void URPG_CharacterMoverComponent::OnHandleImpact(const FMoverOnImpactParams& ImpactParams)
 {
-	return HasGameplayTag(Tag,bExactMatch);
+	Super::OnHandleImpact(ImpactParams);
+	// get the hit component
+	UPrimitiveComponent* HitComponent = ImpactParams.HitResult.GetComponent();
+
+	// is it valid and simulating physics?
+	if (HitComponent && HitComponent->IsSimulatingPhysics())
+	{
+		FVector ImpactForce = ImpactParams.AttemptedMoveDelta * HitComponent->GetMass() * ImpactPhysicsForceMultiplier;
+		HitComponent->AddImpulseAtLocation(ImpactForce, ImpactParams.HitResult.ImpactPoint);
+		UBetterUtilities::DebugLog("Applied impact force on dynamic physics object",EEasylog::Log);
+	}
 }
 
 

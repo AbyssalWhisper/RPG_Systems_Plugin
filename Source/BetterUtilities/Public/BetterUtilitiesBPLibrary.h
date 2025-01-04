@@ -10,6 +10,10 @@
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "UObject/Object.h"
+
+#include "Stats/StatsData.h"
+#include "Stats/Stats.h"
+
 #include "UObject/UnrealType.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -417,7 +421,7 @@ public:
     static FVector GetRandomPointInSphereCollision(class USphereComponent* SphereCollision);
     
     UFUNCTION(BlueprintCallable)
-    static void DebugLog(FString LogMessage,EEasylog LogVerbosity = EEasylog::Log);
+    static void DebugLog(FString LogMessage, EEasylog LogVerbosity = EEasylog::Log, bool PrintScreen = false);
 
     UFUNCTION(BlueprintCallable, BlueprintPure)
     static float GetDeltaSecondsFromStepMs(const float& StepMs);
@@ -479,6 +483,7 @@ public:
         // Se a janela não estiver disponível, retorna um vetor nulo
         return FVector2D::ZeroVector;
     }
+
     
     template<typename T>
     static void LoadAssetAsync(TSoftObjectPtr<T> AssetPtr, TFunction<void(T*)> OnLoaded);
