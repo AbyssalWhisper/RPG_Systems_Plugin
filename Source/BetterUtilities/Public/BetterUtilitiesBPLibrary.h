@@ -9,6 +9,8 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
+#include "JsonBlueprintUtilities/Public/JsonBlueprintFunctionLibrary.h"
+#include "JsonObjectConverter.h"
 #include "UObject/Object.h"
 
 #include "Stats/StatsData.h"
@@ -488,7 +490,203 @@ public:
     template<typename T>
     static void LoadAssetAsync(TSoftObjectPtr<T> AssetPtr, TFunction<void(T*)> OnLoaded);
     
+    
+    UFUNCTION(BlueprintCallable, Category = "Utilities")
+    static FString ObjectToJsonString(UObject* SourceObject,bool bOnlySaveGame = true)
+    {
+        FJsonObjectWrapper JsonObjectWrapper = ObjectToJsonObject(SourceObject, bOnlySaveGame);
 
+        if (!JsonObjectWrapper.JsonObject.IsValid())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to convert object to JSON."));
+            return TEXT("{}");
+        }
+
+        FString JsonString;
+        JsonObjectWrapper.JsonObjectToString(JsonString);
+        return JsonString;
+    }
+
+    UFUNCTION(BlueprintCallable, Category = "Utilities")
+    static FJsonObjectWrapper ObjectToJsonObject(UObject* SourceObject, bool bOnlySaveGame = true)
+    {
+        FJsonObjectWrapper JsonObjectWrapper;
+
+        if (!SourceObject)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("SourceObject is null."));
+            return JsonObjectWrapper;
+        }
+
+        // Criar um objeto JSON para armazenar os dados
+        TSharedPtr<FJsonObject> JsonObject = MakeShared<FJsonObject>();
+
+        // Obter a classe do objeto
+        UClass* ObjectClass = SourceObject->GetClass();
+
+        // Iterar sobre todas as propriedades do objeto
+        for (TFieldIterator<FProperty> PropIt(ObjectClass); PropIt; ++PropIt)
+        {
+            FProperty* Property = *PropIt;
+
+            if (!Property)
+            {
+                continue;
+            }
+
+            // Se bOnlySaveGame for true, verificar a flag SaveGame
+            if (bOnlySaveGame && !Property->HasAllPropertyFlags(CPF_SaveGame))
+            {
+                continue; // Ignorar propriedades que não têm a flag SaveGame
+            }
+
+            // Obter o valor bruto da propriedade
+            const void* ValuePtr = Property->ContainerPtrToValuePtr<void>(SourceObject);
+
+            if (!ValuePtr)
+            {
+                continue;
+            }
+
+            // Converter a propriedade para um valor JSON
+            TSharedPtr<FJsonValue> JsonValue = FJsonObjectConverter::UPropertyToJsonValue(Property, ValuePtr);
+
+            if (JsonValue.IsValid())
+            {
+                // Adicionar o campo ao objeto JSON
+                JsonObject->SetField(Property->GetName(), JsonValue);
+            }
+        }
+
+        // Atribuir o objeto JSON ao wrapper
+        JsonObjectWrapper.JsonObject = JsonObject;
+
+        return JsonObjectWrapper;
+    }
+
+    UFUNCTION(BlueprintCallable, Category = "Utilities")
+    static bool SaveObjectToJsonFile(UObject* SourceObject,bool bOnlySaveGame = true,FString FilePath = "")
+    {
+        FJsonObjectWrapper JsonObjectWrapper = ObjectToJsonObject(SourceObject, bOnlySaveGame);
+
+        if (!JsonObjectWrapper.JsonObject.IsValid())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to convert object to JSON."));
+            return false;
+        }
+
+        return UJsonBlueprintFunctionLibrary::ToFile(JsonObjectWrapper,FFilePath(FilePath));
+    }
+
+    UFUNCTION(BlueprintCallable,meta = (  WorldContext="WorldContextObject",DeterminesOutputType = "ObjectClass"), Category = "Utilities")
+    static UObject* ObjectFromJsonString(UObject* WorldContextObject,TSubclassOf<UObject> ObjectClass,const FString& JsonString)
+    {
+        FJsonObjectWrapper JsonObjectWrapper = FJsonObjectWrapper();
+        
+        if (JsonObjectWrapper.JsonObjectFromString(JsonString))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to parse JSON string."));
+            return nullptr;
+        }
+        
+        return ObjectFromJsonObject(WorldContextObject, ObjectClass, JsonObjectWrapper);
+    }
+
+    UFUNCTION(BlueprintCallable,meta = (  WorldContext="WorldContextObject",DeterminesOutputType = "ObjectClass"), Category = "Utilities")
+    static UObject* ObjectFromJsonObject(UObject* WorldContextObject,TSubclassOf<UObject> ObjectClass, FJsonObjectWrapper& OutJsonObject)
+    {
+        UObject* TargetObject = NewObject<UObject>(WorldContextObject, ObjectClass);
+        
+        if (!TargetObject)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("TargetObject is null."));
+            return nullptr;
+        }
+
+
+        // Iterar sobre as propriedades do objeto
+        for (TFieldIterator<FProperty> PropIt(ObjectClass); PropIt; ++PropIt)
+        {
+            FProperty* Property = *PropIt;
+
+            if (!Property)
+            {
+                continue;
+            }
+
+            // Obter o valor do JSON com o mesmo nome da propriedade
+            TSharedPtr<FJsonValue> JsonValue = OutJsonObject.JsonObject->TryGetField(Property->GetName());
+            if (!JsonValue.IsValid())
+            {
+                continue;
+            }
+
+            // Obter o ponteiro para o valor da propriedade no objeto
+            void* ValuePtr = Property->ContainerPtrToValuePtr<void>(TargetObject);
+            if (!ValuePtr)
+            {
+                continue;
+            }
+
+            // Definir o valor da propriedade com base no JSON
+            if (!FJsonObjectConverter::JsonValueToUProperty(JsonValue, Property, ValuePtr))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to set property '%s' from JSON."), *Property->GetName());
+            }
+        }
+
+        return TargetObject;
+    }
+
+    UFUNCTION(BlueprintCallable,meta = (  WorldContext="WorldContextObject",DeterminesOutputType = "ObjectClass"), Category = "Utilities")
+    static UObject* LoadObjectFromJsonFile(UObject* WorldContextObject,TSubclassOf<UObject> ObjectClass,FString FilePath)
+    {
+        FJsonObjectWrapper JsonObjectWrapper = FJsonObjectWrapper();
+        UJsonBlueprintFunctionLibrary::FromFile(FFilePath(FilePath),JsonObjectWrapper);
+        return ObjectFromJsonObject(WorldContextObject, ObjectClass, JsonObjectWrapper);
+    }
+
+    UFUNCTION(BlueprintCallable,meta = ( DeterminesOutputType = "ObjectClass"), Category = "Utilities")
+    static UObject* SetObjectVariablesFromJsonFile(UObject* Target,FString FilePath)
+    {
+        if (!Target)return nullptr;
+        FJsonObjectWrapper JsonObjectWrapper = FJsonObjectWrapper();
+        UJsonBlueprintFunctionLibrary::FromFile(FFilePath(FilePath),JsonObjectWrapper);
+       
+        // Iterar sobre as propriedades do objeto
+        for (TFieldIterator<FProperty> PropIt(Target->GetClass()); PropIt; ++PropIt)
+        {
+            FProperty* Property = *PropIt;
+
+            if (!Property)
+            {
+                continue;
+            }
+
+            // Obter o valor do JSON com o mesmo nome da propriedade
+            TSharedPtr<FJsonValue> JsonValue = JsonObjectWrapper.JsonObject->TryGetField(Property->GetName());
+            if (!JsonValue.IsValid())
+            {
+                continue;
+            }
+
+            // Obter o ponteiro para o valor da propriedade no objeto
+            void* ValuePtr = Property->ContainerPtrToValuePtr<void>(Target);
+            if (!ValuePtr)
+            {
+                continue;
+            }
+
+            // Definir o valor da propriedade com base no JSON
+            if (!FJsonObjectConverter::JsonValueToUProperty(JsonValue, Property, ValuePtr))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Failed to set property '%s' from JSON."), *Property->GetName());
+            }
+        }
+        return Target;
+        
+    }
+    
 };
 
 template<typename T>

@@ -15,7 +15,6 @@
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
-
 		{
 			"Name": "BetterUtilities",
 			"Type": "Runtime",
@@ -40,6 +39,16 @@
 			"Name": "EasyEditorExtend",
 			"Type": "Editor",
 			"LoadingPhase": "PostEngineInit"
+		},
+		{
+			"Name": "RPG_DialogSystemRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RPG_DialogSystemEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

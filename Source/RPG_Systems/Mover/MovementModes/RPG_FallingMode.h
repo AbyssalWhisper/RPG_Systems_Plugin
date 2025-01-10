@@ -14,5 +14,5 @@ class RPG_SYSTEMS_API URPG_FallingMode : public UFallingMode
 {
 	GENERATED_BODY()
 public:
-	void final 
+	
 };

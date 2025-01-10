@@ -25,7 +25,7 @@ public class BetterUtilities : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core", "JsonBlueprintUtilities",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -40,7 +40,10 @@ public class BetterUtilities : ModuleRules
 				"UMG",
 				"GameplayAbilities",
 				"GameplayTags",
-                "PhysicsCore"
+                "PhysicsCore","Json",
+                "JsonUtilities","Niagara",
+                "Chaos","EnhancedInput",
+                "JsonBlueprintUtilities"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
