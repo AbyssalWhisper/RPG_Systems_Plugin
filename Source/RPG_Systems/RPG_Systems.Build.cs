@@ -29,7 +29,9 @@ public class RPG_Systems : ModuleRules
                 ,"GameplayTags", "GameplayAbilities","AIModule" 
                 , "GameplayTasks", "Niagara" ,"PhysicsCore" 
                 , "BetterUtilities", "Mover","Chaos","InputCore",
-                "EnhancedInput","AsyncTickPhysics","MoverExamples"
+                "EnhancedInput","AsyncTickPhysics","MoverExamples",
+                "OnlineSubsystem","JsonBlueprintUtilities","NetCore"
+                ,"Networking"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

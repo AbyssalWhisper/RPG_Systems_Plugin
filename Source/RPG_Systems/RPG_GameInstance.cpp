@@ -2,6 +2,9 @@
 
 
 #include "RPG_GameInstance.h"
+#include "Online/CoreOnline.h"
+#include "Engine/Engine.h"
+#include "Net/Core/Connection/NetEnums.h"
 
 void URPG_GameInstance::Init()
 {
