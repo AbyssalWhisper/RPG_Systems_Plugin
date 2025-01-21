@@ -20,7 +20,7 @@ public class RPG_DialogSystemEditor : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "DialogAssetEditorRuntime",
+                "RPG_DialogSystemRuntime",
                 "AssetTools","UnrealEd", "RPG_DialogSystemRuntime"
             }
         );
