@@ -13,10 +13,8 @@ UCLASS()
 class RPG_SYSTEMS_API UEndRagdollTransition : public UBaseMovementModeTransition
 {
 	GENERATED_BODY()
-	
-	
-	
-	
-	FTransitionEvalResult Evaluate_Implementation(const FSimulationTickParams& Params) const override;
+
+
+	virtual FTransitionEvalResult Evaluate_Implementation(const FSimulationTickParams& Params) const override;
 
 };
