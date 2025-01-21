@@ -4,9 +4,9 @@
 #include "RPG_Systems/Mover/MovementModes/RPG_PhysicsDrivenCrouchMode.h"
 #include "Components/CapsuleComponent.h"
 
-void URPG_PhysicsDrivenCrouchMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
+void URPG_PhysicsDrivenCrouchMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
-	Super::OnSimulationTick(Params, OutputState);
+	Super::SimulationTick_Implementation(Params, OutputState);
 
 	const float DeltaSeconds = Params.TimeStep.StepMs * 0.001f;
 	//return;

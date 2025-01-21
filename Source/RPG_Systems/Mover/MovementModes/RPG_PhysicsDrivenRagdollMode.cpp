@@ -6,12 +6,12 @@
 #include "DefaultMovementSet/CharacterMoverComponent.h" 
 #include "BetterUtilities/public/BetterUtilitiesBPLibrary.h"
 #include "RPG_Systems/Mover/Transitions/RagdollTransition.h"
-void URPG_PhysicsDrivenRagdollMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const
+void URPG_PhysicsDrivenRagdollMode::GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const
 {
 
 }
 
-void URPG_PhysicsDrivenRagdollMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
+void URPG_PhysicsDrivenRagdollMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
 	if (FRagdollAbilityInputs* AbilityInputs = Params.StartState.InputCmd.InputCollection.FindMutableDataByType<FRagdollAbilityInputs>())
 	{

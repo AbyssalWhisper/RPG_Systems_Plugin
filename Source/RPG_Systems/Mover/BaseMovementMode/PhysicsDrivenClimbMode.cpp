@@ -9,7 +9,7 @@
 #include "MoveLibrary/AirMovementUtils.h"
 #include <RPG_Systems/Mover/MoverFunctionLibrary.h>
 
-void UPhysicsDrivenClimbMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
+void UPhysicsDrivenClimbMode::GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
                                              FProposedMove& OutProposedMove) const
 {
 	//Super::OnGenerateMove(StartState, TimeStep, OutProposedMove);

@@ -17,6 +17,6 @@ class RPG_SYSTEMS_API UEndRagdollTransition : public UBaseMovementModeTransition
 	
 	
 	
-	FTransitionEvalResult OnEvaluate(const FSimulationTickParams& Params) const;
+	FTransitionEvalResult Evaluate_Implementation(const FSimulationTickParams& Params) const override;
 
 };

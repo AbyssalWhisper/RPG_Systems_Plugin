@@ -17,6 +17,6 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TEnumAsByte<ECollisionChannel> TraceChannel;
 protected:
-	virtual void OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
+	virtual void GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
 		FProposedMove& OutProposedMove) const override;
 };

@@ -15,7 +15,7 @@ class RPG_SYSTEMS_API UGroundClimbTransition : public UBaseMovementModeTransitio
 {
 	GENERATED_BODY()
 public:
-	virtual FTransitionEvalResult OnEvaluate(const FSimulationTickParams& Params) const override;
+	virtual FTransitionEvalResult Evaluate_Implementation(const FSimulationTickParams& Params) const override;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TEnumAsByte<ETraceTypeQuery> TraceChannel;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -43,7 +43,7 @@ EDataValidationResult URPG_BaseMovementMode::IsDataValid(FDataValidationContext&
 }
 #endif // WITH_EDITOR
 
-void URPG_BaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
+void URPG_BaseMovementMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 {
  
 const UMoverComponent* MoverComp = GetMoverComponent();
@@ -121,7 +121,7 @@ void URPG_BaseMovementMode::CaptureFinalState(USceneComponent* UpdatedComponent,
 	UpdatedComponent->ComponentVelocity = FinalVelocity;
 }
 
-void URPG_BaseMovementMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
+void URPG_BaseMovementMode::GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
                                            FProposedMove& OutProposedMove) const
 {
  

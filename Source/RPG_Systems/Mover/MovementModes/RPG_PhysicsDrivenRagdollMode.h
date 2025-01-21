@@ -14,9 +14,9 @@ class RPG_SYSTEMS_API URPG_PhysicsDrivenRagdollMode : public URPG_BaseMovementMo
 {
 	GENERATED_BODY()
 public:
-	virtual void OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
+	virtual void GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
 		FProposedMove& OutProposedMove) const override;
-	virtual void OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
+	virtual void SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
 
 
 	

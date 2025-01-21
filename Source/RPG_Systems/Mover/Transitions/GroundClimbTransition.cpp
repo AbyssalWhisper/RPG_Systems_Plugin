@@ -9,7 +9,7 @@
 #include "BetterUtilities/Public/TraceUtils.h"
 #include "RPG_Systems/Mover/MoverFunctionLibrary.h"
 
-FTransitionEvalResult UGroundClimbTransition::OnEvaluate(const FSimulationTickParams& Params) const
+FTransitionEvalResult UGroundClimbTransition::Evaluate_Implementation(const FSimulationTickParams& Params) const
 {
 	
 	FTransitionEvalResult Transition;

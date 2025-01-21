@@ -5,7 +5,7 @@
 #include "BetterUtilities/public/BetterUtilitiesBPLibrary.h"
 #include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
 
-FTransitionEvalResult URagdollTransition::OnEvaluate(const FSimulationTickParams& Params) const
+FTransitionEvalResult URagdollTransition::Evaluate_Implementation(const FSimulationTickParams& Params) const
 {
 
 	
@@ -32,7 +32,7 @@ FTransitionEvalResult URagdollTransition::OnEvaluate(const FSimulationTickParams
 	return EvalResult;
 }
 
-void URagdollTransition::OnTrigger(const FSimulationTickParams& Params)
+void URagdollTransition::Trigger_Implementation(const FSimulationTickParams& Params)
 {   
 
 }

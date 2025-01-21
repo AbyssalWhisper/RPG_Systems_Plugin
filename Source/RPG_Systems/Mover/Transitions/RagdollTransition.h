@@ -15,10 +15,10 @@ class RPG_SYSTEMS_API URagdollTransition : public UBaseMovementModeTransition
 {
 	GENERATED_BODY()
 	
-	virtual FTransitionEvalResult OnEvaluate(const FSimulationTickParams& Params) const override;
+	virtual FTransitionEvalResult Evaluate_Implementation(const FSimulationTickParams& Params) const override;
 
 protected:
-	virtual void OnTrigger(const FSimulationTickParams& Params) override;
+	virtual void Trigger_Implementation(const FSimulationTickParams& Params) override;
 	float CanTransitionDelay = 3;
 	float CurrentTransitionTime = 0;
 	bool bCanToggleRagdoll = true;

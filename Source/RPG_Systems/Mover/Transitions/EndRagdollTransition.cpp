@@ -8,7 +8,7 @@
 #include "BetterUtilities/public/BetterUtilitiesBPLibrary.h"
 #include "RPG_Systems/Mover/Transitions/RagdollTransition.h"
 
-FTransitionEvalResult UEndRagdollTransition::OnEvaluate(const FSimulationTickParams& Params) const
+FTransitionEvalResult UEndRagdollTransition::Evaluate_Implementation(const FSimulationTickParams& Params) const
 {
 	FTransitionEvalResult EvalResult = FTransitionEvalResult::NoTransition;
 	if (FRagdollAbilityInputs* AbilityInputs = Params.StartState.InputCmd.InputCollection.FindMutableDataByType<FRagdollAbilityInputs>())

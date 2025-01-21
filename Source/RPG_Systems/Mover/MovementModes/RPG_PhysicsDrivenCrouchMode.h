@@ -17,7 +17,7 @@ class RPG_SYSTEMS_API URPG_PhysicsDrivenCrouchMode : public UPhysicsDrivenWalkin
 {
 	GENERATED_BODY()
 public:
-	virtual void OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
+	virtual void SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
 	
 	float GetCapsuleHeight_Implementation() override;
 	float GetCapsuleRadius_Implementation() override;
