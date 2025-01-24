@@ -5,17 +5,14 @@
 
 UWorld* UDefaultToInstancedObject::GetWorld() const
 {
-	if (GetOuter() == nullptr)
-	{
-		return nullptr;
-	}
-
+	if (GetOuter() == nullptr)	return nullptr;
+	
 	if (Cast<UPackage>(GetOuter()) != nullptr)
 	{
 		return Cast<UWorld>(GetOuter()->GetOuter());
 	}
-
-	return GetOwningActor()->GetWorld();
+	if (GetOwningActor()) return GetOwningActor()->GetWorld();
+	return nullptr;
 }
 
 AActor* UDefaultToInstancedObject::GetOwningActor() const
