@@ -574,8 +574,9 @@ public:
             UE_LOG(LogTemp, Warning, TEXT("Failed to convert object to JSON."));
             return false;
         }
-
-        return UJsonBlueprintFunctionLibrary::ToFile(JsonObjectWrapper,FFilePath(FilePath));
+        FFilePath FilePathStruct;
+        FilePathStruct.FilePath = FilePath;
+        return UJsonBlueprintFunctionLibrary::ToFile(JsonObjectWrapper,FilePathStruct);
     }
 
     UFUNCTION(BlueprintCallable,meta = (  WorldContext="WorldContextObject",DeterminesOutputType = "ObjectClass"), Category = "Utilities")
@@ -642,7 +643,9 @@ public:
     static UObject* LoadObjectFromJsonFile(UObject* WorldContextObject,TSubclassOf<UObject> ObjectClass,FString FilePath)
     {
         FJsonObjectWrapper JsonObjectWrapper = FJsonObjectWrapper();
-        UJsonBlueprintFunctionLibrary::FromFile(FFilePath(FilePath),JsonObjectWrapper);
+        FFilePath FilePathStruct;
+        FilePathStruct.FilePath = FilePath;
+        UJsonBlueprintFunctionLibrary::FromFile(FilePathStruct,JsonObjectWrapper);
         return ObjectFromJsonObject(WorldContextObject, ObjectClass, JsonObjectWrapper);
     }
 
@@ -651,7 +654,9 @@ public:
     {
         if (!Target)return nullptr;
         FJsonObjectWrapper JsonObjectWrapper = FJsonObjectWrapper();
-        UJsonBlueprintFunctionLibrary::FromFile(FFilePath(FilePath),JsonObjectWrapper);
+        FFilePath FilePathStruct;
+        FilePathStruct.FilePath = FilePath;
+        UJsonBlueprintFunctionLibrary::FromFile(FilePathStruct,JsonObjectWrapper);
        
         // Iterar sobre as propriedades do objeto
         for (TFieldIterator<FProperty> PropIt(Target->GetClass()); PropIt; ++PropIt)
