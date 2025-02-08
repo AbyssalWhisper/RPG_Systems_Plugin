@@ -50,7 +50,12 @@ bool URPG_BaseMovementModeTransition::HasInputTags(const FSimulationTickParams& 
 
 AActor* URPG_BaseMovementModeTransition::GetOwner() const
 {
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 5
+	return Cast<UMoverComponent>(GetOuter()->GetOuter())->GetOwner();
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
 	return GetMoverComponent()->GetOwner();
+#endif
+	
 }
 
 

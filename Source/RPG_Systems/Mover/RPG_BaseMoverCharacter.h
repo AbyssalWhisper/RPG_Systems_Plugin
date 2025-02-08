@@ -183,13 +183,7 @@ public:
 
 #pragma endregion 
 
-
-	/**
-	 * If true, the actor will remain vertical despite any rotation applied to the actor
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MoverExamples)
-	bool bShouldRemainVertical = true;
-
+	
 	/**
 	 * If true, the actor will continue orienting towards the last intended orientation (from input) even after movement intent input has ceased.
 	 * This makes the character finish orienting after a quick stick flick from the player.  If false, character will not turn without input.

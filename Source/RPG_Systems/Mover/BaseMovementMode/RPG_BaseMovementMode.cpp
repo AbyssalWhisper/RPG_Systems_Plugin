@@ -43,7 +43,11 @@ EDataValidationResult URPG_BaseMovementMode::IsDataValid(FDataValidationContext&
 }
 #endif // WITH_EDITOR
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 5
+void URPG_BaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
 void URPG_BaseMovementMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
+#endif
 {
  
 const UMoverComponent* MoverComp = GetMoverComponent();
@@ -121,8 +125,12 @@ void URPG_BaseMovementMode::CaptureFinalState(USceneComponent* UpdatedComponent,
 	UpdatedComponent->ComponentVelocity = FinalVelocity;
 }
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 5
+void URPG_BaseMovementMode::OnGenerateMove(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const
+#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
 void URPG_BaseMovementMode::GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep,
-                                           FProposedMove& OutProposedMove) const
+										   FProposedMove& OutProposedMove) const
+#endif
 {
  
 
@@ -167,6 +175,7 @@ void URPG_BaseMovementMode::GenerateMove_Implementation(const FMoverTickStartDat
 	Params.DeltaSeconds = DeltaSeconds;
 
 	OutProposedMove = UAirMovementUtils::ComputeControlledFreeMove(Params);
+	
 }
 
 void URPG_BaseMovementMode::OnRegistered(const FName ModeName)
@@ -219,9 +228,11 @@ FFreeMoveParams URPG_BaseMovementMode::MakeFreeMoveParams(EMoveInputType MoveInp
 	Params.TurningBoost = TurningBoost;
 	Params.TurningRate = TurningRate;
 	Params.DeltaSeconds = DeltaSeconds;
+	
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
 	Params.WorldToGravityQuat = WorldToGravityQuat;
 	Params.bUseAccelerationForVelocityMove = bUseAccelerationForVelocityMove;
-
+#endif
 	return Params;
 }
 
@@ -261,9 +272,18 @@ FFloorCheckResult URPG_BaseMovementMode::GetCurrentFloor() const
 	// If we don't have cached floor information, we need to search for it again
 	if (!SimBlackboard->TryGet(CommonBlackboard::LastFloorResult, CurrentFloor))
 	{
-		UFloorQueryUtils::FindFloor(MovingComponents, CommonLegacySettings->FloorSweepDistance, CommonLegacySettings->MaxWalkSlopeCosine, GetMoverComponent()->GetUpdatedComponent()->GetComponentLocation(), CurrentFloor);
-	}
+	#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 5
+		UFloorQueryUtils::FindFloor(MovingComponents.UpdatedComponent.Get()
+			,MovingComponents.UpdatedPrimitive.Get(),
+			CommonLegacySettings->FloorSweepDistance,
+			CommonLegacySettings->MaxWalkSlopeCosine,
+			GetMoverComponent()->GetUpdatedComponent()->GetComponentLocation(),
+			CurrentFloor);
+	#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
+				UFloorQueryUtils::FindFloor(MovingComponents, CommonLegacySettings->FloorSweepDistance, CommonLegacySettings->MaxWalkSlopeCosine, GetMoverComponent()->GetUpdatedComponent()->GetComponentLocation(), CurrentFloor);
+		#endif
 
+	}
 	return CurrentFloor;
 }
 
