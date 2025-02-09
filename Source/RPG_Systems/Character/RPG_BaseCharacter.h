@@ -139,7 +139,7 @@ public:
 		void SetMovementState(const E_WalkMovementStates SetMovementState);
 
 	UFUNCTION(BlueprintCallable, Category = "CharacterBase")
-		void GiveAbility(TSubclassOf<URPG_GameplayAbility> Ability);
+		void GiveAbilityWithInput(TSubclassOf<URPG_GameplayAbility> Ability, UInputAction* Input);
 
 	virtual void Landed(const FHitResult& Hit) override;
 

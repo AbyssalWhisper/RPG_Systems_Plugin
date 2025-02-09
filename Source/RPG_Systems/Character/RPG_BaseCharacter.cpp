@@ -65,6 +65,7 @@ void ARPG_BaseCharacter::BeginPlay()
 		}
 	}
 
+	/*
 	if (!CharacterData)return;
 
 	//InitStats();
@@ -90,7 +91,7 @@ void ARPG_BaseCharacter::BeginPlay()
 				FGameplayAbilitySpec(StartupAbility, 1));
 		}
 	}
-
+	*/
 }
 
 // Called every frame
@@ -218,16 +219,18 @@ void ARPG_BaseCharacter::SetMovementState(const E_WalkMovementStates SetMovement
 	MovementStates = SetMovementState;
 }
 
-void ARPG_BaseCharacter::GiveAbility(TSubclassOf<URPG_GameplayAbility> Ability)
+void ARPG_BaseCharacter::GiveAbilityWithInput(TSubclassOf<URPG_GameplayAbility> Ability, UInputAction* Input)
 {
-	AbilitySystemComp->GiveAbility(
-		FGameplayAbilitySpec(Ability, 1));
+	AbilitySystemComp->GiveAbilityWithInputAction(
+		Ability,Input);
 }
 
 void ARPG_BaseCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	if (!AbilitySystemComp)return;
+	if (!CharacterData)return;
+	
 	float FallVelocity = GetVelocity().Z;
 	if (FallVelocity < CharacterData->FallVelocityInitDamage)
 	{
