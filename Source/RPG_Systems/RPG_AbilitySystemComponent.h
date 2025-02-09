@@ -55,6 +55,8 @@ public:
 	TArray<TSubclassOf<UAttributeSet>> AttributeSetsClass;
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Attributes")
 	TMap<FGameplayAttribute, float> AttributeBaseValues;
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Attributes")
+	TMap<TSubclassOf<URPG_GameplayAbility>,UInputAction*> Abilities;
 
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	void AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass);

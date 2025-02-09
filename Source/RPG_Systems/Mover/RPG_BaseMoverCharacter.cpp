@@ -193,8 +193,6 @@ void ARPG_BaseMoverCharacter::BeginPlay()
 		}
 		
 	}
-
-	
 }
 
 
@@ -208,8 +206,10 @@ void ARPG_BaseMoverCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Setup some bindings - we are currently using Enhanced Input and just using some input actions assigned in editor for simplicity
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		/*
 		if (PlayerAbilitiesDataAsset)
 		{
 			const TSet<FGameplayInputAbilityInfo>& InputAbilities = PlayerAbilitiesDataAsset->GetInputAbilities();
@@ -217,22 +217,15 @@ void ARPG_BaseMoverCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 			{
 				if (It.IsValid())
 				{
-					const UInputAction* InputAction = It.InputAction;
-					const int32 InputID = It.InputID;
-					UBetterUtilities::DebugLog("Binding InputAction: " + InputAction->GetFName().ToString() + " with ID: " + FString::FromInt(InputID));
-					EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Started, this, &ARPG_BaseMoverCharacter::OnAbilityInputPressed, InputID);
-					EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &ARPG_BaseMoverCharacter::OnAbilityInputReleased, InputID);
+					UInputAction* InputAction = It.InputAction;
+					
+					UBetterUtilities::DebugLog("Binding InputAction: " + InputAction->GetFName().ToString());
+					AbilitySystemComp->GiveAbilityWithInputAction(It.GameplayAbilityClass, InputAction);
 				}
 			}
-		}
+		}*/
 	}
 	
-	// Setup some bindings - we are currently using Enhanced Input and just using some input actions assigned in editor for simplicity
-	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-
-
-	}
 }
 
 

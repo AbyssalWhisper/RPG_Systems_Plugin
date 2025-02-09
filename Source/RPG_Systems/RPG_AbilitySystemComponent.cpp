@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RPG_AbilitySystemComponent.h"
+#include "RPG_Systems/RPG_AbilitySystemComponent.h"
 
 #include "BetterUtilitiesBPLibrary.h"
 #include "RPG_SystemsDeveloperSettings.h"
@@ -121,6 +121,11 @@ void URPG_AbilitySystemComponent::BeginPlay()
 	{
 		SetAttributeBaseValue(Element.Key,Element.Value);
 	}
+	for (auto Element : Abilities)
+	{
+		GiveAbilityWithInputAction(Element.Key,Element.Value);
+	}
+	
 }
 
 void URPG_AbilitySystemComponent::AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass)
@@ -145,7 +150,7 @@ void URPG_AbilitySystemComponent::SetAttributeBaseValue(FGameplayAttribute Attri
 
 void URPG_AbilitySystemComponent::RemoveAbility(TSubclassOf<URPG_GameplayAbility> AbilityClass)
 {
-	if(!GetOwner()->HasAuthority())return;
+	if(!GetOwnerActor()->HasAuthority())return;
 	
 	if (AbilityClass)
 	{
@@ -175,10 +180,9 @@ void URPG_AbilitySystemComponent::GiveAbilityWithInputAction(TSubclassOf<URPG_Ga
 		InputId = Settings->AbilitiesInputActions.Array().Find(Input);
 		
 	}
-	if (AbilityClass && Input)
+	if (AbilityClass)
 	{
 		//UBetterUtilities::DebugLog("GiveAbilityWithInputAction: " + resultTag->GetTagName().ToString());
 		FGameplayAbilitySpecHandle AbilityHandle = GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, InputId));
-		
 	}
 }
