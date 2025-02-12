@@ -39,6 +39,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = Mover)
 	virtual bool IsClimbing() const;
 
+	
+
 #pragma region InstantMovementEffects
 	
 #pragma endregion 

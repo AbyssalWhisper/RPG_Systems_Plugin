@@ -47,8 +47,12 @@ void ARPG_BaseMoverCharacter::TryJump()
 	bIsJumpJustPressed = !bIsJumpPressed;
 	bIsJumpPressed = true;
 }
- 
 
+
+void ARPG_BaseMoverCharacter::ProduceInput_Implementation(int32 SimTimeMs, FMoverInputCmdContext& InputCmdResult)
+{
+	InputCmdResult = OnProduceInputInBlueprint(SimTimeMs,InputCmdResult);
+}
 
 ARPG_BaseMoverCharacter::ARPG_BaseMoverCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass("MoverComponent", URPG_CharacterMoverComponent::StaticClass()))
 	 
@@ -58,7 +62,9 @@ ARPG_BaseMoverCharacter::ARPG_BaseMoverCharacter(const FObjectInitializer& Objec
 	AbilitySystemComp->SetIsReplicated(true);
 	AttributesSet = CreateDefaultSubobject<URPG_BaseAttributeSet>("PlayerAttributes");
 
-
+	CharacterMoverComponent = CreateDefaultSubobject<URPG_CharacterMoverComponent>("CharacterMoverComponent");
+	CharacterMoverComponent->SetIsReplicated(true);
+	
 	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComp");
 	CapsuleComp->SetCollisionProfileName("BlockAll");
 	RootComponent = CapsuleComp;
@@ -89,15 +95,15 @@ UAbilitySystemComponent* ARPG_BaseMoverCharacter::GetAbilitySystemComponent() co
 }
 
 #pragma region GameplayTags
-void ARPG_BaseMoverCharacter::AddGameplayTag(FGameplayTag TagToAdd)
+void ARPG_BaseMoverCharacter::AddGameplayTag(FGameplayTag TagToAdd, int Count)
 {
 	GetAbilitySystemComponent()->AddLooseGameplayTag(TagToAdd);
-	GetAbilitySystemComponent()->SetTagMapCount(TagToAdd, 1);
+	GetAbilitySystemComponent()->SetTagMapCount(TagToAdd, Count);
 }
 
-void ARPG_BaseMoverCharacter::RemoveGameplayTag(FGameplayTag TagToRemove)
+void ARPG_BaseMoverCharacter::RemoveGameplayTag(FGameplayTag TagToRemove, int Count)
 {
-	GetAbilitySystemComponent()->RemoveLooseGameplayTag(TagToRemove);
+	GetAbilitySystemComponent()->RemoveLooseGameplayTag(TagToRemove,Count);
 
 }
 #pragma endregion
@@ -119,7 +125,6 @@ void ARPG_BaseMoverCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 void ARPG_BaseMoverCharacter::PawnClientRestart()
 {
 	Super::PawnClientRestart();
-
 	if (Controller)
 	{
 		if (auto PlayerController = Cast<APlayerController>(Controller))
@@ -129,6 +134,13 @@ void ARPG_BaseMoverCharacter::PawnClientRestart()
 				Subsystem->ClearAllMappings();
 				Subsystem->AddMappingContext(DefaultMappingContext, 0);
 			}
+			CurrentPlayerController = PlayerController;
+			CurrentPlayerController->PlayerCameraManager->ViewPitchMax = 89.0f;
+			CurrentPlayerController->PlayerCameraManager->ViewPitchMin = -89.0f;
+		}
+		else
+		{
+			CurrentPlayerController = nullptr;
 		}
 	}
 }
@@ -138,24 +150,11 @@ void ARPG_BaseMoverCharacter::PawnClientRestart()
 // Called every frame
 void ARPG_BaseMoverCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	//Super::Tick(DeltaTime);
 
-	// Do whatever you want here. By now we have the latest movement state and latest input processed.
-
-
-	// Spin camera based on input
-	if (APlayerController* PC = Cast<APlayerController>(Controller))
-	{
-		// Simple input scaling. A real game will probably map this to an acceleration curve
-		static float LookRateYaw = 100.f;	// degs/sec
-		static float LookRatePitch = 100.f;	// degs/sec
-
-		PC->AddYawInput(CachedLookInput.Yaw * LookRateYaw * DeltaTime);
-		PC->AddPitchInput(-CachedLookInput.Pitch * LookRatePitch * DeltaTime);
-	}
-
-	// Clear all camera-related cached input
+	UpdateCameraRotation(DeltaTime);
 	CachedLookInput = FRotator::ZeroRotator;
+	
 	{
 		/*
 		if (CharacterMotionComponent->GetMovementModeName() == DefaultModeNames::Walking) {
@@ -170,7 +169,6 @@ void ARPG_BaseMoverCharacter::Tick(float DeltaTime)
 		}*/
 	}
 	
-
 }
 
 void ARPG_BaseMoverCharacter::BeginPlay()
@@ -178,11 +176,7 @@ void ARPG_BaseMoverCharacter::BeginPlay()
 	Super::BeginPlay(); 
 
 
-	if (APlayerController* PC = Cast<APlayerController>(Controller))
-	{
-		PC->PlayerCameraManager->ViewPitchMax = 89.0f;
-		PC->PlayerCameraManager->ViewPitchMin = -89.0f;
-	}
+	
 
 	if (PlayerAbilitiesDataAsset)
 	{
@@ -195,11 +189,28 @@ void ARPG_BaseMoverCharacter::BeginPlay()
 	}
 }
 
-
+FVector2f ARPG_BaseMoverCharacter::GetCameraInput_Implementation()
+{
+	return FVector2f(CachedLookInput.Yaw, -CachedLookInput.Pitch);
+}
 
 
 
 #pragma region Input
+void ARPG_BaseMoverCharacter::UpdateCameraRotation(float DeltaTime)
+{
+	if (CurrentPlayerController)
+	{
+		FVector2f CameraInput = GetCameraInput();// Simple input scaling. A real game will probably map this to an acceleration curve
+
+		static float LookRateYaw = 100.f;	// degs/sec
+		static float LookRatePitch = 100.f;	// degs/sec
+
+		CurrentPlayerController->AddYawInput(CameraInput.X * LookRateYaw * DeltaTime);
+		CurrentPlayerController->AddPitchInput(CameraInput.Y * LookRatePitch * DeltaTime);
+		
+	}
+}
 
 // Called to bind functionality to input
 void ARPG_BaseMoverCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -226,6 +237,11 @@ void ARPG_BaseMoverCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 		}*/
 	}
 	
+}
+
+URPG_CharacterMoverComponent* ARPG_BaseMoverCharacter::GetMoverComponent() const
+{
+	return CharacterMoverComponent;
 }
 
 
