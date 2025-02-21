@@ -46,8 +46,18 @@ struct RPG_SYSTEMS_API FRPG_MoverInputTags : public FMoverDataStructBase
 	{
 		Super::ToString(Out);
 	}
-
+	bool operator==(const FRPG_MoverInputTags& Other) const
+	{
+		return Tags == Other.Tags;
+			
+	}
+	bool operator!=(const FRPG_MoverInputTags& Other) const { return !operator==(Other); }
+	
+	
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override { Super::AddReferencedObjects(Collector); }
+	virtual bool ShouldReconcile(const FMoverDataStructBase& AuthorityState) const override;
+	virtual void Interpolate(const FMoverDataStructBase& From, const FMoverDataStructBase& To, float Pct) override;
+	virtual void Merge(const FMoverDataStructBase& From) override;
 };
 
 template<>
@@ -93,8 +103,17 @@ public:
 	{
 		Super::ToString(Out);
 	}
-
+	bool operator==(const FRPG_RawInput& Other) const
+	{
+		return MoveInput == Other.MoveInput;
+			
+	}
+	bool operator!=(const FRPG_RawInput& Other) const { return !operator==(Other); }
+	
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override { Super::AddReferencedObjects(Collector); }
+	virtual bool ShouldReconcile(const FMoverDataStructBase& AuthorityState) const override;
+	virtual void Interpolate(const FMoverDataStructBase& From, const FMoverDataStructBase& To, float Pct) override;
+	virtual void Merge(const FMoverDataStructBase& From) override;
 };
 
 template<>

@@ -10,6 +10,42 @@
 #include "Chaos/DebugDrawQueue.h"
 #include "MoverComponent.h"
 
+
+bool FRPG_MoverInputTags::ShouldReconcile(const FMoverDataStructBase& AuthorityState) const
+{
+	const FRPG_MoverInputTags& TypedAuthority = static_cast<const FRPG_MoverInputTags&>(AuthorityState);
+	return *this != TypedAuthority;
+}
+
+void FRPG_RawInput::Interpolate(const FMoverDataStructBase& From, const FMoverDataStructBase& To, float Pct)
+{
+	const FRPG_RawInput& TypedFrom = static_cast<const FRPG_RawInput&>(From);
+	const FRPG_RawInput& TypedTo = static_cast<const FRPG_RawInput&>(To);
+	
+	MoveInput = FMath::Lerp(TypedFrom.MoveInput, TypedTo.MoveInput, Pct);
+}
+
+void FRPG_MoverInputTags::Interpolate(const FMoverDataStructBase& From, const FMoverDataStructBase& To, float Pct)
+{
+	
+}
+
+void FRPG_MoverInputTags::Merge(const FMoverDataStructBase& From)
+{
+	
+}
+
+bool FRPG_RawInput::ShouldReconcile(const FMoverDataStructBase& AuthorityState) const
+{
+	const FRPG_RawInput& TypedAuthority = static_cast<const FRPG_RawInput&>(AuthorityState);
+	return *this != TypedAuthority;
+}
+
+void FRPG_RawInput::Merge(const FMoverDataStructBase& From)
+{
+	
+}
+
 void UMoverFunctionLibrary::SetTransforms_WorldSpace(FMoverTickEndData& OutputState, FVector WorldLocation,
                                                      FRotator WorldOrient, FVector WorldVelocity, UPrimitiveComponent* Base, FName BaseBone)
 {

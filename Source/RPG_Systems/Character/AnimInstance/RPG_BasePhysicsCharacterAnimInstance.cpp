@@ -3,9 +3,13 @@
 
 #include "RPG_Systems/Character/AnimInstance/RPG_BasePhysicsCharacterAnimInstance.h"
 
+#include "Animation/TrajectoryTypes.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/MovementComponent.h"
+#include "MoveLibrary/MovementUtils.h"
 #include "RPG_Systems/Character/RPG_CharacterDataAsset.h"
+#include "RPG_Systems/Mover/BaseMovementMode/RPG_BaseMovementMode.h"
 #include "RPG_Systems/Mover/MovementComponents/RPG_CharacterMoverComponent.h"
 
 
@@ -32,9 +36,9 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 	//bIsStunned = RefCharacter->GetAbilitySystemComponent()->HasMatchingGameplayTag(RefCharacter->StunTag);
 	
 	bIsFalling = RefCharacter->GetMoverComponent()->IsFalling();
-	//bIsSwimming = RefCharacter->GetMoverComponent()->IsSwimming();
+	bIsSwimming = RefCharacter->GetMoverComponent()->IsSwimming();
 	bIsJumping = RefCharacter->GetMoverComponent()->IsFalling();
-	//bIsFlying = RefCharacter->GetMoverComponent()->IsFlying();
+	bIsFlying = RefCharacter->GetMoverComponent()->IsFlying();
 	bIsOnGround = RefCharacter->GetMoverComponent()->IsOnGround();
 	
 	if (bIsFalling) FallingVelocity = RefCharacter->GetMoverComponent()->GetVelocity().Z;
@@ -101,12 +105,34 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 			StandingPlayRate = FMath::Min(L_Rate, MaxPlayRate);
 		}
 		*/
-	
+		
 }
 
 void URPG_BasePhysicsCharacterAnimInstance::GetCharacter()
 {
 	RefCharacter = Cast<ARPG_BaseMoverCharacter>(TryGetPawnOwner());
+}
+
+FTransformTrajectory URPG_BasePhysicsCharacterAnimInstance::GetTrajectory(FMoverPredictTrajectoryParams TrajectoryParams)
+{
+	if (RefCharacter && RefCharacter->GetMoverComponent())
+	{
+		
+		URPG_CharacterMoverComponent* Mover = RefCharacter->GetMoverComponent();
+		
+		TArray<FTrajectorySampleInfo> TrajectorySampleInfos = RefCharacter->GetMoverComponent()->GetFutureTrajectory(1,30);
+		FTransformTrajectory Trajectory;
+		Trajectory.Samples.SetNum(TrajectorySampleInfos.Num());
+		int Size = TrajectorySampleInfos.Num();
+		
+		for (int i = 0; i < Size; ++i)
+		{
+			Trajectory.Samples[i].SetTransform(TrajectorySampleInfos[i].Transform);
+			Trajectory.Samples[i].TimeInSeconds = 0.001f * TrajectorySampleInfos[i].SimTimeMs;
+		}
+		return Trajectory;
+	}
+	return FTransformTrajectory();
 }
 
 

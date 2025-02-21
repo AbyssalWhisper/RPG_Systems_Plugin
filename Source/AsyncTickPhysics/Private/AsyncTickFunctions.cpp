@@ -110,6 +110,8 @@ FTransform UAsyncTickFunctions::ATP_GetTransform(UPrimitiveComponent* Component)
 	return Component ? Component->GetComponentTransform() : FTransform();
 }
 
+
+
 FVector UAsyncTickFunctions::ATP_GetLinearVelocity(UPrimitiveComponent* Component, FName BoneName)
 {
 	if (const Chaos::FRigidBodyHandle_Internal* RigidHandle = GetInternalHandle(Component, BoneName))

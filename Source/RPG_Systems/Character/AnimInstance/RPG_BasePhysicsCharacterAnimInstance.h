@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MoverSimulationTypes.h"
 #include "Animation/AnimInstance.h"
 #include "RPG_Systems/Character/RPG_CharacterLibrary.h"
 #include "RPG_Systems/Character/RPG_CharacterDataAsset.h"
@@ -67,4 +68,7 @@ public:
 		bool bIsOnGround;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsDedicatedServer;
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	FTransformTrajectory GetTrajectory(FMoverPredictTrajectoryParams TrajectoryParams);
 };
