@@ -61,10 +61,6 @@
 		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true
-		},
-		{
-			"Name": "AsyncTickPhysics",
-			"Enabled": true
 		}
 	]
 }

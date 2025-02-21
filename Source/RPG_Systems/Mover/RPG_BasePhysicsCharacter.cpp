@@ -20,8 +20,6 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "Backends/MoverNetworkPhysicsLiaison.h"
-#include "RPG_Systems/Mover/BaseMovementMode/PhysicsDrivenClimbMode.h"
-
 
 #include "PhysicsMover/Modes/PhysicsDrivenWalkingMode.h"
 #include "PhysicsMover/Modes/PhysicsDrivenFallingMode.h"
@@ -104,7 +102,7 @@ void ARPG_BasePhysicsCharacter::OnProduceInput(float DeltaMs, FMoverInputCmdCont
 
 	if (bUsingInputIntentForMove && bHasAffirmativeMoveInput)
 	{
-		//Verifica se deve rotacionar para a direção do movimento 
+		//Verifica se deve rotacionar para a direï¿½ï¿½o do movimento 
 		if (bOrientRotationToMovement && !IsClimbing())
 		{
 			// set the intent to the actors movement direction
