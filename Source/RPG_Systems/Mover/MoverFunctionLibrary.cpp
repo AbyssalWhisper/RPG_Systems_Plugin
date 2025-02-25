@@ -167,7 +167,7 @@ void UMoverFunctionLibrary::AddRawInput(FMoverDataCollection& Collection, FRPG_R
 	
 }
 
-FRPG_RawInput UMoverFunctionLibrary::GetRawInput(FMoverDataCollection& Collection)
+FRPG_RawInput UMoverFunctionLibrary::GetRawInput(const FMoverDataCollection& Collection)
 {
 	const FRPG_RawInput* Input = Collection.FindDataByType<FRPG_RawInput>();
 	if (Input)

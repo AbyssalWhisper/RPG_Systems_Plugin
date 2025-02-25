@@ -166,6 +166,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void AddRawInput(UPARAM(Ref) FMoverDataCollection& Collection,FRPG_RawInput RawInput);
 	UFUNCTION(BlueprintCallable,BlueprintPure)
-	static FRPG_RawInput GetRawInput(UPARAM(Ref) FMoverDataCollection& Collection);
+	static FRPG_RawInput GetRawInput(UPARAM(Ref) const FMoverDataCollection& Collection);
 
 };
