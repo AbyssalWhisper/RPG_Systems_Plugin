@@ -1,5 +1,6 @@
 // Some copyright should be here...
 
+using System.IO;
 using UnrealBuildTool;
 
 public class RPG_Systems : ModuleRules
@@ -7,16 +8,21 @@ public class RPG_Systems : ModuleRules
 	public RPG_Systems(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		string EngineSourceDirectory = Path.GetFullPath(Target.RelativeEnginePath);
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
+				Path.Combine(ModuleDirectory, "Shaders", "Private")
 			}
 			);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
+				System.IO.Path.Combine(GetModuleDirectory("Engine"), "Private"),
+				Path.Combine(EngineSourceDirectory, "Source/Runtime/Engine/Private/Materials")
+			
 				// ... add other private include paths required here ...
 			}
 			);
@@ -31,7 +37,8 @@ public class RPG_Systems : ModuleRules
                 , "BetterUtilities", "Mover","Chaos","InputCore",
                 "EnhancedInput","AsyncTickPhysics","MoverExamples",
                 "OnlineSubsystem","JsonBlueprintUtilities","NetCore"
-                ,"Networking"
+                ,"Networking","ShaderCompilerCommon",
+                "MaterialUtilities","MaterialBaking","MaterialX","OnlineSubsystem"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -46,7 +53,8 @@ public class RPG_Systems : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore","DeveloperSettings"
+				"SlateCore","RenderCore","Renderer",
+				"RHI","DeveloperSettings"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

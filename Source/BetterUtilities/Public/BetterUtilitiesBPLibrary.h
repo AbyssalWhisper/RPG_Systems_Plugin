@@ -691,7 +691,31 @@ public:
         return Target;
         
     }
-    
+
+    UFUNCTION(BlueprintCallable)
+    static TArray<UClass*> GetAllSubclassesOf(UClass* BaseClass)
+    {
+        TArray<UClass*> Subclasses;
+
+        for (TObjectIterator<UClass> It; It; ++It)
+        {
+            UClass* CurrentClass = *It;
+
+            // Pula classes abstratas e interfaces
+            if (CurrentClass->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated))
+            {
+                continue;
+            }
+
+            // Verifica se herda da base
+            if (CurrentClass->IsChildOf(BaseClass))
+            {
+                Subclasses.Add(CurrentClass);
+            }
+        }
+
+        return Subclasses;
+    }
 };
 
 template<typename T>
@@ -723,4 +747,7 @@ inline void UBetterUtilities::LoadAssetAsync(TSoftObjectPtr<T> AssetPtr, TFuncti
                 UBetterUtilities::DebugLog(TEXT("Failed to load asset."), EEasylog::Warning);
             }
         });
+    
 }
+
+

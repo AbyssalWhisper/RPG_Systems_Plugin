@@ -16,7 +16,14 @@ private:
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(blueprintReadWrite, EditAnywhere)
+	bool bAutoLoadAndApplySettings = true;
+
+	
 	virtual void Init() override;
+	
+
+	void LoadAndApplySettings();
 
 	virtual void HandleNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 	UFUNCTION(BlueprintNativeEvent, Category = "Network")

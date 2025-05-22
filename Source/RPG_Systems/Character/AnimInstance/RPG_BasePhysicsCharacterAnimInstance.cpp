@@ -120,7 +120,7 @@ FTransformTrajectory URPG_BasePhysicsCharacterAnimInstance::GetTrajectory(FMover
 		
 		URPG_CharacterMoverComponent* Mover = RefCharacter->GetMoverComponent();
 		
-		TArray<FTrajectorySampleInfo> TrajectorySampleInfos = RefCharacter->GetMoverComponent()->GetFutureTrajectory(1,30);
+		TArray<FTrajectorySampleInfo> TrajectorySampleInfos = RefCharacter->GetMoverComponent()->GetPredictedTrajectory(TrajectoryParams);
 		FTransformTrajectory Trajectory;
 		Trajectory.Samples.SetNum(TrajectorySampleInfos.Num());
 		int Size = TrajectorySampleInfos.Num();

@@ -13,6 +13,9 @@ namespace RPG_MovementModes
 	const FName Crouch = TEXT("Crouch");
 }
 
+ UE_DECLARE_GAMEPLAY_TAG_EXTERN(Mover_IsClimbing);
+
+
 USTRUCT(BlueprintType)
 struct RPG_SYSTEMS_API FRPG_MoverInputTags : public FMoverDataStructBase
 {

@@ -7,7 +7,8 @@
 void FRPG_SystemsModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	
+	FString ShaderDir = FPaths::Combine(FPaths::ProjectPluginsDir(), TEXT("RPG_Systems/Shaders"));
+	AddShaderSourceDirectoryMapping("/RPG_Systems", ShaderDir);
 }
 
 void FRPG_SystemsModule::ShutdownModule()

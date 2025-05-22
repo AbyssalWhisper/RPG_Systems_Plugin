@@ -6,6 +6,7 @@
 #include "PhysicsMover/Modes/PhysicsDrivenWalkingMode.h"
 #include "PhysicsMover/Modes/PhysicsDrivenSwimmingMode.h"
 #include "Backends/MoverNetworkPhysicsLiaison.h"
+#include "RPG_Systems/Mover/MoverFunctionLibrary.h"
 
 URPG_CharacterMoverComponent::URPG_CharacterMoverComponent()
 {
@@ -59,15 +60,6 @@ bool URPG_CharacterMoverComponent::TeleportImmediately(const FVector& Location, 
 	return bSuccessfullyWrote;
 }
 
-TObjectPtr<UBaseMovementMode> URPG_CharacterMoverComponent::GetCurrentMovementMode()
-{
-	if (bHasValidCachedState)
-	{
-		
-		return MovementModes.Find(CachedLastSyncState.MovementMode)->Get();
-	}
-	return nullptr;
-}
 
 void URPG_CharacterMoverComponent::OnHandleImpact(const FMoverOnImpactParams& ImpactParams)
 {
@@ -87,10 +79,5 @@ void URPG_CharacterMoverComponent::OnHandleImpact(const FMoverOnImpactParams& Im
 
 bool URPG_CharacterMoverComponent::IsClimbing() const
 {
-	if (bHasValidCachedState)
-	{
-		return CachedLastSyncState.MovementMode == DefaultModeNames::Swimming;
-	}
-
-	return false;
+	return HasGameplayTag(Mover_IsClimbing, true); 
 }

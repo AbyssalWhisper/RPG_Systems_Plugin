@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CharacterVariants/MoverExamplesPhysicsCharacterMoverComponent.h"
 #include "DefaultMovementSet/CharacterMoverComponent.h"
 #include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
+#include "Mover/Public/PhysicsMover/PhysicsCharacterMoverComponent.h"
+
 #include "RPG_CharacterMoverComponent.generated.h"
 
 
@@ -12,7 +15,7 @@
  * 
  */
 UCLASS(Blueprintable,BlueprintType,meta=(BlueprintSpawnableComponent))
-class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UCharacterMoverComponent
+class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UMoverExamplesPhysicsCharacterMoverComponent
 {
 	GENERATED_BODY()
 	
@@ -30,8 +33,7 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool TeleportImmediately(const FVector& Location, const FRotator& Orientation, const FVector& Velocity);
-	
-	virtual TObjectPtr<UBaseMovementMode> GetCurrentMovementMode();
+
 
 	/** Applies forces to physics objects on impact */
 	virtual void OnHandleImpact(const FMoverOnImpactParams& ImpactParams) override;

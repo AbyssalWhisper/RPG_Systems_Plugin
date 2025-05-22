@@ -11,6 +11,8 @@
 #include "MoverComponent.h"
 
 
+UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mover_IsClimbing, "Mover.IsClimbing", "IsClimbing.");
+
 bool FRPG_MoverInputTags::ShouldReconcile(const FMoverDataStructBase& AuthorityState) const
 {
 	const FRPG_MoverInputTags& TypedAuthority = static_cast<const FRPG_MoverInputTags&>(AuthorityState);
