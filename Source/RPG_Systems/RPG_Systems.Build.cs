@@ -13,7 +13,7 @@ public class RPG_Systems : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				Path.Combine(ModuleDirectory, "Shaders", "Private")
+				//Path.Combine(ModuleDirectory, "Shaders", "Private")
 			}
 			);
 				
@@ -37,8 +37,7 @@ public class RPG_Systems : ModuleRules
                 , "BetterUtilities", "Mover","Chaos","InputCore",
                 "EnhancedInput","AsyncTickPhysics","MoverExamples",
                 "OnlineSubsystem","JsonBlueprintUtilities","NetCore"
-                ,"Networking","ShaderCompilerCommon",
-                "MaterialUtilities","MaterialBaking","MaterialX","OnlineSubsystem"
+                ,"Networking","OnlineSubsystem"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

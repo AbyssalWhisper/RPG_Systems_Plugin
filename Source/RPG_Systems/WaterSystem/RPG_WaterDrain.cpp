@@ -89,17 +89,18 @@ void ARPG_WaterDrain::UpdateWater()
 {
 	float Alpha = CurrentWater / MaxWater;
 
+	FVector TargetLocation = GetActorLocation() + (this->GetActorUpVector() * GetActorScale3D().Z * (Alpha * 100));
 	BoxComponent->SetRelativeScale3D(FVector(1.f, 1.f, Alpha));
-	BoxComponent->SetWorldLocation(GetActorLocation() + (this->GetActorUpVector() * GetActorScale3D().Z * (Alpha * 100)));
+	BoxComponent->SetWorldLocation(TargetLocation);
 	FVector Scale = this->GetActorScale3D();
 	BoxComponent->SetWorldRotation(GetActorRotation());
 	PostProcess->SetRelativeScale3D(FVector(1.f, 1.f, Alpha));
-	PostProcess->SetWorldLocation(GetActorLocation() + (this->GetActorUpVector() * GetActorScale3D().Z * (Alpha * 100)));
+	PostProcess->SetWorldLocation(TargetLocation);
 	PostProcess->SetWorldRotation(GetActorRotation());
 	if (PhysicsVolume)
 	{
 		PhysicsVolume->SetActorScale3D(FVector(GetActorScale3D().X, GetActorScale3D().Y, GetActorScale3D().Z*Alpha));
-		PhysicsVolume->SetActorLocation(GetActorLocation() + (this->GetActorUpVector() * GetActorScale3D().Z * (Alpha * 100)));
+		PhysicsVolume->SetActorLocation(TargetLocation);
 		PhysicsVolume->SetActorRotation(GetActorRotation()); 
 
 	}
@@ -112,7 +113,7 @@ void ARPG_WaterDrain::UpdateWater()
 	{
 		if (Actors[i].Actor)
 		{
-			Actors[i].Actor->SetActorLocation(GetActorLocation() + (GetActorUpVector() * GetActorScale3D().Z * (Alpha * 100)) + Actors[i].OffSetLocation);
+			Actors[i].Actor->SetActorLocation(TargetLocation + Actors[i].OffSetLocation);
 			if (Actors[i].UpdateScale)
 			{
 				Actors[i].Actor->SetActorScale3D(FVector(Scale.X, Scale.Y, Scale.Z * Alpha) * Actors[i].OffSetScale);
