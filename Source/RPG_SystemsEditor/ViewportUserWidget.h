@@ -9,6 +9,9 @@
 #include "SEditorViewport.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/SOverlay.h"
+#include "Widgets/Input/SComboBox.h"
+#include "Widgets/Text/STextBlock.h"
+#include "AssetViewerSettings.h"
 #include "ViewportUserWidget.generated.h"
 
 class FViewportWidgetClient;
@@ -101,6 +104,31 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Viewport")
     int32 GetObjectCount() const;
 
+    UFUNCTION(blueprintCallable, Category = "Viewport")
+    void SetViewportProfile(const int ProfileIndex)
+    {
+        if (PreviewScene.IsValid())
+        {
+            PreviewScene->SetProfileIndex(ProfileIndex);
+        }
+    }
+
+    // Funções para gerenciar profiles do viewport (para combo box)
+    UFUNCTION(BlueprintCallable, Category = "Viewport")
+    TArray<FString> GetAllProfileNames() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Viewport")
+    int32 GetCurrentProfileIndex() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Viewport")
+    FString GetCurrentProfileName() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Viewport")
+    void SetViewportProfileByName(const FString& ProfileName);
+
+    UFUNCTION(BlueprintCallable, Category = "Viewport")
+    int32 GetProfileCount() const;
+
     // Propriedades editáveis no Blueprint
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Viewport Settings")
     bool bShowFloor = true;
@@ -113,6 +141,16 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Viewport Settings")
     FRotator InitialCameraRotation = FRotator(-15, -45, 0);
+
+    // Configurações do Combo Box de Profiles
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Profile Settings")
+    bool bShowProfileComboBox = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Profile Settings")
+    FVector2D ProfileComboBoxPosition = FVector2D(10.0f, 10.0f);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Profile Settings")
+    FVector2D ProfileComboBoxSize = FVector2D(200.0f, 30.0f);
 
     // Delegates para Blueprint
     UPROPERTY(BlueprintAssignable, Category = "Viewport Events")
@@ -131,11 +169,16 @@ private:
     TSharedPtr<FAdvancedPreviewScene> PreviewScene;
     TArray<TWeakObjectPtr<AActor>> SpawnedActors;
 
+    // Combo box integrado para profiles
+    TSharedPtr<SComboBox<TSharedPtr<FString>>> ProfileComboBox;
+    TArray<TSharedPtr<FString>> ProfileOptions;
+
     void InitializeViewport();
     void SpawnStaticMeshActor(UStaticMesh* Mesh, const FVector& Location, bool bEnablePhysics);
     FVector GetRandomSpawnLocation() const;
 
-    
+    // Funções do combo box
+    void InitializeProfileComboBox();
 };
 
 /**

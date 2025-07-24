@@ -142,6 +142,84 @@ void UViewportUserWidget::SpawnActorByClass(TSubclassOf<AActor> ActorClass, FVec
     SpawnedActors.Add(NewActor);
 }
 
+// Implementação das funções de profile para combo box
+TArray<FString> UViewportUserWidget::GetAllProfileNames() const
+{
+    TArray<FString> ProfileNames;
+    
+    UAssetViewerSettings* DefaultSettings = UAssetViewerSettings::Get();
+    if (DefaultSettings)
+    {
+        for (const auto& Profile : DefaultSettings->Profiles)
+        {
+            ProfileNames.Add(Profile.ProfileName);
+        }
+    }
+    
+    // Se não houver profiles, adicionar um padrão
+    if (ProfileNames.Num() == 0)
+    {
+        ProfileNames.Add(TEXT("Default"));
+    }
+    
+    return ProfileNames;
+}
+
+int32 UViewportUserWidget::GetCurrentProfileIndex() const
+{
+    if (PreviewScene.IsValid())
+    {
+        return PreviewScene->GetCurrentProfileIndex();
+    }
+    return 0;
+}
+
+FString UViewportUserWidget::GetCurrentProfileName() const
+{
+    if (PreviewScene.IsValid())
+    {
+        UAssetViewerSettings* DefaultSettings = UAssetViewerSettings::Get();
+        if (DefaultSettings)
+        {
+            int32 CurrentProfile = PreviewScene->GetCurrentProfileIndex();
+            if (DefaultSettings->Profiles.IsValidIndex(CurrentProfile))
+            {
+                return DefaultSettings->Profiles[CurrentProfile].ProfileName;
+            }
+        }
+    }
+    return TEXT("Default");
+}
+
+void UViewportUserWidget::SetViewportProfileByName(const FString& ProfileName)
+{
+    if (!PreviewScene.IsValid())
+        return;
+        
+    UAssetViewerSettings* DefaultSettings = UAssetViewerSettings::Get();
+    if (DefaultSettings)
+    {
+        for (int32 i = 0; i < DefaultSettings->Profiles.Num(); i++)
+        {
+            if (DefaultSettings->Profiles[i].ProfileName == ProfileName)
+            {
+                PreviewScene->SetProfileIndex(i);
+                break;
+            }
+        }
+    }
+}
+
+int32 UViewportUserWidget::GetProfileCount() const
+{
+    UAssetViewerSettings* DefaultSettings = UAssetViewerSettings::Get();
+    if (DefaultSettings)
+    {
+        return DefaultSettings->Profiles.Num();
+    }
+    return 0;
+}
+
 TSharedRef<SWidget> UViewportUserWidget::RebuildWidget()
 {
     if (IsDesignTime()) 
@@ -164,6 +242,28 @@ TSharedRef<SWidget> UViewportUserWidget::RebuildWidget()
     [
         ViewportWidget.ToSharedRef()
     ];
+
+    // Adicionar combo box de profiles se habilitado
+    if (bShowProfileComboBox)
+    {
+        InitializeProfileComboBox();
+        
+        if (ProfileComboBox.IsValid())
+        {
+            OverlayWidget->AddSlot()
+            .HAlign(HAlign_Left)
+            .VAlign(VAlign_Top)
+            .Padding(ProfileComboBoxPosition.X, ProfileComboBoxPosition.Y, 0, 0)
+            [
+                SNew(SBox)
+                .WidthOverride(ProfileComboBoxSize.X)
+                .HeightOverride(ProfileComboBoxSize.Y)
+                [
+                    ProfileComboBox.ToSharedRef()
+                ]
+            ];
+        }
+    }
 
     // Adicionar widgets filhos sobre o viewport
     for (UPanelSlot* PanelSlot : Slots)
@@ -337,9 +437,68 @@ FVector UViewportUserWidget::GetRandomSpawnLocation() const
     );
 }
 
+// Implementação das funções do combo box de profiles
+void UViewportUserWidget::InitializeProfileComboBox()
+{
+    if (!ProfileComboBox.IsValid())
+    {
+        // Limpar opções anteriores
+        ProfileOptions.Empty();
+        
+        // Obter todos os nomes dos profiles
+        TArray<FString> ProfileNames = GetAllProfileNames();
+        
+        // Converter para TSharedPtr<FString> para uso no combo box
+        for (const FString& ProfileName : ProfileNames)
+        {
+            ProfileOptions.Add(MakeShareable(new FString(ProfileName)));
+        }
+        
+        // Criar o combo box usando lambdas ao invés de delegates
+        ProfileComboBox = SNew(SComboBox<TSharedPtr<FString>>)
+            .OptionsSource(&ProfileOptions)
+            .OnGenerateWidget_Lambda([](TSharedPtr<FString> InOption)
+            {
+                return SNew(STextBlock)
+                    .Text(FText::FromString(InOption.IsValid() ? *InOption : TEXT("Invalid")));
+            })
+            .OnSelectionChanged_Lambda([this](TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+            {
+                if (SelectedItem.IsValid() && SelectInfo != ESelectInfo::Direct)
+                {
+                    SetViewportProfileByName(*SelectedItem);
+                }
+            })
+            [
+                SNew(STextBlock)
+                .Text_Lambda([this]()
+                {
+                    return FText::FromString(GetCurrentProfileName());
+                })
+            ];
+        
+        // Definir seleção inicial
+        FString CurrentProfileName = GetCurrentProfileName();
+        for (const auto& Option : ProfileOptions)
+        {
+            if (Option.IsValid() && *Option == CurrentProfileName)
+            {
+                ProfileComboBox->SetSelectedItem(Option);
+                break;
+            }
+        }
+    }
+}
 void UViewportUserWidget::ReleaseSlateResources(bool bReleaseChildren)
 {
-    // 1. Limpar o ViewportClient primeiro para quebrar referências circulares
+    // 1. Limpar o ProfileComboBox
+    if (ProfileComboBox.IsValid())
+    {
+        ProfileComboBox.Reset();
+    }
+    ProfileOptions.Empty();
+
+    // 2. Limpar o ViewportClient primeiro para quebrar referências circulares
     if (ViewportWidget.IsValid())
     {
         TSharedPtr<FViewportWidgetClient> Client = StaticCastSharedPtr<FViewportWidgetClient>(ViewportWidget->GetViewportClient());
@@ -348,11 +507,9 @@ void UViewportUserWidget::ReleaseSlateResources(bool bReleaseChildren)
             // Desabilitar física e parar atualizações
             Client->SetPhysicsEnabled(false);
         }
-        
-       
     }
     
-    // 2. Limpar todos os atores spawned antes de destruir a cena
+    // 3. Limpar todos os atores spawned antes de destruir a cena
     if (PreviewScene.IsValid() && PreviewScene->GetWorld())
     {
         UWorld* World = PreviewScene->GetWorld();
@@ -367,20 +524,19 @@ void UViewportUserWidget::ReleaseSlateResources(bool bReleaseChildren)
         SpawnedActors.Empty();
     }
     
-    // 3. Liberar o widget da viewport (TSharedPtr)
+    // 4. Liberar o widget da viewport (TSharedPtr)
     if (ViewportWidget.IsValid())
     {
         ViewportWidget.Reset();
     }
     
-    // 4. Liberar a PreviewScene (TSharedPtr)
+    // 5. Liberar a PreviewScene (TSharedPtr)
     if (PreviewScene.IsValid())
     {
         PreviewScene.Reset();
     }
-
     
-    // 5. Chamar o método da classe pai para liberar recursos filhos
+    // 6. Chamar o método da classe pai para liberar recursos filhos
     Super::ReleaseSlateResources(bReleaseChildren);
 }
 

@@ -22,7 +22,8 @@ public class RPG_SystemsEditor : ModuleRules
                 "UnrealEd",
                 "Slate",
                 "SlateCore",
-                "AdvancedPreviewScene"
+                "AdvancedPreviewScene",
+                "InputCore",
             }
         );
     }
