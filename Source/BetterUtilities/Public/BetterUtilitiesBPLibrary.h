@@ -716,6 +716,13 @@ public:
 
         return Subclasses;
     }
+
+    // IsInGameThread
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+    static bool IsInGameThread_BP()
+    {
+        return IsInGameThread();
+    }
 };
 
 template<typename T>

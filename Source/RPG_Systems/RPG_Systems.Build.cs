@@ -51,6 +51,7 @@ public class RPG_Systems : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
+				"UMG",
 				"Slate",
 				"SlateCore","RenderCore","Renderer",
 				"RHI","DeveloperSettings"

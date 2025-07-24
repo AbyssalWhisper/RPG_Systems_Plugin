@@ -90,6 +90,13 @@ UInputAction* URPG_GameplayAbility::FindInputActionFromSettings(
 	
     const URPG_SystemsDeveloperSettings* Settings = GetDefault<URPG_SystemsDeveloperSettings>();
     {
+    	
+    	if (Spec.InputID > (Settings->AbilitiesInputActions.Num() - 1))
+    	{
+    		UBetterUtilities::DebugLog(GetPathName()+" Input ID is out of range");
+    		UBetterUtilities::DebugLog(GetPathName()+" Input ID: " + FString::FromInt(Spec.InputID));
+    		return nullptr;
+    	}
     	auto FoundAction = Settings->AbilitiesInputActions.Array()[Spec.InputID];
     	auto loadedAction = FoundAction.Get();
     	if (loadedAction)
