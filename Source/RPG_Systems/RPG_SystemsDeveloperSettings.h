@@ -18,8 +18,12 @@ class RPG_SYSTEMS_API URPG_SystemsDeveloperSettings : public UDeveloperSettings
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, config,NoClear, Category = "General Settings")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, config,NoClear, Category = "General Settings")
 	TSet<TSoftObjectPtr<UInputAction>> AbilitiesInputActions;
 	
-	
+	UFUNCTION(BlueprintCallable ,BlueprintPure,Category = "RPG Systems Settings")
+	static URPG_SystemsDeveloperSettings* GetRPGSystemsSettings()
+	{
+		return GetMutableDefault<URPG_SystemsDeveloperSettings>();
+	}
 };

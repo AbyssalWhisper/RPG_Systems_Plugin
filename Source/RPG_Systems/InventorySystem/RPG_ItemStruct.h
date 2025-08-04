@@ -89,15 +89,19 @@ public:
 		URPG_ItemData* Item;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int Count = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DecayTime = 0;
 
 	FSTR_RPG_ItemSlot() {
 		Item = nullptr;
 		Count = 0;
+		DecayTime = 0;
 	}
 
-	FSTR_RPG_ItemSlot(URPG_ItemData* Item_, int Count_) {
+	FSTR_RPG_ItemSlot(URPG_ItemData* Item_, int Count_, float DecayTime_) {
 		Item = Item_;
 		Count = Count_;
+		DecayTime = DecayTime_;
 	}
 };
 

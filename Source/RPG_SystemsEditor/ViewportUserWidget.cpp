@@ -128,18 +128,18 @@ void UViewportUserWidget::ClearContent()
 }
 
 
-
-void UViewportUserWidget::SpawnActorByClass(TSubclassOf<AActor> ActorClass, FVector Location, FRotator Rotation)
+AActor* UViewportUserWidget::SpawnActorByClass(TSubclassOf<AActor> ActorClass, FVector Location, FRotator Rotation)
 {
     if (!ActorClass || !PreviewScene.IsValid() || !PreviewScene->GetWorld())
-        return;
+        return nullptr;
     UWorld* World = PreviewScene->GetWorld();
-    if (!World) return;
+    if (!World) return nullptr;
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     AActor* NewActor = World->SpawnActor<AActor>(ActorClass, Location, Rotation, SpawnParams);
 
     SpawnedActors.Add(NewActor);
+    return NewActor;
 }
 
 // Implementação das funções de profile para combo box

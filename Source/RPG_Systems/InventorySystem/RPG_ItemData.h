@@ -95,4 +95,19 @@ public:
 		}*/
 		return Items;
 	}
+
+	//Get Item By Name
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static URPG_ItemData* GetItemByName(const FName& ItemName)
+	{
+		for (URPG_ItemData* Item : GetAllItems())
+		{
+			if (Item && Item->GetFName() == ItemName)
+			{
+				return Item;
+			}
+		}
+		return nullptr;
+	}
+	
 };

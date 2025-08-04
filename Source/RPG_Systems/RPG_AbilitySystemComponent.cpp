@@ -112,20 +112,30 @@ const UAttributeSet* URPG_AbilitySystemComponent::GetOrCreateAttributeSet(const 
 void URPG_AbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (!GetOwnerActor()->HasAuthority()) return;
 	for (auto Element : AttributeSetsClass)
 	{
 		AddAttributeSet(Element);
 	}
+	// timer the next frame with lambda
+
+	
 	for (auto Element : AttributeBaseValues)
 	{
-		SetAttributeBaseValue(Element.Key,Element.Value);
+		URPG_BP_Library_Utilities::SetAttributeValue(this, Element.Key,EGameplayModOp::Override, Element.Value);
 	}
+
+	// gameplay effects
+	for (TSubclassOf<UGameplayEffect> Effect : GameplayEffects)
+	{
+		if (Effect) BP_ApplyGameplayEffectToSelf(Effect, 1, FGameplayEffectContextHandle());
+	}
+	
 	for (auto Element : Abilities)
 	{
 		GiveAbilityWithInputAction(Element.Key,Element.Value);
 	}
-	
+	ForceReplication();
 }
 
 void URPG_AbilitySystemComponent::AddAttributeSet(TSubclassOf<UAttributeSet> AttributeClass)
@@ -178,6 +188,7 @@ void URPG_AbilitySystemComponent::GiveAbilityWithInputAction(TSubclassOf<URPG_Ga
 		auto a = TSoftObjectPtr<UInputAction>(Input);
 		Settings->AbilitiesInputActions.Add(a);
 		InputId = Settings->AbilitiesInputActions.Array().Find(Input);
+	
 		
 	}
 	if (AbilityClass)

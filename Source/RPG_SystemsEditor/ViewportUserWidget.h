@@ -159,8 +159,9 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Viewport Events")
     FOnViewportClicked OnViewportClicked;
 
-    UFUNCTION(BlueprintCallable)
-    void SpawnActorByClass(TSubclassOf<AActor> ActorClass, FVector Location = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator);
+    UFUNCTION(BlueprintCallable,meta=(DeterminesOutputType ="ActorClass"), Category = "Viewport")
+    AActor* SpawnActorByClass(TSubclassOf<AActor> ActorClass, FVector Location = FVector::ZeroVector,
+                              FRotator Rotation = FRotator::ZeroRotator);
 protected:
     virtual TSharedRef<SWidget> RebuildWidget() override;
 

@@ -21,6 +21,7 @@ URPG_InventoryComponent::URPG_InventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	
 	/*
 	static ConstructorHelpers::FObjectFinder<UDataTable> DatatableRef(TEXT("DataTable'/Game/Blueprints/InventorySystem/DT_Items__.DT_Items__'"));
 	if (DatatableRef.Succeeded())
@@ -41,7 +42,64 @@ void URPG_InventoryComponent::BeginPlay()
 	
 		OwnerCharacter = Cast<ARPG_BaseCharacter>(GetOwner());
 	// ...
-	
+
+	if (GetWorld())
+	{
+		//Calculate the time to decay the item
+		
+		float DecayTime = DecayTick * DecayFactor;
+		if (DecayTime <= 0)DecayTime = 1;
+		if (!GetOwner()->HasAuthority()) return;
+		TWeakObjectPtr<URPG_InventoryComponent> WeakThis(this);
+		
+		GetWorld()->GetTimerManager().SetTimer(DecayTimerHandle,[WeakThis,this,DecayTime]()
+		{
+
+			if (!WeakThis.IsValid()) return;
+			
+			for (int i = 0; i < Items.Num(); i++)
+			{
+				
+				if (Items[i].Item != nullptr && Items[i].Item->bCanDecay)
+				{
+					FSTR_RPG_ItemSlot& InventorySlot = Items[i];
+					InventorySlot.DecayTime -= DecayTime;
+					if (InventorySlot.DecayTime <= 0)
+					{
+						bool Sucess = false;
+						URPG_ItemData* DecayItem;
+						if (!InventorySlot.Item->DecayItem.IsNull())
+						{
+							if (InventorySlot.Item->DecayItem.ToSoftObjectPath().IsValid())
+							{
+								DecayItem = InventorySlot.Item->DecayItem.Get();
+							}else {
+								DecayItem = InventorySlot.Item->DecayItem.LoadSynchronous();
+							}
+							InventorySlot.DecayTime = InventorySlot.Item->DecayTime;
+							RemoveItemFromIndex(i,1, Sucess);
+							FSTR_RPG_ItemSlot RemainingItems;
+							TryAddItem(DecayItem, 1, RemainingItems);
+						}else {
+							InventorySlot.DecayTime = InventorySlot.Item->DecayTime;
+							RemoveItemFromIndex(i, 1, Sucess);
+						}
+					}
+
+					//UBetterUtilities::DebugLog(FString::SanitizeFloat(InventorySlot.DecayTime));
+				}
+			}
+		}, DecayTime, true);
+	}
+}
+
+void URPG_InventoryComponent::BeginDestroy()
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DecayTimerHandle);
+	}
+	Super::BeginDestroy();
 }
 
 
@@ -71,7 +129,7 @@ void URPG_InventoryComponent::Multicast_InitContainer_Implementation()
 
 bool URPG_InventoryComponent::TryAddItem(URPG_ItemData* ItemData,int Count, FSTR_RPG_ItemSlot& RemainingItems)
 {
-	FSTR_RPG_ItemSlot ItemSlot_ = FSTR_RPG_ItemSlot(ItemData,Count);
+	FSTR_RPG_ItemSlot ItemSlot_ = FSTR_RPG_ItemSlot(ItemData,Count,ItemData->DecayTime);
 	int EmptySlotIndex = -1;
 	RemainingItems = ItemSlot_;
 	if (ItemSlot_.Count < 1 || !ItemSlot_.Item)return false;
@@ -192,6 +250,7 @@ void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item,FSTR_RPG_I
 				Item.Count -= MaxItemPerSlot;
 				Items[i].Item = Item.Item;
 				Items[i].Count = MaxItemPerSlot;
+				Items[i].DecayTime = Item.DecayTime;
 				
 				RemainingItems = Item;
 
@@ -203,6 +262,7 @@ void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item,FSTR_RPG_I
 			{
 				Items[i].Item = Item.Item;
 				Items[i].Count = Item.Count;
+				Items[i].DecayTime = Item.DecayTime;
 				
 				RemainingItems = FSTR_RPG_ItemSlot();
 

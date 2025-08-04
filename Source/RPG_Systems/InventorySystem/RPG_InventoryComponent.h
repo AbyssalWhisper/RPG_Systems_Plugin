@@ -32,11 +32,18 @@ public:
 		TArray<APlayerController*> Players;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		ARPG_BaseCharacter* OwnerCharacter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DecayTick = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DecayFactor = 1;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	virtual void BeginDestroy() override;
+	FTimerHandle DecayTimerHandle;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

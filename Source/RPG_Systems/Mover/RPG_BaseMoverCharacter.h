@@ -138,13 +138,14 @@ public:
 	bool bIsCrouching = false;
 
 #pragma region functions
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsCrouching() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	class UCapsuleComponent* CapsuleComp;
+	class UCapsuleComponent* CollisionCylinder;
 
 	virtual void PawnClientRestart() override;
 

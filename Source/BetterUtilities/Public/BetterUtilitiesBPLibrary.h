@@ -691,7 +691,29 @@ public:
         return Target;
         
     }
+    
+    UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"))
+    static void TravelToMapByName(UObject* WorldContextObject, const FString& MapName, const FString& Options = "")
+    {
+        if (!WorldContextObject || !WorldContextObject->GetWorld())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("WorldContextObject or World is null."));
+            return;
+        }
+        UKismetSystemLibrary::ExecuteConsoleCommand(WorldContextObject, "ServerTravel "+ MapName + "?listen");
+    }
 
+    UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"))
+    static void TravelToMapByReference(UObject* WorldContextObject, const TSoftObjectPtr<UWorld> Level, const FString& Options = "")
+    {
+        if (!WorldContextObject || !WorldContextObject->GetWorld())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("WorldContextObject or World is null."));
+            return;
+        }
+        UKismetSystemLibrary::ExecuteConsoleCommand(WorldContextObject, "ServerTravel "+ Level.GetAssetName() + "?listen");
+    }
+    
     UFUNCTION(BlueprintCallable)
     static TArray<UClass*> GetAllSubclassesOf(UClass* BaseClass)
     {
@@ -717,6 +739,17 @@ public:
         return Subclasses;
     }
 
+    // getuniqueid
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+    static int32 GetUniqueId(const UObject* Object)
+    {
+        if (!Object)
+        {
+            return Object->GetUniqueID();
+        }
+        return 0; 
+    }
+    
     // IsInGameThread
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
     static bool IsInGameThread_BP()

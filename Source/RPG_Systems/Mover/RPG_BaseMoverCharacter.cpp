@@ -65,9 +65,9 @@ ARPG_BaseMoverCharacter::ARPG_BaseMoverCharacter(const FObjectInitializer& Objec
 	CharacterMoverComponent = CreateDefaultSubobject<URPG_CharacterMoverComponent>("CharacterMoverComponent");
 	CharacterMoverComponent->SetIsReplicated(true);
 	
-	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComp");
-	CapsuleComp->SetCollisionProfileName("BlockAll");
-	RootComponent = CapsuleComp;
+	CollisionCylinder = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComp");
+	CollisionCylinder->SetCollisionProfileName("BlockAll");
+	RootComponent = CollisionCylinder;
 	 
  
  
@@ -107,6 +107,8 @@ void ARPG_BaseMoverCharacter::RemoveGameplayTag(FGameplayTag TagToRemove, int Co
 
 }
 #pragma endregion
+
+
 
 bool ARPG_BaseMoverCharacter::IsCrouching() const
 {
