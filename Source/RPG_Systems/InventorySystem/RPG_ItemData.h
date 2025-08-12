@@ -88,11 +88,6 @@ public:
 				Items.Add(FoundAsset);
 			}
 		}
-		/*
-		for (TObjectIterator<URPG_ItemData> It; It; ++It)
-		{
-			Items.Add(*It);
-		}*/
 		return Items;
 	}
 
