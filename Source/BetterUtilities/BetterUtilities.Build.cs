@@ -43,7 +43,7 @@ public class BetterUtilities : ModuleRules
                 "PhysicsCore","Json",
                 "JsonUtilities","Niagara",
                 "Chaos","EnhancedInput",
-                "JsonBlueprintUtilities"
+                "JsonBlueprintUtilities", "PakFile" ,"AssetRegistry","RenderCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
@@ -59,8 +59,8 @@ public class BetterUtilities : ModuleRules
 		{
 			PublicDependencyModuleNames.Add("UnrealEd"); 
 			PublicDependencyModuleNames.Add("GraphEditor"); 
-			PublicDependencyModuleNames.Add("BlueprintGraph"); 
-			PublicDependencyModuleNames.Add("KismetCompiler"); 
+			PublicDependencyModuleNames.Add("BlueprintGraph");
+			PublicDependencyModuleNames.Add("KismetCompiler");
 			// Adiciona o módulo UnrealEd apenas para builds de Editor
 		}
 		

@@ -18,5 +18,6 @@ class EASYEDITOREXTEND_API UEasyComboButtonEntry : public UEasyComboButtonCompon
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Instanced,meta = (ShowOnlyInnerProperties))
 	UEasyEditorObjectExecuteCode* CustomExecuteCode;
+
 	virtual void Execute(FMenuBuilder& MenuBuilder) override;
 };

@@ -43,53 +43,8 @@ public:
         return UEasyEditorExtendLibrary::GetClassFromAssetData(AssetDataList);
     }
 
-	
-	static TArray<UDynamicButtonEditorExtend*> GetAllGetAllDynamicButtonExtend()
-    {
-    	TArray<UDynamicButtonEditorExtend*> Items;
-    	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-    	TArray<FAssetData> AssetData;
-    	FTopLevelAssetPath ClassPathName = FTopLevelAssetPath("/Script/EasyEditorExtend","DynamicButtonEditorExtend");
-		
-    	AssetRegistryModule.Get().GetAssetsByClass(ClassPathName, AssetData,true);
-        UE_LOG(LogTemp, Warning, TEXT("encontrados %s  "), *FString::FromInt(AssetData.Num()));
-    	for (int i = 0; i < AssetData.Num(); i++) {
-    		UDynamicButtonEditorExtend* FoundAsset = Cast<UDynamicButtonEditorExtend>(AssetData[i].GetAsset());
-			
-    		if (FoundAsset != NULL) {
-    			Items.Add(FoundAsset);
-    		}
-    	} 
-    	return Items;
-    }
 
-	static TArray<UDynamicComboButtonExtend*> GetAllDynamicComboButtonExtend()
-    {
-    	TArray<UDynamicComboButtonExtend*> Items;
-    	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-    	TArray<FAssetData> AssetData;
-    	FTopLevelAssetPath ClassPathName = FTopLevelAssetPath("/Script/EasyEditorExtend","DynamicComboButtonExtend");
-		
-    	AssetRegistryModule.Get().GetAssetsByClass(ClassPathName, AssetData,true);
-    	for (int i = 0; i < AssetData.Num(); i++) {
-    		UDynamicComboButtonExtend* FoundAsset = Cast<UDynamicComboButtonExtend>(AssetData[i].GetAsset());
-			
-    		if (FoundAsset != NULL) {
-    			Items.Add(FoundAsset);
-    		}
-    	}
-    	/*
-		for (TObjectIterator<URPG_ItemData> It; It; ++It)
-		{
-			Items.Add(*It);
-		}*/
-    	return Items;
-    }
-    void CreateButton(UDynamicButtonEditorExtend* ButtonObject);
-	void CreateComboButton(UDynamicComboButtonExtend* ButtonObject);
 
-    UWorld* MainWorld;
-    UWorld* GetCurrentEditorWorld();
 };
 
 static TArray<UEasyEditorAutoExecuteCode*> GetAllEasyEditorAutoExecuteCode()
