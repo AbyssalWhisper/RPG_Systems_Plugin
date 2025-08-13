@@ -2,12 +2,15 @@
 
 #include "BetterUtilitiesBPLibrary.h"
 #include "BetterUtilities.h"
+#include "GameplayTagContainer.h"
 #include "BetterUtilities/Objects/ReplicatedObject.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AbilitySystemComponent.h"
+
 
 DEFINE_LOG_CATEGORY(LogRPG_Systems);
 
@@ -139,7 +142,23 @@ void UBetterUtilities::RunInEditor(ETrueFalse& TrueFalse)
 #endif
 }
 
- 
+float UBetterUtilities::GetPercentFromAttribute(const UAbilitySystemComponent* AbilitySystemComponent,
+    const FGameplayAttribute Attribute, const FGameplayAttribute MaxAttribute)
+{
+    const float MaxValue = AbilitySystemComponent->GetNumericAttribute(MaxAttribute);
+    const float CurrentValue = AbilitySystemComponent->GetNumericAttribute(Attribute);
+    return GetPercent(CurrentValue, MaxValue);
+}
+
+float UBetterUtilities::GetAlphaPercentFromAttribute(const UAbilitySystemComponent* AbilitySystemComponent,
+    const FGameplayAttribute Attribute, const FGameplayAttribute MaxAttribute)
+{
+    const float MaxValue = AbilitySystemComponent->GetNumericAttribute(MaxAttribute);
+    const float CurrentValue = AbilitySystemComponent->GetNumericAttribute(Attribute);
+    return GetAlphaPercent(CurrentValue, MaxValue);
+}
+
+
 FTimerHandle UBetterUtilities::EditorDelay(FTimerDynamicDelegate InputDelegate, float DelayTime)
 {
     FTimerHandle TimerHandle;
@@ -371,4 +390,114 @@ void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent
 {
     if (!ActorComponent && !Object)return;
     ActorComponent->RemoveReplicatedSubObject(Object);
+}
+
+TArray<UClass*> UBetterUtilities::GetAllSubclassesOf(UClass* BaseClass)
+{
+    TArray<UClass*> Subclasses;
+
+    for (TObjectIterator<UClass> It; It; ++It)
+    {
+        UClass* CurrentClass = *It;
+
+        // Pula classes abstratas e interfaces
+        if (CurrentClass->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated))
+        {
+            continue;
+        }
+
+        // Verifica se herda da base
+        if (CurrentClass->IsChildOf(BaseClass))
+        {
+            Subclasses.Add(CurrentClass);
+        }
+    }
+
+    return Subclasses;
+}
+
+TArray<UClass*> UBetterUtilities::GetAllSubclassesOfFromAssetRegistry(UClass* BaseClass, TArray<FString> PathsToScan)
+{
+    // Load asset registry module
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
+    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	
+    // Scan specific path
+  
+    //PathsToScan.Add(TEXT("/Game"));
+    //AssetRegistry.SearchAllAssets(true);
+   
+    AssetRegistry.ScanPathsSynchronous(PathsToScan);
+	
+    // Get all assets in the path, does not load them
+    TArray<FAssetData> ScriptAssetList;
+    AssetRegistry.GetAssetsByClass(BaseClass->GetClassPathName(), ScriptAssetList, true);
+
+    // Ensure all assets are loaded and store their class
+    TArray<UClass*> EventClasses;
+    for (const FAssetData& Asset : ScriptAssetList)
+    {
+        EventClasses.Add(Asset.GetClass());
+    }
+    // Assets count
+    UE_LOG(LogRPG_Systems, Log, TEXT("Found %d subclasses of %s in asset registry."), EventClasses.Num(), *BaseClass->GetName());
+    return EventClasses;
+}
+
+#include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+#include "HAL/PlatformFileManager.h"
+#include "IPlatformFilePak.h"
+#include "Misc/PackageName.h"
+
+TArray<UClass*> UBetterUtilities::GetBlueprintClassesOfParent(UClass* ParentClass)
+{
+    TArray<UClass*> Result;
+
+    if (!ParentClass)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Classe inválida!"));
+        return Result;
+    }
+
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+
+    FARFilter Filter;
+    Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
+    Filter.bRecursiveClasses = true;
+
+    // Caminho da classe pai no formato correto
+    const FString ParentClassPath = FString::Printf(
+        TEXT("%s'%s'"),
+        *ParentClass->GetClass()->GetName(),
+        *ParentClass->GetPathName()
+    );
+
+    Filter.TagsAndValues.Add("ParentClass", ParentClassPath);
+
+    TArray<FAssetData> AssetList;
+    AssetRegistryModule.Get().GetAssets(Filter, AssetList);
+
+    for (const FAssetData& Asset : AssetList)
+    {
+        if (UBlueprint* BP = Cast<UBlueprint>(Asset.GetAsset()))
+        {
+            if (BP->GeneratedClass && BP->GeneratedClass->IsChildOf(ParentClass))
+            {
+                Result.Add(BP->GeneratedClass);
+            }
+        }
+    }
+
+    return Result;
+}
+
+UClass* UBetterUtilities::GetAssetClassFromAssetData(const FAssetData& AssetData)
+{
+    //get generated class from asset data
+    if (UBlueprint* BP = Cast<UBlueprint>(AssetData.GetAsset()))
+    {
+       return BP->GeneratedClass;
+    }
+    return nullptr;
 }

@@ -7,10 +7,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/GameStateBase.h"
 #include "CoreMinimal.h"
-#include "AbilitySystemComponent.h"
-#include "AttributeSet.h"
 #include "JsonBlueprintUtilities/Public/JsonBlueprintFunctionLibrary.h"
 #include "JsonObjectConverter.h"
+#include "ShaderCompiler.h"
 #include "UObject/Object.h"
 
 #include "Stats/StatsData.h"
@@ -21,10 +20,12 @@
 
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
+#include "ShaderPipelineCache.h"
 
 #include "BetterUtilitiesBPLibrary.generated.h"
 
 class UReplicatedObject;
+class UAttributeSet;
 
 //É necessário implementar no arquivo cpp
 DECLARE_LOG_CATEGORY_EXTERN(LogRPG_Systems, Log, All);
@@ -111,7 +112,7 @@ enum class ERotationDirection : uint8
     
 };
 
-
+class UAbilitySystemComponent;
 UCLASS()
 class BETTERUTILITIES_API UBetterUtilities : public UBlueprintFunctionLibrary
 {
@@ -173,20 +174,10 @@ public:
     }
 
     UFUNCTION(BlueprintCallable, BlueprintPure)
-    static float GetPercentFromAttribute(const UAbilitySystemComponent* AbilitySystemComponent,const FGameplayAttribute Attribute,const FGameplayAttribute MaxAttribute)
-    {
-        const float MaxValue = AbilitySystemComponent->GetNumericAttribute(MaxAttribute);
-        const float CurrentValue = AbilitySystemComponent->GetNumericAttribute(Attribute);
-        return GetPercent(CurrentValue, MaxValue);
-    }
+    static float GetPercentFromAttribute(const UAbilitySystemComponent* AbilitySystemComponent,const FGameplayAttribute Attribute,const FGameplayAttribute MaxAttribute);
 
     UFUNCTION(BlueprintCallable, BlueprintPure)
-    static float GetAlphaPercentFromAttribute(const UAbilitySystemComponent* AbilitySystemComponent,const FGameplayAttribute Attribute,const FGameplayAttribute MaxAttribute)
-    {
-        const float MaxValue = AbilitySystemComponent->GetNumericAttribute(MaxAttribute);
-        const float CurrentValue = AbilitySystemComponent->GetNumericAttribute(Attribute);
-        return GetAlphaPercent(CurrentValue, MaxValue);
-    }
+    static float GetAlphaPercentFromAttribute(const UAbilitySystemComponent* AbilitySystemComponent,const FGameplayAttribute Attribute,const FGameplayAttribute MaxAttribute);
 
 
     UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -715,30 +706,17 @@ public:
     }
     
     UFUNCTION(BlueprintCallable)
-    static TArray<UClass*> GetAllSubclassesOf(UClass* BaseClass)
-    {
-        TArray<UClass*> Subclasses;
+    static TArray<UClass*> GetAllSubclassesOf(UClass* BaseClass);
+    UFUNCTION(BlueprintCallable)
+    static TArray<UClass*> GetAllSubclassesOfFromAssetRegistry(UClass* BaseClass, TArray<FString> PathsToScan);
+    UFUNCTION(BlueprintCallable, Category = "Utilities")
+    static TArray<UClass*> GetBlueprintClassesOfParent(UClass* ParentClass);
 
-        for (TObjectIterator<UClass> It; It; ++It)
-        {
-            UClass* CurrentClass = *It;
+    //get asset class from assetdata
+    UFUNCTION(blueprintCallable, Category = "Utilities")
+    static UClass* GetAssetClassFromAssetData(const FAssetData& AssetData);
 
-            // Pula classes abstratas e interfaces
-            if (CurrentClass->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated))
-            {
-                continue;
-            }
-
-            // Verifica se herda da base
-            if (CurrentClass->IsChildOf(BaseClass))
-            {
-                Subclasses.Add(CurrentClass);
-            }
-        }
-
-        return Subclasses;
-    }
-
+    
     // getuniqueid
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
     static int32 GetUniqueId(const UObject* Object)

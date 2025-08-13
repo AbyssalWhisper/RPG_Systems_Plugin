@@ -49,6 +49,11 @@
 			"Name": "RPG_DialogSystemEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Mods",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -75,7 +80,8 @@
 		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true
-		},{
+		},
+		{
 			"Name": "SerializationUtils",
 			"Enabled": true
 		},
