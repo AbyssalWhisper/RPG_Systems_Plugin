@@ -705,17 +705,15 @@ public:
         UKismetSystemLibrary::ExecuteConsoleCommand(WorldContextObject, "ServerTravel "+ Level.GetAssetName() + "?listen");
     }
     
-    UFUNCTION(BlueprintCallable)
-    static TArray<UClass*> GetAllSubclassesOf(UClass* BaseClass);
-    UFUNCTION(BlueprintCallable)
-    static TArray<UClass*> GetAllDerivedClasses(UClass* BaseClass);
-    UFUNCTION(BlueprintCallable, Category = "Utilities")
-    static TArray<UClass*> GetBlueprintClassesOfParent(UClass* ParentClass);
 
-    //get asset class from assetdata
-    UFUNCTION(blueprintCallable, Category = "Utilities")
-    static UClass* GetAssetClassFromAssetData(const FAssetData& AssetData);
+    UFUNCTION(BlueprintCallable)
+    static TArray<UClass*> GetAllDerivedClasses(UClass* ParentClass);
+    UFUNCTION(BlueprintCallable)
+    static TArray<TSoftClassPtr<UObject>> GetAllDerivedClasses_SoftClass(TSubclassOf<UObject> ParentClass);
+    
+    static TArray<TSoftClassPtr<UObject>> GetAllDerivedClassesFromAssetTag(FString ClassPath);
 
+    
     
     // getuniqueid
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")

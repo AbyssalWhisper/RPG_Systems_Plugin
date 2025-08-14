@@ -392,29 +392,7 @@ void UBetterUtilities::RemoveReplicatedSubObject(UActorComponent* ActorComponent
     ActorComponent->RemoveReplicatedSubObject(Object);
 }
 
-TArray<UClass*> UBetterUtilities::GetAllSubclassesOf(UClass* BaseClass)
-{
-    TArray<UClass*> Subclasses;
 
-    for (TObjectIterator<UClass> It; It; ++It)
-    {
-        UClass* CurrentClass = *It;
-
-        // Pula classes abstratas e interfaces
-        if (CurrentClass->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated))
-        {
-            continue;
-        }
-
-        // Verifica se herda da base
-        if (CurrentClass->IsChildOf(BaseClass))
-        {
-            Subclasses.Add(CurrentClass);
-        }
-    }
-
-    return Subclasses;
-}
 
 TArray<UClass*> UBetterUtilities::GetAllDerivedClasses(UClass* ParentClass)
 {
@@ -424,12 +402,12 @@ TArray<UClass*> UBetterUtilities::GetAllDerivedClasses(UClass* ParentClass)
     //log all class functions
     if (ParentClass)
     {
-        UBetterUtilities::DebugLog(ParentClass->GetClass()->GetFullName(), EEasylog::Warning);
+        DebugLog(ParentClass->GetClass()->GetFullName(), EEasylog::Warning);
         TSoftClassPtr<UObject> SoftClass = TSoftClassPtr<UObject>(ParentClass);
         
       
         ParentClassTagName = FString::Printf(TEXT("%s'%s'"), *ParentClass->GetClass()->GetClassPathName().ToString(), *SoftClass->GetPathName());
-        UBetterUtilities::DebugLog(FString::Printf(TEXT("Class Tag Name: %s"), *ParentClassTagName), EEasylog::Warning);
+        DebugLog(FString::Printf(TEXT("Class Tag Name: %s"), *ParentClassTagName), EEasylog::Warning);
     }
     
     TArray<UClass*> Result;
@@ -450,16 +428,118 @@ TArray<UClass*> UBetterUtilities::GetAllDerivedClasses(UClass* ParentClass)
     
     for (const FAssetData& Asset : Assets)
     {
+        FString ClassPath;
+        if (Asset.GetTagValue("GeneratedClass", ClassPath))
+            //Asset.GetTagValue("GeneratedClassPath", ClassPath))
+        {
+            
+            if (UClass* LoadedClass = LoadObject<UClass>(nullptr, *ClassPath))
+            {
+                Result.Add(LoadedClass);
+                auto ChildClasses = GetAllDerivedClasses(LoadedClass);
+                Result.Append(ChildClasses);
+            }
+        }
         
-        Result.Add(Asset.GetClass());
-        auto ChildClasses = GetAllDerivedClasses(Asset.GetClass());
-        Result.Append(ChildClasses);
     }
 
     return Result;
 }
 
+TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClasses_SoftClass(TSubclassOf<UObject> ParentClass)
+{
+    // trace scope
+    TRACE_CPUPROFILER_EVENT_SCOPE(GetAllDerivedClasses_SoftClass);
+    FString ParentClassTagName;
+    //log all class functions
+    if (ParentClass)
+    {
+        UBetterUtilities::DebugLog(ParentClass->GetClass()->GetFullName(), EEasylog::Warning);
+        
+        TSoftClassPtr<UObject> SoftClass = TSoftClassPtr<UObject>(ParentClass);
+        
+      
+        ParentClassTagName = FString::Printf(TEXT("%s'%s'"), *ParentClass->GetClass()->GetClassPathName().ToString(), *SoftClass->GetPathName());
+        DebugLog(FString::Printf(TEXT("Class Tag Name: %s"), *ParentClassTagName), EEasylog::Warning);
+    }
+    
+    TArray<TSoftClassPtr<UObject>> Result;
+    if (!ParentClass) return Result;
 
+    FAssetRegistryModule& ARM = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    IAssetRegistry& AR = ARM.Get();
+    
+
+    FARFilter Filter;
+    Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
+    Filter.TagsAndValues.Add("ParentClass", ParentClassTagName);
+    //Filter.bRecursivePaths = true;
+    // NÃO adiciona PackagePaths -> busca global
+
+    TArray<FAssetData> Assets;
+    AR.GetAssets(Filter, Assets);
+    
+    for (const FAssetData& Asset : Assets)
+    {
+        FString ClassPath;
+        if (Asset.GetTagValue("GeneratedClass", ClassPath))
+            //Asset.GetTagValue("GeneratedClassPath", ClassPath))
+        {
+            DebugLog(FString::Printf(TEXT("Class Path: %s"), *ClassPath), EEasylog::Warning);
+            
+            auto LoadedClass = TSoftClassPtr<UClass>(FSoftObjectPath(ClassPath));
+            
+            Result.Add(LoadedClass);
+            TArray<TSoftClassPtr<UObject>> ChildClasses = GetAllDerivedClassesFromAssetTag(ClassPath);
+            Result.Append(ChildClasses);
+        }
+        
+    }
+
+    return Result;
+}
+
+TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClassesFromAssetTag(FString ClassPath)
+{
+    FString ParentClassTagName;
+    //log all class functions
+
+    ParentClassTagName = FString::Printf(TEXT("%s"), *ClassPath);
+    DebugLog(FString::Printf(TEXT("Class Tag Name: %s"), *ParentClassTagName), EEasylog::Warning);
+    
+    
+    TArray<TSoftClassPtr<UObject>> Result;
+
+    FAssetRegistryModule& ARM = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    IAssetRegistry& AR = ARM.Get();
+    
+
+    FARFilter Filter;
+    Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
+    Filter.TagsAndValues.Add("ParentClass", ParentClassTagName);
+    //Filter.bRecursivePaths = true;
+    // NÃO adiciona PackagePaths -> busca global
+
+    TArray<FAssetData> Assets;
+    AR.GetAssets(Filter, Assets);
+    
+    for (const FAssetData& Asset : Assets)
+    {
+        FString ClassPath;
+        if (Asset.GetTagValue("GeneratedClass", ClassPath))
+            //Asset.GetTagValue("GeneratedClassPath", ClassPath))
+        {
+            DebugLog(FString::Printf(TEXT("Class Path: %s"), *ClassPath), EEasylog::Warning);
+            auto LoadedClass = TSoftClassPtr<UClass>(FSoftObjectPath(ClassPath));
+            Result.Add(LoadedClass);
+            auto ChildClasses = GetAllDerivedClassesFromAssetTag(ClassPath);
+            Result.Append(ChildClasses);
+        }
+        
+    }
+
+    return Result;
+}
 
 
 #include "Misc/Paths.h"
@@ -467,56 +547,4 @@ TArray<UClass*> UBetterUtilities::GetAllDerivedClasses(UClass* ParentClass)
 #include "HAL/PlatformFileManager.h"
 #include "IPlatformFilePak.h"
 #include "Misc/PackageName.h"
-
-TArray<UClass*> UBetterUtilities::GetBlueprintClassesOfParent(UClass* ParentClass)
-{
-    TArray<UClass*> Result;
-
-    if (!ParentClass)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Classe inválida!"));
-        return Result;
-    }
-
-    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-
-    FARFilter Filter;
-    Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
-    Filter.bRecursiveClasses = true;
-
-    // Caminho da classe pai no formato correto
-    const FString ParentClassPath = FString::Printf(
-        TEXT("%s'%s'"),
-        *ParentClass->GetClass()->GetName(),
-        *ParentClass->GetPathName()
-    );
-
-    Filter.TagsAndValues.Add("ParentClass", ParentClassPath);
-
-    TArray<FAssetData> AssetList;
-    AssetRegistryModule.Get().GetAssets(Filter, AssetList);
-
-    for (const FAssetData& Asset : AssetList)
-    {
-        if (UBlueprint* BP = Cast<UBlueprint>(Asset.GetAsset()))
-        {
-            if (BP->GeneratedClass && BP->GeneratedClass->IsChildOf(ParentClass))
-            {
-                Result.Add(BP->GeneratedClass);
-            }
-        }
-    }
-
-    return Result;
-}
-
-UClass* UBetterUtilities::GetAssetClassFromAssetData(const FAssetData& AssetData)
-{
-    //get generated class from asset data
-    if (UBlueprint* BP = Cast<UBlueprint>(AssetData.GetAsset()))
-    {
-       return BP->GeneratedClass;
-    }
-    return nullptr;
-}
 
