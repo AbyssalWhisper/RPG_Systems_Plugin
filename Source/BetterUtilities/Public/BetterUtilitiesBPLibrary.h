@@ -708,7 +708,7 @@ public:
     UFUNCTION(BlueprintCallable)
     static TArray<UClass*> GetAllSubclassesOf(UClass* BaseClass);
     UFUNCTION(BlueprintCallable)
-    static TArray<UClass*> GetAllSubclassesOfFromAssetRegistry(UClass* BaseClass, TArray<FString> PathsToScan);
+    static TArray<UClass*> GetAllDerivedClasses(UClass* BaseClass);
     UFUNCTION(BlueprintCallable, Category = "Utilities")
     static TArray<UClass*> GetBlueprintClassesOfParent(UClass* ParentClass);
 

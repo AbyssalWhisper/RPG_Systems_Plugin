@@ -36,7 +36,7 @@ bool UPakLoader::LoadAllModsFromDirectory(const FString& ModsDirectory, bool bMo
 			UBetterUtilities::DebugLog(FString::Printf(TEXT("Failed to mount PAK file: %s"), *PakFile));
 		}
 	}
-
+	
 	return LoadedCount > 0;
 }
 
@@ -145,13 +145,39 @@ bool UPakLoader::MountPakFileEasy(const FString& PakFilename)
 			break;
 		}
 	}
-	
-	LoadAssetRegistryFile(AssetRegistryFile);
-	PakFile.SafeRelease();
 
+	LoadAssetRegistryFile(AssetRegistryFile);
+	
 	bool bArchive = false;
 	GConfig->GetBool(TEXT("/Script/UnrealEd.ProjectPackagingSettings"), TEXT("bShareMaterialShaderCode"), bArchive, GGameIni);
 
+	// extract file name without extension
+	FString ContentPathWithoutPak = FPaths::GetBaseFilename(PakFilename);
+	static const FName AssetRegistryModuleName(TEXT("AssetRegistry"));
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryModuleName);
+	//AssetRegistryModule.Get().ScanPathsSynchronous({ "/"+ContentPathWithoutPak }, true);  // ou outro path se for diferente
+
+	// debug log scanned paths
+	//UBetterUtilities::DebugLog(FString::Printf(TEXT("Scanned path for AssetRegistry: %s"), *ContentPathWithoutPak));
+	// dump asset registry
+	// Acessar AssetRegistry
+	IAssetRegistry& AssetRegistry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry").Get();
+	
+	// Argumentos: você escolhe o que incluir
+	TArray<FString> Arguments = { TEXT("ObjectPath"), TEXT("Class"), TEXT("PackageName"), TEXT("Tag") };
+
+	// Resultado paginado
+	TArray<FString> OutPages;
+
+	// Dumpa com 100 linhas por "página"
+	//AssetRegistry.DumpState(Arguments, OutPages, 100);
+
+	// Loga cada "página"
+	for (int32 PageIndex = 0; PageIndex < OutPages.Num(); ++PageIndex)
+	{
+		UE_LOG(LogTemp, Log, TEXT("=== AssetRegistry Dump - Página %d ===\n%s"), PageIndex + 1, *OutPages[PageIndex]);
+	}
+	
 	bool bEnable = !FPlatformProperties::IsServerOnly() && FApp::CanEverRender() && bArchive;
 
 	if (bEnable)
@@ -273,6 +299,7 @@ void UPakLoader::LoadAssetRegistryFile(const FString &AssetRegistryFile)
 			PakState.Load(SerializedAssetData);
 			AssetRegistryModule.Get().AppendState(PakState);
 			UBetterUtilities::DebugLog(FString::Printf(TEXT("Loaded AssetRegistry from %s"), *AssetRegistryFile));
+			
 		}
 	}
 }

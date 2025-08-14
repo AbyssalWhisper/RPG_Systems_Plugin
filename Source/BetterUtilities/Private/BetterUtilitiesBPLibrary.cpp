@@ -416,33 +416,51 @@ TArray<UClass*> UBetterUtilities::GetAllSubclassesOf(UClass* BaseClass)
     return Subclasses;
 }
 
-TArray<UClass*> UBetterUtilities::GetAllSubclassesOfFromAssetRegistry(UClass* BaseClass, TArray<FString> PathsToScan)
+TArray<UClass*> UBetterUtilities::GetAllDerivedClasses(UClass* ParentClass)
 {
-    // Load asset registry module
-    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
-    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-	
-    // Scan specific path
-  
-    //PathsToScan.Add(TEXT("/Game"));
-    //AssetRegistry.SearchAllAssets(true);
-   
-    AssetRegistry.ScanPathsSynchronous(PathsToScan);
-	
-    // Get all assets in the path, does not load them
-    TArray<FAssetData> ScriptAssetList;
-    AssetRegistry.GetAssetsByClass(BaseClass->GetClassPathName(), ScriptAssetList, true);
-
-    // Ensure all assets are loaded and store their class
-    TArray<UClass*> EventClasses;
-    for (const FAssetData& Asset : ScriptAssetList)
+    // trace scope
+    TRACE_CPUPROFILER_EVENT_SCOPE(GetAllDerivedClasses);
+    FString ParentClassTagName;
+    //log all class functions
+    if (ParentClass)
     {
-        EventClasses.Add(Asset.GetClass());
+        UBetterUtilities::DebugLog(ParentClass->GetClass()->GetFullName(), EEasylog::Warning);
+        TSoftClassPtr<UObject> SoftClass = TSoftClassPtr<UObject>(ParentClass);
+        
+      
+        ParentClassTagName = FString::Printf(TEXT("%s'%s'"), *ParentClass->GetClass()->GetClassPathName().ToString(), *SoftClass->GetPathName());
+        UBetterUtilities::DebugLog(FString::Printf(TEXT("Class Tag Name: %s"), *ParentClassTagName), EEasylog::Warning);
     }
-    // Assets count
-    UE_LOG(LogRPG_Systems, Log, TEXT("Found %d subclasses of %s in asset registry."), EventClasses.Num(), *BaseClass->GetName());
-    return EventClasses;
+    
+    TArray<UClass*> Result;
+    if (!ParentClass) return Result;
+
+    FAssetRegistryModule& ARM = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    IAssetRegistry& AR = ARM.Get();
+    
+
+    FARFilter Filter;
+    Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
+    Filter.TagsAndValues.Add("ParentClass", ParentClassTagName);
+    //Filter.bRecursivePaths = true;
+    // NÃO adiciona PackagePaths -> busca global
+
+    TArray<FAssetData> Assets;
+    AR.GetAssets(Filter, Assets);
+    
+    for (const FAssetData& Asset : Assets)
+    {
+        
+        Result.Add(Asset.GetClass());
+        auto ChildClasses = GetAllDerivedClasses(Asset.GetClass());
+        Result.Append(ChildClasses);
+    }
+
+    return Result;
 }
+
+
+
 
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
@@ -501,3 +519,4 @@ UClass* UBetterUtilities::GetAssetClassFromAssetData(const FAssetData& AssetData
     }
     return nullptr;
 }
+
