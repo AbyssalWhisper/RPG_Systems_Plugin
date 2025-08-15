@@ -706,13 +706,18 @@ public:
     }
     
 
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable,blueprintPure,Category = "Utilities")
     static TArray<UClass*> GetAllDerivedClasses(UClass* ParentClass);
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable,blueprintPure,Category = "Utilities")
     static TArray<TSoftClassPtr<UObject>> GetAllDerivedClasses_SoftClass(TSubclassOf<UObject> ParentClass);
     
     static TArray<TSoftClassPtr<UObject>> GetAllDerivedClassesFromAssetTag(FString ClassPath);
 
+    UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Utilities")
+    static TArray<TSoftObjectPtr<UWorld>>  GetAllMaps();
+
+    UFUNCTION(BlueprintCallable,BlueprintPure,DisplayName="GetAllDataAssetsOfClass",meta = ( DeterminesOutputType = "DataAssetClass") ,Category = "Utilities")
+    static TArray<UDataAsset*> GetAllDataAssetsOfClass_BP(TSubclassOf<UDataAsset> DataAssetClass);
     
     
     // getuniqueid

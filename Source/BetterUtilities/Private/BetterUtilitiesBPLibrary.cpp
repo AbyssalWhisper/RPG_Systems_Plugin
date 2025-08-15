@@ -541,6 +541,61 @@ TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClassesFromAssetTa
     return Result;
 }
 
+TArray<TSoftObjectPtr<UWorld>> UBetterUtilities::GetAllMaps()
+{
+    TArray<TSoftObjectPtr<UWorld>> MapList;
+
+    // Carrega o módulo do AssetRegistry
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+    // Configura o filtro para buscar mapas (UWorld)
+    FARFilter Filter;
+    Filter.ClassPaths.Add(UWorld::StaticClass()->GetClassPathName());
+    Filter.bRecursiveClasses = true;
+    Filter.bRecursivePaths = true;
+
+    // Se quiser apenas mapas do jogo (exclui mapas da Engine)
+    // Filter.PackagePaths.Add("/Game");
+
+    TArray<FAssetData> Assets;
+    AssetRegistry.GetAssets(Filter, Assets);
+
+    for (const FAssetData& Asset : Assets)
+    {
+        FString AssetPath = Asset.GetSoftObjectPath().ToString(); // Ex: /Game/Maps/MyMap.MyMap
+        // Ignorar mapas gerados automaticamente
+        
+        if (AssetPath.Contains("_Generated_"))
+            continue;
+        TSoftObjectPtr<UWorld> SoftMap(AssetPath);
+        MapList.Add(SoftMap);
+        DebugLog(FString::Printf(TEXT("Found Map: %s"), *AssetPath), EEasylog::Log);
+    }
+
+    return MapList;
+}
+
+TArray<UDataAsset*> UBetterUtilities::GetAllDataAssetsOfClass_BP(TSubclassOf<UDataAsset> DataAssetClass)
+{
+    //Get assets from registry
+    TArray<UDataAsset*> DataAssets;
+    if (!DataAssetClass)return TArray<UDataAsset*>();
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+    TArray<FAssetData> AssetData;
+    AssetRegistry.GetAssetsByClass(DataAssetClass->GetClassPathName(), AssetData,true);
+    for (const FAssetData& Data : AssetData)
+    {
+        UDataAsset* DataAsset = Cast<UDataAsset>(Data.GetAsset());
+        if (DataAsset)
+        {
+            DataAssets.Add(DataAsset);
+        }
+    }
+    return DataAssets;
+}
+
 
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
