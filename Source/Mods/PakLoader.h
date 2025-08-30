@@ -10,6 +10,21 @@
 /**
  * 
  */
+USTRUCT(Blueprintable,BlueprintType)
+struct FPakContantInfo
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PakLoader")
+	FString PakName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PakLoader")
+	FString PakFilePath;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PakLoader")
+	FString ContentPath;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PakLoader")
+	FString RootPath;
+};
+
 UCLASS()
 class MODS_API UPakLoader : public UGameInstanceSubsystem
 {
@@ -26,7 +41,7 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "PakLoader")
 	TArray<FString> GetAvailablePakFiles(const FString &ModsDirectory);
 	UFUNCTION(BlueprintCallable, Category = "PakLoader")
-	bool MountPakFileEasy(const FString& PakFilename);
+	bool MountPakFileEasy(const FString& PakFilePath,FString CustomID="");
 	UFUNCTION(BlueprintCallable, Category = "PakLoader")
 	bool MountPakFile(const FString& PakFilename, int32 PakOrder, const FString& MountPath);
 	UFUNCTION(BlueprintCallable, Category = "PakLoader")
@@ -43,4 +58,13 @@ public:
 	void LoadAssetRegistryFile(const FString& AssetRegistryFile);
 	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "PakLoader")
 	bool DoesFileExist(const FString& Filename);
+
+	TMap<FString, FPakContantInfo> MountedPaks;
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "PakLoader")
+	FPakContantInfo GetMountedPak(FString PakName);
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "PakLoader")
+	TMap<FString, FPakContantInfo> GetMountedPaks();
+	//Remove
+	UFUNCTION(BlueprintCallable, Category = "PakLoader")
+	void RemoveMountedPakArray(FString Id);
 };

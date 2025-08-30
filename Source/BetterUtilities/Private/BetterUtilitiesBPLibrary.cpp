@@ -499,12 +499,12 @@ TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClasses_SoftClass(
     return Result;
 }
 
-TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClassesFromAssetTag(FString ClassPath)
+TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClassesFromAssetTag(FString ParentClassPath)
 {
     FString ParentClassTagName;
     //log all class functions
 
-    ParentClassTagName = FString::Printf(TEXT("%s"), *ClassPath);
+    ParentClassTagName = FString::Printf(TEXT("%s"), *ParentClassPath);
     DebugLog(FString::Printf(TEXT("Class Tag Name: %s"), *ParentClassTagName), EEasylog::Warning);
     
     
@@ -525,7 +525,7 @@ TArray<TSoftClassPtr<UObject>> UBetterUtilities::GetAllDerivedClassesFromAssetTa
     
     for (const FAssetData& Asset : Assets)
     {
-        FString ClassPath;
+        FString ClassPath = FString();
         if (Asset.GetTagValue("GeneratedClass", ClassPath))
             //Asset.GetTagValue("GeneratedClassPath", ClassPath))
         {

@@ -711,7 +711,7 @@ public:
     UFUNCTION(BlueprintCallable,blueprintPure,Category = "Utilities")
     static TArray<TSoftClassPtr<UObject>> GetAllDerivedClasses_SoftClass(TSubclassOf<UObject> ParentClass);
     
-    static TArray<TSoftClassPtr<UObject>> GetAllDerivedClassesFromAssetTag(FString ClassPath);
+    static TArray<TSoftClassPtr<UObject>> GetAllDerivedClassesFromAssetTag(FString ParentClassPath);
 
     UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Utilities")
     static TArray<TSoftObjectPtr<UWorld>>  GetAllMaps();

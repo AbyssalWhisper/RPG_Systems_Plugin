@@ -82,10 +82,10 @@ FPakPlatformFile* UPakLoader::GetPakPlatformFile()
 	return PakPlatformFile;
 }
 
-TArray<FString> UPakLoader::GetAvailablePakFiles(const FString &ModsDirectory)
+TArray<FString> UPakLoader::GetAvailablePakFiles(const FString &SearchDirectory)
 {
 	TArray<FString> AvailablePakFiles;
-	FString SearchDirectory = ModsDirectory.IsEmpty() ? FPaths::ProjectDir() / TEXT("Mods") : ModsDirectory;
+	
 	
 	if (!FPaths::DirectoryExists(SearchDirectory))
 	{
@@ -95,18 +95,18 @@ TArray<FString> UPakLoader::GetAvailablePakFiles(const FString &ModsDirectory)
 
 	IFileManager::Get().FindFilesRecursive(AvailablePakFiles, *SearchDirectory, TEXT("*.pak"), true, false);
 
-	UBetterUtilities::DebugLog(FString::Printf(TEXT("Found %d PAK files in directory: %s"), AvailablePakFiles.Num(), *SearchDirectory));
+	UBetterUtilities::DebugLog(FString::Printf(TEXT("Found %d PAK files in directory: %s"), AvailablePakFiles.Num(), *SearchDirectory),EEasylog::Log,true);
 	return AvailablePakFiles;
 }
 
-bool UPakLoader::MountPakFileEasy(const FString& PakFilename)
+bool UPakLoader::MountPakFileEasy(const FString& PakFilePath,FString CustomID)
 {
-	TRefCountPtr<FPakFile> PakFile = new FPakFile(GetPakPlatformFile(), *PakFilename, false);
+	TRefCountPtr<FPakFile> PakFile = new FPakFile(GetPakPlatformFile(), *PakFilePath, false);
 
 	if (!PakFile->IsValid())
 	{
 		PakFile.SafeRelease();
-		UBetterUtilities::DebugLog(FString::Printf(TEXT("Pak file not valid: %s"), *PakFilename));
+		UBetterUtilities::DebugLog(FString::Printf(TEXT("Pak file not valid: %s"), *PakFilePath));
 		return false;
 	}
 
@@ -117,17 +117,17 @@ bool UPakLoader::MountPakFileEasy(const FString& PakFilename)
 		
 		UBetterUtilities::DebugLog(FString::Printf(TEXT("Unable to automatically detect root and content "
 			"path for pak file %s. This happens when there is no AssetRegistry.bin in the pak file. Make sure that your pak "
-			"file has one or use MountPakFile and RegisterMountPoint to specify them yourself."), *PakFilename));
+			"file has one or use MountPakFile and RegisterMountPoint to specify them yourself."), *PakFilePath));
 
 		return false;
 	}
 
 	FString EmptyMP;
-	if (!MountPakFile(PakFilename, INDEX_NONE, EmptyMP))
+	if (!MountPakFile(PakFilePath, INDEX_NONE, EmptyMP))
 	{
 		PakFile.SafeRelease();
 
-		UBetterUtilities::DebugLog(FString::Printf(TEXT("Mounting of pak file failed %s"), *PakFilename));
+		UBetterUtilities::DebugLog(FString::Printf(TEXT("Mounting of pak file failed %s"), *PakFilePath));
 		return false;
 	}
 
@@ -152,7 +152,7 @@ bool UPakLoader::MountPakFileEasy(const FString& PakFilename)
 	GConfig->GetBool(TEXT("/Script/UnrealEd.ProjectPackagingSettings"), TEXT("bShareMaterialShaderCode"), bArchive, GGameIni);
 
 	// extract file name without extension
-	FString ContentPathWithoutPak = FPaths::GetBaseFilename(PakFilename);
+	FString ContentPathWithoutPak = FPaths::GetBaseFilename(PakFilePath);
 	static const FName AssetRegistryModuleName(TEXT("AssetRegistry"));
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryModuleName);
 	//AssetRegistryModule.Get().ScanPathsSynchronous({ "/"+ContentPathWithoutPak }, true);  // ou outro path se for diferente
@@ -184,6 +184,10 @@ bool UPakLoader::MountPakFileEasy(const FString& PakFilename)
 	{
 		FShaderCodeLibrary::OpenLibrary(FApp::GetProjectName(), ContentPath);
 	}
+
+	if (CustomID.IsEmpty()) CustomID = FPaths::GetBaseFilename(PakFilePath);
+	MountedPaks.Add(CustomID, FPakContantInfo{FPaths::GetBaseFilename(PakFilePath),PakFilePath,ContentPath,RootPath});
+	
 	return true;
 }
 
@@ -307,4 +311,23 @@ void UPakLoader::LoadAssetRegistryFile(const FString &AssetRegistryFile)
 bool UPakLoader::DoesFileExist(const FString &Filename)
 {
 	return GetPakPlatformFile()->FileExists(*Filename);
+}
+
+FPakContantInfo UPakLoader::GetMountedPak(FString PakName)
+{
+	if (MountedPaks.Contains(PakName))
+	{
+		return MountedPaks[PakName];
+	}
+	return FPakContantInfo();
+}
+
+TMap<FString, FPakContantInfo> UPakLoader::GetMountedPaks()
+{
+	return MountedPaks;
+}
+
+void UPakLoader::RemoveMountedPakArray(FString Id)
+{
+	MountedPaks.Remove(Id);
 }

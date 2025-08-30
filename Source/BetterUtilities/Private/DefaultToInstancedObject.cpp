@@ -6,6 +6,9 @@
 UWorld* UDefaultToInstancedObject::GetWorld() const
 {
 	if (GetOuter() == nullptr)	return nullptr;
+
+	if (Cast<UGameInstance>(GetOuter())) return Cast<UGameInstance>(GetOuter())->GetWorld();
+	
 	
 	if (Cast<UPackage>(GetOuter()) != nullptr)
 	{
