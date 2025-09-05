@@ -279,9 +279,13 @@ TSharedRef<SWidget> UViewportUserWidget::RebuildWidget()
 
 void UViewportUserWidget::InitializeViewport()
 {
+    
     if (!PreviewScene.IsValid())
     {
         // Criar a cena de preview
+        //auto Values = FPreviewScene::ConstructionValues();
+        //Values
+        
         PreviewScene = MakeShareable(new FAdvancedPreviewScene(FPreviewScene::ConstructionValues()));
         PreviewScene->SetFloorVisibility(bShowFloor, true);
         
@@ -290,6 +294,7 @@ void UViewportUserWidget::InitializeViewport()
         {
             PreviewScene->GetWorld()->bShouldSimulatePhysics = true;
         }
+        PreviewScene->GetWorld()->bAllowAudioPlayback = true;
     }
     
     if (!ViewportWidget.IsValid())

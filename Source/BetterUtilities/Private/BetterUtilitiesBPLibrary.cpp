@@ -596,6 +596,11 @@ TArray<UDataAsset*> UBetterUtilities::GetAllDataAssetsOfClass_BP(TSubclassOf<UDa
     return DataAssets;
 }
 
+bool UBetterUtilities::IsStatEnabled(FString StatName)
+{
+    return GEngine->GameViewport->IsStatEnabled(StatName);
+}
+
 
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"

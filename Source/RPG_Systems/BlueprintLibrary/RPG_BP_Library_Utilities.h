@@ -101,7 +101,7 @@ public:
 		static FString GetProjectVersion();
 	UFUNCTION(BlueprintCallable, Category = "RPG Utilities")
 		static bool InitStatsByCharacterData(UAbilitySystemComponent* AbilitySystemCom, URPG_CharacterDataAsset* CharacterData);
-	 
+
 	UFUNCTION(BlueprintCallable)
 		static void SetAttributeValue(UAbilitySystemComponent* AbilitySystemComp, FGameplayAttribute Attribute, EGameplayModOp::Type Modifier, float Value);
 	UFUNCTION(BlueprintPure, Category = "Snap")
@@ -119,6 +119,7 @@ public:
 			return Cast<T>(Actor->GetComponentByClass(T::StaticClass()));
 		}
 		return nullptr;
+		
 	}
 
 	

@@ -730,6 +730,9 @@ public:
         }
         return 0; 
     }
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+    static bool IsStatEnabled(FString StatName);
     
     // IsInGameThread
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
