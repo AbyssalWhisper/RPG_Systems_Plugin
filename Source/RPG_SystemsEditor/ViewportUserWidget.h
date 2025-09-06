@@ -162,6 +162,9 @@ public:
     UFUNCTION(BlueprintCallable,meta=(DeterminesOutputType ="ActorClass"), Category = "Viewport")
     AActor* SpawnActorByClass(TSubclassOf<AActor> ActorClass, FVector Location = FVector::ZeroVector,
                               FRotator Rotation = FRotator::ZeroRotator);
+
+    UFUNCTION(BlueprintCallable, Category = "Viewport")
+    UObject* GetViewportWorld() const { return PreviewScene->GetWorld(); }
 protected:
     virtual TSharedRef<SWidget> RebuildWidget() override;
 
