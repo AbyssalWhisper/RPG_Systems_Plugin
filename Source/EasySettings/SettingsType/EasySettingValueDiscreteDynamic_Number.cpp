@@ -12,14 +12,25 @@ UEasySettingValueDiscreteDynamic_Number::UEasySettingValueDiscreteDynamic_Number
 	Options.Add(NSLOCTEXT("EasySettings", "Quality_Cinematic", "Cinematic"));
 }
 
-void UEasySettingValueDiscreteDynamic_Number::SetValue(int NewValue)
+void UEasySettingValueDiscreteDynamic_Number::SetValue_Logic_Implementation(int NewValue)
 {
 }
 
-int UEasySettingValueDiscreteDynamic_Number::GetValue() const
+int UEasySettingValueDiscreteDynamic_Number::GetValue_Implementation() const
 {
 	return 0;
 }
+
+
+
+void UEasySettingValueDiscreteDynamic_Number::SetValue(int NewValue)
+{
+	SetValue_Logic(NewValue);
+	OnValueChanged.Broadcast(NewValue);
+	OnSettingChanged.Broadcast(this);
+}
+
+
 
 FText UEasySettingValueDiscreteDynamic_Number::GetCurrentOptionName()
 {

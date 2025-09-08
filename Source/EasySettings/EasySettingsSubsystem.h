@@ -20,4 +20,6 @@ public:
 	UEasySettingBase* GetSettingByClass(TSubclassOf<class UEasySettingBase> SettingClass) const;
 	UPROPERTY(blueprintReadOnly, Category="Easy Settings")
 	TSet<UEasySettingBase*> Settings;
+
+	void InitializeDependencies();
 };

@@ -19,6 +19,7 @@ void UEasySettingsSubsystem::InitializeSettings(TArray<TSubclassOf<class UEasySe
 			}
 		}
 	}
+	InitializeDependencies();
 }
 
 UEasySettingBase* UEasySettingsSubsystem::GetSettingByClass(TSubclassOf<class UEasySettingBase> SettingClass) const
@@ -34,4 +35,28 @@ UEasySettingBase* UEasySettingsSubsystem::GetSettingByClass(TSubclassOf<class UE
 
 	UE_LOG(LogTemp, Warning, TEXT("No match for: %s"), *SettingClass->GetName());
 	return nullptr;
+}
+
+void UEasySettingsSubsystem::InitializeDependencies()
+{
+	for (UEasySettingBase* Setting : Settings)
+	{
+		for (auto DependencyClass : Setting->SettingsDependency)
+		{
+			if (DependencyClass)
+			{
+				UEasySettingBase* DependencySetting = GetSettingByClass(DependencyClass);
+				if (DependencySetting)
+				{
+					DependencySetting->OnSettingChanged.AddDynamic(Setting, &UEasySettingBase::OnDependentConfigurationChanged_Internal);
+					
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Setting %s depends on %s"), *Setting->GetClass()->GetName(), *DependencySetting->GetClass()->GetName());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Dependency %s for setting %s not found"), *DependencyClass->GetName(), *Setting->GetClass()->GetName());
+			}
+		}
+	}
 }

@@ -15,6 +15,7 @@ class EASYSETTINGS_API UEasySettingBase : public UObject
 	GENERATED_BODY()
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSettingChanged, UEasySettingBase*, Setting);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDependentConfigurationChanged, UEasySettingBase*, Setting);
 	
 	UPROPERTY(BlueprintAssignable, Category="Easy Settings")
 	FOnSettingChanged OnSettingChanged;
@@ -22,6 +23,10 @@ public:
 	TArray<FText> Options;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
 	int32 CurrentOptionIndex = 0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
+	FText SettingName;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
+	FOnDependentConfigurationChanged OnDependentConfigurationChanged;
 	
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
 	void AddOption(const FText& NewOption)
@@ -41,10 +46,25 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
+	void OnDependentConfigurationChanged_Internal(UEasySettingBase* Setting)
+	{
+		OnDependentConfigurationChanged.Broadcast(Setting);
+	}
+	
+	UFUNCTION(BlueprintCallable, Category="Easy Settings")
 	virtual FText GetCurrentOptionName();
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
 	FText GetOptionNameByIndex(int32 Index) const
 	{
 		return Options.IsValidIndex(Index) ? Options[Index] : FText::FromString("Invalid Index");
 	};
+
+	//SettingsDependency
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
+	TArray<TSubclassOf<UEasySettingBase>> SettingsDependency;
+	
+	//DisplayCondition
+	UFUNCTION(BlueprintCallable, Category="Easy Settings")
+	virtual bool IsDisplayConditionMet() const { return true; };
+	//
 };

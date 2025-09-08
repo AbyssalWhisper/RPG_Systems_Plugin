@@ -5,23 +5,21 @@
 
 #include "GameFramework/GameUserSettings.h"
 
-void UEasyShadowSetting::SetValue(int NewValue)
+void UEasyShadowSetting::SetValue_Logic_Implementation(int NewValue)
 {
 	// set the shadow quality
 	UGameUserSettings::GetGameUserSettings()->SetShadowQuality(NewValue);
 	OnSettingChanged.Broadcast(this);
 	OnValueChanged.Broadcast(NewValue);
+	
 }
 
-int UEasyShadowSetting::GetValue() const
+int UEasyShadowSetting::GetValue_Implementation() const
 {
 	return UGameUserSettings::GetGameUserSettings()->GetShadowQuality();
 }
 
 UEasyShadowSetting::UEasyShadowSetting()
 {
-	// add options with localized text
-	
+	SettingName = NSLOCTEXT("EasySettings", "ShadowSetting", "Shadow Quality");
 }
-
-

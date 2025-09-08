@@ -16,10 +16,15 @@ class EASYSETTINGS_API UEasySettingValueDiscreteDynamic_Number : public UEasySet
 public:
 	UEasySettingValueDiscreteDynamic_Number();
 	
+	
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,  Category = "EasySettings|ValueDiscreteDynamic_Number")
+	void SetValue_Logic(int NewValue);
 	UFUNCTION(BlueprintCallable, Category = "EasySettings|ValueDiscreteDynamic_Number")
 	virtual void SetValue(int NewValue);
-	UFUNCTION(BlueprintCallable, Category = "EasySettings|ValueDiscreteDynamic_Number")
-	virtual int GetValue() const;
+	
+	
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent, Category = "EasySettings|ValueDiscreteDynamic_Number")
+	int GetValue() const;
 
 	virtual FText GetCurrentOptionName() override;
 	
