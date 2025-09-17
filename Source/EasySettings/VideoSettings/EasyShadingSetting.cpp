@@ -19,3 +19,8 @@ UEasyShadingSetting::UEasyShadingSetting()
 {
 	SettingName = NSLOCTEXT("EasySettings", "ShadingSetting", "Shading Quality");
 }
+
+bool UEasyShadingSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

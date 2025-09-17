@@ -54,7 +54,7 @@ void URPG_BasePhysicsCharacterAnimInstance::NativeUpdateAnimation(float DeltaSec
 
 	bIsMoving = MoveSpeed >= IsMovingStartVelocity;
 
-	//Direction = FMath::FInterpTo(Direction, RefCharacter->GetCapsuleComponent()->GetPhysicsAngularVelocityInDegrees().Z, DeltaSeconds, RotationSpeed);
+	Direction = FMath::FInterpTo(Direction, RefCharacter->CollisionCylinder->GetPhysicsAngularVelocityInDegrees().Z, DeltaSeconds, RotationSpeed);
 	ForwardVelocity = UKismetMathLibrary::LessLess_VectorRotator(RefCharacter->GetVelocity(), RefCharacter->GetActorRotation()).X;
 	
 	/*

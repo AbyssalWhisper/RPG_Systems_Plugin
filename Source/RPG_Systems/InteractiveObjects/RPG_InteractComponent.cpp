@@ -65,7 +65,12 @@ void URPG_InteractComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 				TArray<AActor*> IgnoreActors;
 				IgnoreActors.Add(PlayerController->GetPawn());
 				FHitResult hit;
-				bool Sucess = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), PlayerController->PlayerCameraManager->GetCameraLocation(), PlayerController->PlayerCameraManager->GetCameraLocation() + (UKismetMathLibrary::GetForwardVector(PlayerController->PlayerCameraManager->GetCameraRotation()) * 1000), 10.f, UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility), false, IgnoreActors, EDrawDebugTrace::None, hit, true);
+				bool Sucess = UKismetSystemLibrary::SphereTraceSingle(GetWorld(),
+					PlayerController->PlayerCameraManager->GetCameraLocation(),
+					PlayerController->PlayerCameraManager->GetCameraLocation()
+					+ (UKismetMathLibrary::GetForwardVector(PlayerController->PlayerCameraManager->GetCameraRotation()) * 1000),
+					10.f, UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
+					false, IgnoreActors, EDrawDebugTrace::ForOneFrame, hit, true);
 
 				if (Sucess) {
 
@@ -152,12 +157,13 @@ void URPG_InteractComponent::TryPickupItemOnServer_Implementation(ARPG_MasterIte
 	bool Sucess = false;
 	if (ItemActor)
 	{
-		ARPG_PlayerCharacter* PlayerCharacter  = Cast<ARPG_PlayerCharacter>(PlayerController->GetPawn());
-		if (PlayerCharacter)
+		
+		auto InventoryComponent = PlayerController->GetPawn()->GetComponentByClass<URPG_InventoryComponent>();
+		if (InventoryComponent)
 		{
 			FSTR_RPG_ItemSlot RemainingItem;
 
-			if (!PlayerCharacter->Inventory->TryAddItem(ItemActor->Item.Item,ItemActor->Item.Count, RemainingItem))return;
+			if (!InventoryComponent->TryAddItem(ItemActor->Item.Item,ItemActor->Item.Count, RemainingItem))return;
 
 			if (RemainingItem.Count>0)
 			{

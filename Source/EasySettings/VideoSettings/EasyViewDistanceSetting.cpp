@@ -17,3 +17,8 @@ UEasyViewDistanceSetting::UEasyViewDistanceSetting()
 {
     SettingName = NSLOCTEXT("EasySettings", "ViewDistanceSetting", "View Distance Quality");
 }
+
+bool UEasyViewDistanceSetting::IsDisplayConditionMet_Implementation()
+{
+    return Super::IsDisplayConditionMet_Implementation();
+}

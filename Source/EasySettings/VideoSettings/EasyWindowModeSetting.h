@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "EasySettings/SettingsType/EasySettingValueDiscreteDynamic_Number.h"
-#include "EasyShadowSetting.generated.h"
+#include "EasyWindowModeSetting.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EASYSETTINGS_API UEasyShadowSetting : public UEasySettingValueDiscreteDynamic_Number
+class EASYSETTINGS_API UEasyWindowModeSetting : public UEasySettingValueDiscreteDynamic_Number
 {
 	GENERATED_BODY()
 
@@ -18,7 +18,7 @@ public:
 	virtual void SetValue_Logic_Implementation(int NewValue) override;
 	virtual int GetValue_Implementation() const override;
 	
-	UEasyShadowSetting();
+	UEasyWindowModeSetting();
 
 	virtual bool IsDisplayConditionMet_Implementation() override;
 };

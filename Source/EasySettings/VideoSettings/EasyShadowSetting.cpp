@@ -23,3 +23,8 @@ UEasyShadowSetting::UEasyShadowSetting()
 {
 	SettingName = NSLOCTEXT("EasySettings", "ShadowSetting", "Shadow Quality");
 }
+
+bool UEasyShadowSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

@@ -19,3 +19,8 @@ UEasyReflectionsSetting::UEasyReflectionsSetting()
 {
 	SettingName = NSLOCTEXT("EasySettings", "ReflectionsSetting", "Reflections Quality");
 }
+
+bool UEasyReflectionsSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

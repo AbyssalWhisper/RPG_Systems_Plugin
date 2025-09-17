@@ -19,3 +19,8 @@ UEasyGlobalIlluminationSetting::UEasyGlobalIlluminationSetting()
 {
 	SettingName = NSLOCTEXT("EasySettings", "GlobalIlluminationSetting", "Global Illumination Quality");
 }
+
+bool UEasyGlobalIlluminationSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

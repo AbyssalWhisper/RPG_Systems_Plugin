@@ -31,4 +31,13 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnValueChanged, int, NewValue);
 	UPROPERTY(BlueprintAssignable, Category = "EasySettings|ValueDiscreteDynamic_Number")
 	FOnValueChanged OnValueChanged;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Easy Settings")
+	void NextOption();
+	virtual void NextOption_Implementation();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Easy Settings")
+	void PreviousOption();
+	virtual void PreviousOption_Implementation();
+	
+	
 };

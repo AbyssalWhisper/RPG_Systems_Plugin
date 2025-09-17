@@ -19,4 +19,6 @@ public:
 	virtual int GetValue_Implementation() const override;
 	
 	UEasyFoliageSetting();
+
+	virtual bool IsDisplayConditionMet_Implementation() override;
 };

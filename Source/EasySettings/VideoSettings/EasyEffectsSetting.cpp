@@ -19,3 +19,8 @@ UEasyEffectsSetting::UEasyEffectsSetting()
 {
 	SettingName = NSLOCTEXT("EasySettings", "EffectsSetting", "Effects Quality");
 }
+
+bool UEasyEffectsSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

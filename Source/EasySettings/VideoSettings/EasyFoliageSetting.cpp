@@ -17,3 +17,8 @@ UEasyFoliageSetting::UEasyFoliageSetting()
 {
     SettingName = NSLOCTEXT("EasySettings", "FoliageSetting", "Foliage Quality");
 }
+
+bool UEasyFoliageSetting::IsDisplayConditionMet_Implementation()
+{
+    return Super::IsDisplayConditionMet_Implementation();
+}

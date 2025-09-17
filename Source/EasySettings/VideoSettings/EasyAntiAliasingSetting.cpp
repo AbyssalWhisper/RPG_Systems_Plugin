@@ -19,3 +19,8 @@ UEasyAntiAliasingSetting::UEasyAntiAliasingSetting()
 {
 	SettingName = NSLOCTEXT("EasySettings", "AntiAliasingSetting", "Anti-Aliasing Quality");
 }
+
+bool UEasyAntiAliasingSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

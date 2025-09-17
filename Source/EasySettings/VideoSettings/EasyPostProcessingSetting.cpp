@@ -19,3 +19,8 @@ UEasyPostProcessingSetting::UEasyPostProcessingSetting()
 {
     SettingName = NSLOCTEXT("EasySettings", "PostProcessingSetting", "Post Processing Quality");
 }
+
+bool UEasyPostProcessingSetting::IsDisplayConditionMet_Implementation()
+{
+	return Super::IsDisplayConditionMet_Implementation();
+}

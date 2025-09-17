@@ -227,7 +227,7 @@ public:
         return nullptr;
     }
 
-    UFUNCTION(BlueprintPure, Category = "Actor",meta=(WorldContext="WorldContextObject"))
+    UFUNCTION(BlueprintPure, Category = "Actor",meta=(WorldContext="WorldContextObject",DeterminesOutputType = "GameInstanceClass"))
     static UObject* GetGameInstanceWithAutoCastPure(const UObject* WorldContextObject, TSubclassOf<UGameInstance> GameInstanceClass) {
         if (GameInstanceClass && WorldContextObject && WorldContextObject->GetWorld()) {
             UGameInstance* Game = Cast<UGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject->GetWorld()));

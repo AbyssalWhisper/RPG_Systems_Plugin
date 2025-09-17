@@ -14,4 +14,6 @@ public:
 	virtual int GetValue_Implementation() const override;
 
 	UEasyPostProcessingSetting();
+
+	virtual bool IsDisplayConditionMet_Implementation() override;
 };

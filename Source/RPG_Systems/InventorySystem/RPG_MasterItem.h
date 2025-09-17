@@ -31,5 +31,6 @@ public:
 		void Interact(APlayerController* PlayerController);
 		void Interact_Implementation(APlayerController* PlayerController);
 		virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual FText GetInteractText_Implementation() override;
 };

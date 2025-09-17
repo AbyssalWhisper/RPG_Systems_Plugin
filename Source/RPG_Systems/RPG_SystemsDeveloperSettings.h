@@ -26,4 +26,10 @@ public:
 	{
 		return GetMutableDefault<URPG_SystemsDeveloperSettings>();
 	}
+
+	UFUNCTION(BlueprintCallable, Category = "RPG Systems Settings")
+	void SaveConfig_()
+	{
+		SaveConfig();
+	}
 };

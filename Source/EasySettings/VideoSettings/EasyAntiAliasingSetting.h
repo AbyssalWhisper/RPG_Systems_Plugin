@@ -14,4 +14,6 @@ public:
 	virtual int GetValue_Implementation() const override;
 
 	UEasyAntiAliasingSetting();
+
+	virtual bool IsDisplayConditionMet_Implementation() override;
 };

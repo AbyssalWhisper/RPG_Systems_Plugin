@@ -14,4 +14,6 @@ public:
 	virtual int GetValue_Implementation() const override;
 
 	UEasyGlobalIlluminationSetting();
+
+	virtual bool IsDisplayConditionMet_Implementation() override;
 };

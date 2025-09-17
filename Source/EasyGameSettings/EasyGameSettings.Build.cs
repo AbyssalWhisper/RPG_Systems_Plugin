@@ -19,6 +19,7 @@ public class EasyGameSettings : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
+                "RHI",
                 "SlateCore"
             }
         );

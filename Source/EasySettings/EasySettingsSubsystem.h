@@ -22,4 +22,5 @@ public:
 	TSet<UEasySettingBase*> Settings;
 
 	void InitializeDependencies();
+	void CallInitFunctions();
 };

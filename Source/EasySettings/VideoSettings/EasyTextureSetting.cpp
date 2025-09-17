@@ -19,3 +19,8 @@ UEasyTextureSetting::UEasyTextureSetting()
 {
     SettingName = NSLOCTEXT("EasySettings", "TextureSetting", "Texture Quality");
 }
+
+bool UEasyTextureSetting::IsDisplayConditionMet_Implementation()
+{
+    return Super::IsDisplayConditionMet_Implementation();
+}

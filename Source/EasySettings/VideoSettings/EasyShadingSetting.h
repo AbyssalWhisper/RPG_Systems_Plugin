@@ -14,4 +14,5 @@ public:
 	virtual int GetValue_Implementation() const override;
 
 	UEasyShadingSetting();
+	virtual bool IsDisplayConditionMet_Implementation() override;
 };

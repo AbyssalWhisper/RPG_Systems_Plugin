@@ -19,6 +19,8 @@ public class EasySettings : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
+                "RHI",
+                "DeveloperSettings",
                 "SlateCore"
             }
         );

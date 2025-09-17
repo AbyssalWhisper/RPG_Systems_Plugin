@@ -14,4 +14,5 @@ public:
 	virtual int GetValue_Implementation() const override;
 
 	UEasyViewDistanceSetting();
+	virtual bool IsDisplayConditionMet_Implementation() override;
 };

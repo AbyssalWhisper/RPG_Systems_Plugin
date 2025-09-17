@@ -36,3 +36,26 @@ FText UEasySettingValueDiscreteDynamic_Number::GetCurrentOptionName()
 {
 	return GetOptionNameByIndex(GetValue());
 }
+
+void UEasySettingValueDiscreteDynamic_Number::NextOption_Implementation()
+{
+	if (GetValue() + 1 < Options.Num())
+	{
+		SetValue(GetValue() + 1);
+	}else
+	{
+		SetValue(0);
+	}
+}
+
+void UEasySettingValueDiscreteDynamic_Number::PreviousOption_Implementation()
+{
+	if (GetValue() - 1 >= 0)
+	{
+		SetValue(GetValue() - 1);
+	}
+	else
+	{
+		SetValue(Options.Num() - 1);
+	}
+}

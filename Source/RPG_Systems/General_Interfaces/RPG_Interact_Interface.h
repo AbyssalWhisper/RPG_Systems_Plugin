@@ -25,4 +25,6 @@ class RPG_SYSTEMS_API IRPG_Interact_Interface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		void Interact(APlayerController* PlayerController);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		FText GetInteractText();
 };

@@ -67,15 +67,9 @@ void URPG_InventoryComponent::BeginPlay()
 					if (InventorySlot.DecayTime <= 0)
 					{
 						bool Sucess = false;
-						URPG_ItemData* DecayItem;
-						if (!InventorySlot.Item->DecayItem.IsNull())
+						URPG_ItemData* DecayItem = InventorySlot.Item->DecayItem.LoadSynchronous();
+						if (DecayItem)
 						{
-							if (InventorySlot.Item->DecayItem.ToSoftObjectPath().IsValid())
-							{
-								DecayItem = InventorySlot.Item->DecayItem.Get();
-							}else {
-								DecayItem = InventorySlot.Item->DecayItem.LoadSynchronous();
-							}
 							InventorySlot.DecayTime = InventorySlot.Item->DecayTime;
 							RemoveItemFromIndex(i,1, Sucess);
 							FSTR_RPG_ItemSlot RemainingItems;
@@ -639,4 +633,5 @@ void URPG_InventoryComponent::OnItemRemoved(URPG_ItemData* Item_, int Count_)
 		}
 	}
 }
+
 

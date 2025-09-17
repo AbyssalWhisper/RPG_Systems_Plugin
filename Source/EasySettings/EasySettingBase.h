@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "EasySettingBase.generated.h"
 
+class UEasySettingsSubsystem;
 /**
  * 
  */
@@ -25,7 +26,7 @@ public:
 	int32 CurrentOptionIndex = 0;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
 	FText SettingName;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
+	UPROPERTY(BlueprintAssignable, Category="Easy Settings")
 	FOnDependentConfigurationChanged OnDependentConfigurationChanged;
 	
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
@@ -46,7 +47,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
-	void OnDependentConfigurationChanged_Internal(UEasySettingBase* Setting)
+	virtual void OnDependentConfigurationChanged_Internal(UEasySettingBase* Setting)
 	{
 		OnDependentConfigurationChanged.Broadcast(Setting);
 	}
@@ -62,9 +63,20 @@ public:
 	//SettingsDependency
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Easy Settings")
 	TArray<TSubclassOf<UEasySettingBase>> SettingsDependency;
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category="Easy Settings")
+	void Init();
+	virtual void Init_Implementation();
 	
 	//DisplayCondition
-	UFUNCTION(BlueprintCallable, Category="Easy Settings")
-	virtual bool IsDisplayConditionMet() const { return true; };
-	//
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable,BlueprintPure, Category="Easy Settings")
+	bool IsDisplayConditionMet();
+	virtual bool IsDisplayConditionMet_Implementation();
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable,BlueprintPure, Category="Easy Settings")
+	bool EditConditionMet();
+	virtual bool EditConditionMet_Implementation();
+
+	UPROPERTY(BlueprintReadOnly, Category="Easy Settings")
+	UEasySettingsSubsystem* SettingsSubsystem;
+	
 };
