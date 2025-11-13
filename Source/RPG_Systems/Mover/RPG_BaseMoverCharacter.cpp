@@ -69,7 +69,7 @@ ARPG_BaseMoverCharacter::ARPG_BaseMoverCharacter(const FObjectInitializer& Objec
 	CollisionCylinder->SetCollisionProfileName("BlockAll");
 	RootComponent = CollisionCylinder;
 	 
- 
+	PrimaryActorTick.SetTickFunctionEnable(true);
  
 }
 
@@ -152,7 +152,7 @@ void ARPG_BaseMoverCharacter::PawnClientRestart()
 // Called every frame
 void ARPG_BaseMoverCharacter::Tick(float DeltaTime)
 {
-	//Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
 	UpdateCameraRotation(DeltaTime);
 	CachedLookInput = FRotator::ZeroRotator;
