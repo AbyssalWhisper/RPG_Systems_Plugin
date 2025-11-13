@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ChaosMover/Character/ChaosCharacterMoverComponent.h"
 #include "CharacterVariants/MoverExamplesPhysicsCharacterMoverComponent.h"
 #include "DefaultMovementSet/CharacterMoverComponent.h"
 #include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
@@ -17,7 +18,7 @@ class UPhysicsCharacterMovementModeInterface;
  * 
  */
 UCLASS(Blueprintable,BlueprintType,meta=(BlueprintSpawnableComponent))
-class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UMoverExamplesPhysicsCharacterMoverComponent
+class RPG_SYSTEMS_API URPG_CharacterMoverComponent : public UChaosCharacterMoverComponent
 {
 protected:
 	virtual void
@@ -49,7 +50,6 @@ public:
 	virtual bool IsClimbing() const;
 
 protected:
-	virtual void OnMoverPostSimulationTick(const FMoverTimeStep& TimeStep) override;
 
 public:
 #pragma region InstantMovementEffects

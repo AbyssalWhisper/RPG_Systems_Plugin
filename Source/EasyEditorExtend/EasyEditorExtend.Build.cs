@@ -22,5 +22,6 @@ public class EasyEditorExtend : ModuleRules
                 "SlateCore","ToolMenus","EditorSubsystem", "Blutility" ,"UMG","UMGEditor", "EditorScriptingUtilities"
             }
         );
+         
     }
 }

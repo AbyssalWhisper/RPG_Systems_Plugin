@@ -28,8 +28,6 @@ URPG_InventoryComponent::URPG_InventoryComponent()
 	{
 		Item_DT.DataTable = DatatableRef.Object;
 	}*/
-
-	
 }
 
 
@@ -433,6 +431,8 @@ int URPG_InventoryComponent::GetItemCount(URPG_ItemData* Item)
 			FoundCount += Items[i].Count;
 		}
 	}
+	// print debug
+	//UBetterUtilities::DebugLog
 	return FoundCount;
 }
 

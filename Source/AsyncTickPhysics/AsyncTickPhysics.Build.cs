@@ -52,5 +52,6 @@ public class AsyncTickPhysics : ModuleRules
 			);
 
 		SetupModulePhysicsSupport(Target);
+		 
 	}
 }

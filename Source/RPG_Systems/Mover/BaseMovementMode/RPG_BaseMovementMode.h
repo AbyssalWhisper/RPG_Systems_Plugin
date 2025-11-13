@@ -7,6 +7,7 @@
 #include "PhysicsMover/PhysicsMoverSimulationTypes.h"
 
 #include "MovementMode.h"
+#include "ChaosMover/ChaosMovementMode.h"
 
 #include "RPG_BaseMovementMode.generated.h"
 
@@ -14,7 +15,7 @@
  * 
  */
 UCLASS()
-class RPG_SYSTEMS_API URPG_BaseMovementMode : public UBaseMovementMode
+class RPG_SYSTEMS_API URPG_BaseMovementMode : public UChaosMovementMode
 {
 public:
 	//virtual void UpdateConstraintSettings(Chaos::FCharacterGroundConstraint& Constraint) const override;
@@ -23,7 +24,7 @@ private:
 	GENERATED_BODY()
 
 public:
-	URPG_BaseMovementMode();
+	URPG_BaseMovementMode(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	FName NextModeName = "";

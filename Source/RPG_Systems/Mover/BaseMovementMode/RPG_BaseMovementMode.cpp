@@ -6,7 +6,11 @@
 #include "Chaos/PhysicsObject.h"
 
 #include "MoverComponent.h"
+#include "ChaosMover/ChaosMoverLog.h"
+#include "ChaosMover/ChaosMoverSimulation.h"
+#include "ChaosMover/ChaosMoverSimulationTypes.h"
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "MoveLibrary/AirMovementUtils.h"
 #include "PhysicsMover/PhysicsMoverSimulationTypes.h" 
 #include "HAL/IConsoleManager.h"
@@ -31,10 +35,13 @@ void URPG_BaseMovementMode::UpdateConstraintSettings(Chaos::FCharacterGroundCons
 	Constraint.SetTargetHeight(0.0f);
 }*/
 
-URPG_BaseMovementMode::URPG_BaseMovementMode()
-{ 
+URPG_BaseMovementMode::URPG_BaseMovementMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
 }
+
 #if WITH_EDITOR
+
+
 EDataValidationResult URPG_BaseMovementMode::IsDataValid(FDataValidationContext& Context) const
 {
 	EDataValidationResult Result = Super::IsDataValid(Context);
@@ -49,63 +56,41 @@ void URPG_BaseMovementMode::OnSimulationTick(const FSimulationTickParams& Params
 void URPG_BaseMovementMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 #endif
 {
- 
-const UMoverComponent* MoverComp = GetMoverComponent();
-	const FMoverTickStartData& StartState = Params.StartState;
-	USceneComponent* UpdatedComponent = Params.MovingComps.UpdatedComponent.Get();
-	FProposedMove ProposedMove = Params.ProposedMove;
+	if (!Simulation)
+	{
+		UE_LOG(LogChaosMover, Warning, TEXT("No Simulation set on ChaosFlyingMode"));
+		return;
+	}
 
-	const FCharacterDefaultInputs* CharacterInputs = StartState.InputCmd.InputCollection.FindDataByType<FCharacterDefaultInputs>();
-	const FMoverDefaultSyncState* StartingSyncState = StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
+	const FChaosMoverSimulationDefaultInputs* DefaultSimInputs = Simulation->GetLocalSimInput().FindDataByType<FChaosMoverSimulationDefaultInputs>();
+	if (!DefaultSimInputs)
+	{
+		UE_LOG(LogChaosMover, Warning, TEXT("ChaosFlyingMode requires FChaosMoverSimulationDefaultInputs"));
+		return;
+	}
+
+	const FMoverDefaultSyncState* StartingSyncState = Params.StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
 	check(StartingSyncState);
 
+	FProposedMove ProposedMove = Params.ProposedMove;
 	FMoverDefaultSyncState& OutputSyncState = OutputState.SyncState.SyncStateCollection.FindOrAddMutableDataByType<FMoverDefaultSyncState>();
 
 	const float DeltaSeconds = Params.TimeStep.StepMs * 0.001f;
 
-	FMovementRecord MoveRecord;
-	MoveRecord.SetDeltaSeconds(DeltaSeconds);
+	const FRotator TargetOrient = UMovementUtils::ApplyAngularVelocityToRotator(StartingSyncState->GetOrientation_WorldSpace(), ProposedMove.AngularVelocityDegrees, DeltaSeconds);
 
-	UMoverBlackboard* SimBlackboard = MoverComp->GetSimBlackboard_Mutable();
+	// The physics simulation applies Z-only gravity acceleration via physics volumes, so we need to account for it here 
+	FVector TargetVel = ProposedMove.LinearVelocity - DefaultSimInputs->PhysicsObjectGravity * FVector::UpVector * DeltaSeconds;
+	FVector TargetPos = StartingSyncState->GetLocation_WorldSpace() + TargetVel * DeltaSeconds;
 
-	SimBlackboard->Invalidate(CommonBlackboard::LastFloorResult);	// flying = no valid floor
-	SimBlackboard->Invalidate(CommonBlackboard::LastFoundDynamicMovementBase);
-
-	OutputSyncState.MoveDirectionIntent = (ProposedMove.bHasDirIntent ? ProposedMove.DirectionIntent : FVector::ZeroVector);
-
-	// Use the orientation intent directly. If no intent is provided, use last frame's orientation. Note that we are assuming rotation changes can't fail. 
-	const FRotator StartingOrient = StartingSyncState->GetOrientation_WorldSpace();
-	FRotator TargetOrient = StartingOrient;
-
-	bool bIsOrientationChanging = false;
-
-	// Apply orientation changes (if any)
-	if (!UMovementUtils::IsAngularVelocityZero(ProposedMove.AngularVelocity))
-	{
-		TargetOrient += (ProposedMove.AngularVelocity * DeltaSeconds);
-		bIsOrientationChanging = (TargetOrient != StartingOrient);
-	}
-	
-	FVector MoveDelta = ProposedMove.LinearVelocity * DeltaSeconds;
-	const FQuat OrientQuat = TargetOrient.Quaternion();
-	FHitResult Hit(1.f);
-
-	if (!MoveDelta.IsNearlyZero() || bIsOrientationChanging)
-	{
-		UMovementUtils::TrySafeMoveUpdatedComponent(Params.MovingComps, MoveDelta, OrientQuat, true, Hit, ETeleportType::None, MoveRecord);
-	}
-
-	if (Hit.IsValidBlockingHit())
-	{
-		UMoverComponent* MoverComponent = GetMoverComponent();
-		FMoverOnImpactParams ImpactParams(DefaultModeNames::Flying, Hit, MoveDelta);
-		MoverComponent->HandleImpact(ImpactParams);
-		// Try to slide the remaining distance along the surface.
-		UMovementUtils::TryMoveToSlideAlongSurface(FMovingComponentSet(MoverComponent), MoveDelta, 1.f - Hit.Time, OrientQuat, Hit.Normal, Hit, true, MoveRecord);
-	}
-
-	CaptureFinalState(UpdatedComponent, MoveRecord, *StartingSyncState, OutputSyncState, DeltaSeconds);
-
+	OutputState.MovementEndState.RemainingMs = 0.0f;
+	OutputState.MovementEndState.NextModeName = Params.StartState.SyncState.MovementMode;
+	OutputSyncState.MoveDirectionIntent = ProposedMove.bHasDirIntent ? ProposedMove.DirectionIntent : FVector::ZeroVector;
+	OutputSyncState.SetTransforms_WorldSpace(
+		TargetPos,
+		TargetOrient,
+		TargetVel,
+		ProposedMove.AngularVelocityDegrees);
 }
 
 void URPG_BaseMovementMode::CaptureFinalState(USceneComponent* UpdatedComponent, FMovementRecord& Record,
@@ -272,17 +257,12 @@ FFloorCheckResult URPG_BaseMovementMode::GetCurrentFloor() const
 	// If we don't have cached floor information, we need to search for it again
 	if (!SimBlackboard->TryGet(CommonBlackboard::LastFloorResult, CurrentFloor))
 	{
-	#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 5
-		UFloorQueryUtils::FindFloor(MovingComponents.UpdatedComponent.Get()
-			,MovingComponents.UpdatedPrimitive.Get(),
+	UFloorQueryUtils::FindFloor(MovingComponents,
 			CommonLegacySettings->FloorSweepDistance,
 			CommonLegacySettings->MaxWalkSlopeCosine,
+			CommonLegacySettings->bUseFlatBaseForFloorChecks,
 			GetMoverComponent()->GetUpdatedComponent()->GetComponentLocation(),
 			CurrentFloor);
-	#elif ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 6
-				UFloorQueryUtils::FindFloor(MovingComponents, CommonLegacySettings->FloorSweepDistance, CommonLegacySettings->MaxWalkSlopeCosine, GetMoverComponent()->GetUpdatedComponent()->GetComponentLocation(), CurrentFloor);
-		#endif
-
 	}
 	return CurrentFloor;
 }

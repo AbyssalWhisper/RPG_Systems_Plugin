@@ -46,7 +46,6 @@ public:
 	FTimerHandle DecayTimerHandle;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	
 	virtual void InitContainer();
 	UFUNCTION(Client,Reliable)

@@ -55,7 +55,7 @@ public class BetterUtilities : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 		);
-	if (Target.Type == TargetType.Editor)
+		if (Target.Type == TargetType.Editor)
 		{
 			PublicDependencyModuleNames.Add("UnrealEd"); 
 			PublicDependencyModuleNames.Add("GraphEditor"); 
@@ -63,6 +63,7 @@ public class BetterUtilities : ModuleRules
 			PublicDependencyModuleNames.Add("KismetCompiler");
 			// Adiciona o módulo UnrealEd apenas para builds de Editor
 		}
+		 
 		
 	}
 }

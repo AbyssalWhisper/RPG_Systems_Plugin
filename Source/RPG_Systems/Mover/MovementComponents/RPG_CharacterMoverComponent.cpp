@@ -100,12 +100,7 @@ bool URPG_CharacterMoverComponent::IsClimbing() const
 	return HasGameplayTag(Mover_IsClimbing, true); 
 }
 
-void URPG_CharacterMoverComponent::OnMoverPostSimulationTick(const FMoverTimeStep& TimeStep)
-{
-	Super::OnMoverPostSimulationTick(TimeStep);
-	FCapsuleSizeModifier::OnPostSimulationTick(this, UpdatedCompAsPrimitive);
 
-}
 
 FCapsuleSizeModifier::FCapsuleSizeModifier()
 	: HalfHeight(0.0f)

@@ -35,8 +35,10 @@ public class RPG_Systems : ModuleRules
                 ,"GameplayTags", "GameplayAbilities","AIModule" 
                 , "GameplayTasks", "Niagara" ,"PhysicsCore" 
                 , "BetterUtilities", "Mover","Chaos","InputCore",
-                "EnhancedInput","AsyncTickPhysics","MoverExamples",
-                "OnlineSubsystem","JsonBlueprintUtilities","NetCore"
+                "EnhancedInput","AsyncTickPhysics",
+                "MoverExamples",
+                "OnlineSubsystem",
+                "JsonBlueprintUtilities","NetCore"
                 ,"Networking","OnlineSubsystem"
 				// ... add other public dependencies that you statically link with here ...
 			}
@@ -53,8 +55,11 @@ public class RPG_Systems : ModuleRules
 				"Engine",
 				"UMG",
 				"Slate",
-				"SlateCore","RenderCore","Renderer",
-				"RHI","DeveloperSettings"
+				"SlateCore",
+				"RenderCore",
+				"Renderer",
+				"RHI",
+				"DeveloperSettings", "ChaosMover"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -66,5 +71,7 @@ public class RPG_Systems : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+		
+		 
 	}
 }

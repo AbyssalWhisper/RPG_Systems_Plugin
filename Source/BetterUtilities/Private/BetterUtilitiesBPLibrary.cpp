@@ -568,7 +568,9 @@ TArray<TSoftObjectPtr<UWorld>> UBetterUtilities::GetAllMaps()
         
         if (AssetPath.Contains("_Generated_"))
             continue;
-        TSoftObjectPtr<UWorld> SoftMap(AssetPath);
+        TSoftObjectPtr<UWorld> SoftMap;
+        FSoftObjectPath SoftMapPath(AssetPath);
+        SoftMap = TSoftObjectPtr<UWorld>(SoftMapPath);
         MapList.Add(SoftMap);
         DebugLog(FString::Printf(TEXT("Found Map: %s"), *AssetPath), EEasylog::Log);
     }
