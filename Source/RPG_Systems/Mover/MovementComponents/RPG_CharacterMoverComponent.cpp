@@ -6,6 +6,7 @@
 #include "PhysicsMover/Modes/PhysicsDrivenWalkingMode.h"
 #include "PhysicsMover/Modes/PhysicsDrivenSwimmingMode.h"
 #include "Backends/MoverNetworkPhysicsLiaison.h"
+#include "ChaosMover/Character/Modes/ChaosSwimmingMode.h"
 #include "Components/CapsuleComponent.h"
 #include "DefaultMovementSet/InstantMovementEffects/BasicInstantMovementEffects.h"
 #include "MoveLibrary/MovementUtils.h"
@@ -30,7 +31,7 @@ URPG_CharacterMoverComponent::URPG_CharacterMoverComponent()
 {
 	BackendClass = UMoverNetworkPhysicsLiaisonComponent::StaticClass();
 
-	MovementModes.Add(DefaultModeNames::Swimming, CreateDefaultSubobject<USwimmingMode>(TEXT("DefaultSwimmingMode")));
+	MovementModes.Add(DefaultModeNames::Swimming, CreateDefaultSubobject<UChaosSwimmingMode>(TEXT("DefaultSwimmingMode")));
 	//MovementModes.Add(RPG_MovementModes::Climbing, CreateDefaultSubobject<UPhysicsDrivenClimbMode>(TEXT("PhysicsDrivenClimbingMode")));
 	//MovementModes.Find(DefaultModeNames::Walking)->Get()->Transitions.Add(CreateDefaultSubobject<UPhysicsJumpCheck>(TEXT("PhysicsJumpCheck")));
 	//MovementModes.Find(DefaultModeNames::Walking)->Get()->Transitions.Add(CreateDefaultSubobject<UGroundClimbTransition>(TEXT("GroundClimbTransition")));

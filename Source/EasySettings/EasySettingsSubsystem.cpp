@@ -4,24 +4,40 @@
 #include "EasySettingsSubsystem.h"
 
 #include "EasySettingBase.h"
+#include "EasySettingsConfig.h"
+#include "Templates/SubclassOf.h"
 
-void UEasySettingsSubsystem::InitializeSettings(TArray<TSubclassOf<class UEasySettingBase>> SettingsClasses)
+void UEasySettingsSubsystem::InitializeSettings()
 {
-	for (TSubclassOf<UEasySettingBase> SettingClass : SettingsClasses)
+	UEasySettingsConfig* SettingsConfig = UEasySettingsConfig::GetEasySettings();
+	TArray<FName> AvailableSections;
+	SettingsConfig->SettingsSections.GetKeys(AvailableSections);
+	
+	for (FName Section : AvailableSections)
 	{
-		if (SettingClass)
+		FSettingsSection SettingsClasses_ = SettingsConfig->SettingsSections.FindRef(Section);
+		for (TSubclassOf<class UEasySettingBase> SettingClass_ : SettingsClasses_.Settings)
 		{
-			UEasySettingBase* NewSetting = NewObject<UEasySettingBase>(this, SettingClass);
-			if (NewSetting)
-			{
-				Settings.Add(NewSetting);
-				NewSetting->SettingsSubsystem = this;
-				UE_LOG(LogTemp, Warning, TEXT("Added Setting: %s"), *NewSetting->GetClass()->GetName());
-			}
+			AddSettingByClass(SettingClass_);
 		}
 	}
+	 
 	InitializeDependencies();
 	CallInitFunctions();
+}
+
+void UEasySettingsSubsystem::AddSettingByClass(TSubclassOf<class UEasySettingBase> SettingClass)
+{
+	if (SettingClass)
+	{
+		UEasySettingBase* NewSetting = NewObject<UEasySettingBase>(this, SettingClass);
+		if (NewSetting)
+		{
+			Settings.Add(NewSetting);
+			NewSetting->SettingsSubsystem = this;
+			UE_LOG(LogTemp, Warning, TEXT("Added Setting: %s"), *NewSetting->GetClass()->GetName());
+		}
+	}
 }
 
 UEasySettingBase* UEasySettingsSubsystem::GetSettingByClass(TSubclassOf<class UEasySettingBase> SettingClass) const
@@ -70,3 +86,4 @@ void UEasySettingsSubsystem::CallInitFunctions()
 		Setting->Init();
 	}
 }
+

@@ -9,6 +9,7 @@
 #include "CoreMinimal.h"
 #include "JsonBlueprintUtilities/Public/JsonBlueprintFunctionLibrary.h"
 #include "JsonObjectConverter.h"
+#include "OnlineHelpers.h"
 #include "ShaderCompiler.h"
 #include "UObject/Object.h"
 
@@ -21,6 +22,7 @@
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
 #include "ShaderPipelineCache.h"
+#include "Engine/Engine.h"
 
 #include "BetterUtilitiesBPLibrary.generated.h"
 
@@ -683,7 +685,10 @@ public:
         
     }
     
-    UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"))
+    UFUNCTION(BlueprintCallable, meta=(WorldContext="WorldContextObject"), Category = "Utilities|Travel")
+    static void ServerTravel(UObject* WorldContextObject, const FString& URL, bool bAbsolute = false, bool bShouldSkipGameNotify = false);
+
+    UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"), Category = "Utilities|Travel")
     static void TravelToMapByName(UObject* WorldContextObject, const FString& MapName, const FString& Options = "")
     {
         if (!WorldContextObject || !WorldContextObject->GetWorld())
@@ -694,7 +699,7 @@ public:
         UKismetSystemLibrary::ExecuteConsoleCommand(WorldContextObject, "ServerTravel "+ MapName + "?listen");
     }
 
-    UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"))
+    UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"), Category = "Utilities|Travel")
     static void TravelToMapByReference(UObject* WorldContextObject, const TSoftObjectPtr<UWorld> Level, const FString& Options = "")
     {
         if (!WorldContextObject || !WorldContextObject->GetWorld())
@@ -719,6 +724,16 @@ public:
     UFUNCTION(BlueprintCallable,BlueprintPure,DisplayName="GetAllDataAssetsOfClass",meta = ( DeterminesOutputType = "DataAssetClass") ,Category = "Utilities")
     static TArray<UDataAsset*> GetAllDataAssetsOfClass_BP(TSubclassOf<UDataAsset> DataAssetClass);
     
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+    static FUniqueNetIdRepl GetPlayerUniqueNetId(const int PlayerIndex)
+    {
+        APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();
+        if (PC)
+        {
+            return UOnlineHelpers::GetControllerUniqueNetId(PC);
+        }
+        return FUniqueNetIdRepl(); 
+    }
     
     // getuniqueid
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
@@ -740,6 +755,14 @@ public:
     {
         return IsInGameThread();
     }
+    
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+    static bool IsPlayingRootMotion_BP(USkeletalMeshComponent* SkeletalMeshComponent);
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities")
+    static UObject* GetDefaultObjectFromClass_BP(const UClass* Class);
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utilities|Network", meta=(WorldContext="WorldContextObject"))
+    static int32 GetNetDriverRegisteredObjectsCount(const UObject* WorldContextObject);
 };
 
 template<typename T>

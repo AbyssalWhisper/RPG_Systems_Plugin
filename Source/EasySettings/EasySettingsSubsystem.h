@@ -15,7 +15,9 @@ class EASYSETTINGS_API UEasySettingsSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
-	void InitializeSettings(TArray<TSubclassOf<class UEasySettingBase>> SettingsClasses);
+	void InitializeSettings();
+	UFUNCTION(BlueprintCallable, Category="Easy Settings")
+	void AddSettingByClass(TSubclassOf<class UEasySettingBase> SettingClass);
 	UFUNCTION(BlueprintCallable, Category="Easy Settings", meta=(DeterminesOutputType="SettingClass"))
 	UEasySettingBase* GetSettingByClass(TSubclassOf<class UEasySettingBase> SettingClass) const;
 	UPROPERTY(blueprintReadOnly, Category="Easy Settings")
@@ -23,4 +25,5 @@ public:
 
 	void InitializeDependencies();
 	void CallInitFunctions();
+	
 };

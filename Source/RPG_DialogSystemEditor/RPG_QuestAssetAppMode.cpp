@@ -11,6 +11,9 @@ TSharedPtr<class RPG_QuestEditorApp> app)  :
 FApplicationMode("RPG_QuestAssetAppMode")
 {
 	_app = app;
+	
+	// Register tab factory in the WorkflowAllowedTabSet
+	// The framework will handle registration with the tab manager
 	_tabs.RegisterFactory(MakeShareable(new RPG_QuestAssetEditorPrimaryTabFactory(app)));
 
 	TabLayout = FTabManager::NewLayout("RPG_QuestAssetAppMode_Layout_v1")
@@ -26,17 +29,20 @@ FApplicationMode("RPG_QuestAssetAppMode")
 		);
 }
 
-void RPG_QuestAssetAppMode::RegisterTabFactories(
-	TSharedPtr<FTabManager> InTabManager)
-{
-	TSharedPtr<RPG_QuestEditorApp> app = _app.Pin();
-	app->PushTabFactories(_tabs);
-	FApplicationMode::RegisterTabFactories(InTabManager);
-}
 
 void RPG_QuestAssetAppMode::PreDeactivateMode()
 {
 	FApplicationMode::PreDeactivateMode();
+}
+
+void RPG_QuestAssetAppMode::RegisterTabFactories(
+	TSharedPtr<FTabManager> InTabManager)
+{
+	TSharedPtr<RPG_QuestEditorApp> app = _app.Pin();
+	
+	// Only push the tab factories to the workflow app
+	// Do NOT call FApplicationMode::RegisterTabFactoriesWithManager as it causes double registration
+	app->PushTabFactories(_tabs);
 }
 
 void RPG_QuestAssetAppMode::PostActivateMode()

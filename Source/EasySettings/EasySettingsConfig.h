@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
+#include "Engine/DeveloperSettings.h"
 
 #include "EasySettingsConfig.generated.h"
 
@@ -14,8 +16,6 @@ struct FSettingsSection : public FTableRowBase
 {
 	GENERATED_BODY()
 	public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
-	FText SectionName = FText::GetEmpty();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
 	TArray<TSubclassOf<class UEasySettingBase>> Settings;
 };

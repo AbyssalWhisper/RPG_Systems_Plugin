@@ -15,7 +15,7 @@ class USkeletalMeshComponent;
 class UAnimSequenceBase;
 
 UENUM()
-enum ETraceType : uint8
+enum EANSTraceType : uint8
 {
 	SphereTrace,
 	BoxTrace,
@@ -33,11 +33,11 @@ class RPG_SYSTEMS_API UANS_TraceHit : public UAnimNotifyState
 	FName SocketName = "";
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace")
-	TEnumAsByte<ETraceType> TraceType = ETraceType::SphereTrace;
+	TEnumAsByte<EANSTraceType> TraceType = EANSTraceType::SphereTrace;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==ETraceType::SphereTrace",EditConditionHides))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==EANSTraceType::SphereTrace",EditConditionHides))
 	float Radius = 5.0f;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==ETraceType::BoxTrace",EditConditionHides))
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==EANSTraceType::BoxTrace",EditConditionHides))
 	FVector BoxExtend = FVector(10.0f, 10.0f, 10.0f);
 	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
 	FVector OffSetLocation = FVector(0.0f, 0.0f, 0.0f);

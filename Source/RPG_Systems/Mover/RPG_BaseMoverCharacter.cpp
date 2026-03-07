@@ -65,9 +65,11 @@ ARPG_BaseMoverCharacter::ARPG_BaseMoverCharacter(const FObjectInitializer& Objec
 	CharacterMoverComponent = CreateDefaultSubobject<URPG_CharacterMoverComponent>("CharacterMoverComponent");
 	CharacterMoverComponent->SetIsReplicated(true);
 	
-	CollisionCylinder = CreateDefaultSubobject<UCapsuleComponent>("CapsuleComp");
-	CollisionCylinder->SetCollisionProfileName("BlockAll");
-	RootComponent = CollisionCylinder;
+	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("CollisionCylinder");
+	CapsuleComponent->SetSimulatePhysics(true);
+	CapsuleComponent->SetEnableGravity(true);
+	CapsuleComponent->SetCollisionProfileName("BlockAll");
+	RootComponent = CapsuleComponent;
 	 
 	PrimaryActorTick.SetTickFunctionEnable(true);
  

@@ -10,6 +10,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitySystemComponent.h"
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
+
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/Blueprint.h"
+#include "Engine/DataAsset.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/NetworkObjectList.h"
 
 
 DEFINE_LOG_CATEGORY(LogRPG_Systems);
@@ -224,10 +234,20 @@ void UBetterUtilities::SetStaticMeshAndMaterials(UStaticMeshComponent* TargetMes
 
 void UBetterUtilities::AddWidgetToClientViewport(UWidget* Widget, int Z_Order)
 {
-    if (GEngine->GetCurrentPlayWorld() && Widget)
+#if !UE_SERVER
+    if (GEngine && GEngine->GetCurrentPlayWorld() && Widget)
     {
-       UGameplayStatics::GetGameInstance(GEngine->GetCurrentPlayWorld())->GetGameViewportClient()->AddViewportWidgetContent(Widget->TakeWidget(), Z_Order);
+        UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GEngine->GetCurrentPlayWorld());
+        if (GameInstance)
+        {
+            UGameViewportClient* ViewportClient = GameInstance->GetGameViewportClient();
+            if (ViewportClient)
+            {
+                ViewportClient->AddViewportWidgetContent(Widget->TakeWidget(), Z_Order);
+            }
+        }
     }
+#endif
 }
 
 UObject* UBetterUtilities::GetWorldContextObjectFromGEngine()
@@ -280,11 +300,16 @@ TArray<UMaterialInterface*> UBetterUtilities::AutoLoadMaterials(TArray<TSoftObje
 
 void UBetterUtilities::ShowMouseCursor(bool bShow)
 {
-    APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();
-    if (PC)
+#if !UE_SERVER
+    if (GEngine && GEngine->GetCurrentPlayWorld())
     {
-        PC->bShowMouseCursor = bShow;
+        APlayerController* PC = GEngine->GetCurrentPlayWorld()->GetFirstPlayerController();
+        if (PC)
+        {
+            PC->bShowMouseCursor = bShow;
+        }
     }
+#endif
 }
 
 bool UBetterUtilities::SimpleLineTraceSingleByChannel(const UObject* WorldContextObject,FVector StartLocation, FRotator Direction,
@@ -600,8 +625,27 @@ TArray<UDataAsset*> UBetterUtilities::GetAllDataAssetsOfClass_BP(TSubclassOf<UDa
 
 bool UBetterUtilities::IsStatEnabled(FString StatName)
 {
-    return GEngine->GameViewport->IsStatEnabled(StatName);
+#if !UE_SERVER
+    if (GEngine && GEngine->GameViewport)
+    {
+        return GEngine->GameViewport->IsStatEnabled(StatName);
+    }
+#endif
+    return false;
 }
+
+bool UBetterUtilities::IsPlayingRootMotion_BP(USkeletalMeshComponent* SkeletalMeshComponent)
+{
+    if (!SkeletalMeshComponent)return false;
+    return SkeletalMeshComponent->IsPlayingRootMotion();
+}
+
+UObject* UBetterUtilities::GetDefaultObjectFromClass_BP(const UClass* Class)
+{
+    if (!Class)return nullptr;
+    return Class->GetDefaultObject();
+}
+
 
 
 #include "Misc/Paths.h"
@@ -609,4 +653,41 @@ bool UBetterUtilities::IsStatEnabled(FString StatName)
 #include "HAL/PlatformFileManager.h"
 #include "IPlatformFilePak.h"
 #include "Misc/PackageName.h"
+
+void UBetterUtilities::ServerTravel(UObject* WorldContextObject, const FString& URL, bool bAbsolute, bool bShouldSkipGameNotify)
+{
+    if (!WorldContextObject || !WorldContextObject->GetWorld())
+    {
+        UE_LOG(LogRPG_Systems, Warning, TEXT("ServerTravel: WorldContextObject or World is null."));
+        return;
+    }
+
+    UWorld* World = WorldContextObject->GetWorld();
+    if (!World)
+    {
+        UE_LOG(LogRPG_Systems, Warning, TEXT("ServerTravel: Failed to get World from WorldContextObject."));
+        return;
+    }
+
+    World->ServerTravel(URL, bAbsolute, bShouldSkipGameNotify);
+}
+
+int32 UBetterUtilities::GetNetDriverRegisteredObjectsCount(const UObject* WorldContextObject)
+{
+    if (!WorldContextObject || !WorldContextObject->GetWorld())
+    {
+        return 0;
+    }
+
+    UWorld* World = WorldContextObject->GetWorld();
+    UNetDriver* NetDriver = World->GetNetDriver();
+
+    if (!NetDriver)
+    {
+        return 0;
+    }
+
+    // Retorna o número de objetos registrados no NetDriver
+    return NetDriver->GetNetworkObjectList().GetAllObjects().Num();
+}
 

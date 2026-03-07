@@ -145,7 +145,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	class UCapsuleComponent* CollisionCylinder;
+	class UCapsuleComponent* CapsuleComponent;
 
 	virtual void PawnClientRestart() override;
 
