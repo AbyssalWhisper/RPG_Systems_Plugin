@@ -34,6 +34,8 @@ public:
 
 #pragma region Attributes
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|General")
+		float CapsuleHeight = 75;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|Health")
 		float MaxHealth = 1000;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|Health")

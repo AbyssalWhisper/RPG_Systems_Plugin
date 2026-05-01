@@ -102,7 +102,7 @@ void ARPG_Base_Containers::EndPlay(const EEndPlayReason::Type EndPlayReason)
 				Gamemode->WorldChests.Remove(this);
 				if (Gamemode->MapDataSaveGame) {
 					 
-					Gamemode->MapDataSaveGame->WorldChests.Add(GetGuid(), FRPG_ChestData(GetActorLocation(), GetActorRotation(), ContainerInventory->Items, 0, this->GetClass()));
+					Gamemode->MapDataSaveGame->WorldChests.Add(GetGuid(), FRPG_ChestData(GetActorLocation(), GetActorRotation(), ContainerInventory->Items.Slots, 0, this->GetClass()));
 				}
 			}
 			else
@@ -128,7 +128,7 @@ void ARPG_Base_Containers::InitGuid()
 			}
 			else
 			{
-				Gamemode->MapDataSaveGame->PlayersChests.Add(ActorWorldGuid, FRPG_ChestData(GetActorLocation(), GetActorRotation(), ContainerInventory->Items, 0, this->GetClass()));
+				Gamemode->MapDataSaveGame->PlayersChests.Add(ActorWorldGuid, FRPG_ChestData(GetActorLocation(), GetActorRotation(), ContainerInventory->Items.Slots, 0, this->GetClass()));
 			}
 		}
 	}

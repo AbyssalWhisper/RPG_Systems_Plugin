@@ -1,6 +1,24 @@
 #include "RPG_Systems/Mover/ChaosCharacterMovementModeBP_Library.h"
 
+#include "BaseMovementMode/RPG_BaseMovementMode.h"
 #include "ChaosMover/Character/Modes/ChaosCharacterMovementMode.h"
+
+namespace
+{
+	class FChaosCharacterMovementModeAccessor : public UChaosCharacterMovementMode
+	{
+	public:
+		static void SetTargetHeight(UChaosCharacterMovementMode* MovementMode, float Value)
+		{
+			static_cast<FChaosCharacterMovementModeAccessor*>(MovementMode)->SetTargetHeightOverride(Value);
+		}
+
+		static void ClearTargetHeight(UChaosCharacterMovementMode* MovementMode)
+		{
+			static_cast<FChaosCharacterMovementModeAccessor*>(MovementMode)->ClearTargetHeightOverride();
+		}
+	};
+}
 
 bool UChaosCharacterMovementModeBP_Library::ShouldEnableConstraint(const UChaosCharacterMovementMode* MovementMode)
 {
@@ -10,6 +28,22 @@ bool UChaosCharacterMovementModeBP_Library::ShouldEnableConstraint(const UChaosC
 float UChaosCharacterMovementModeBP_Library::GetTargetHeight(const UChaosCharacterMovementMode* MovementMode)
 {
 	return MovementMode ? MovementMode->GetTargetHeight() : 0.0f;
+}
+
+void UChaosCharacterMovementModeBP_Library::SetTargetHeight(UChaosCharacterMovementMode* MovementMode, float Value)
+{
+	if (MovementMode)
+	{
+		FChaosCharacterMovementModeAccessor::SetTargetHeight(MovementMode, Value);
+	}
+}
+
+void UChaosCharacterMovementModeBP_Library::ClearTargetHeight(UChaosCharacterMovementMode* MovementMode)
+{
+	if (MovementMode)
+	{
+		FChaosCharacterMovementModeAccessor::ClearTargetHeight(MovementMode);
+	}
 }
 
 float UChaosCharacterMovementModeBP_Library::GetGroundQueryRadius(const UChaosCharacterMovementMode* MovementMode)

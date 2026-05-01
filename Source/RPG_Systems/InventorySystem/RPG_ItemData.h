@@ -33,10 +33,7 @@ public:
 	//FName ItemID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> Icon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int MaxCount = 999;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Weight = 0;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InventoryEvents")
 	TArray<TObjectPtr<URPG_ExecuteItemCodeComponent>> OnUseItem;
@@ -50,23 +47,31 @@ public:
 	TArray<TObjectPtr<URPG_UseItemConditionComponent>> UseItemConditions;
 	UPROPERTY(EditAnywhere,Instanced, BlueprintReadWrite, meta = (ShowOnlyInnerProperties))
 	TObjectPtr<URPG_BaseItemType> ItemType;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Decay")
-	bool bCanDecay = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDecay"),Category="Decay")
-	float DecayTime = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer ItemTags;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FGameplayTag,float> ItemAttributes;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDecay"),Category="Decay")
 	TSoftObjectPtr<URPG_ItemData> DecayItem;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
-	bool bCanDrop = true;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
 	TSoftObjectPtr<UStaticMesh> DropMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
 	TSoftObjectPtr<URPG_ItemDropSound> DropSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<USoundBase> TakeSound;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int MaxCount = 999;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDecay"),Category="Decay")
+	float DecayTime = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Weight = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Decay")
+	bool bCanDecay = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta = (EditConditionHides, EditCondition = "bCanDrop"),Category="Drop")
+	bool bCanDrop = true;
+	
 	UFUNCTION(BlueprintCallable)
 	FText GetCategoryText();
 	UFUNCTION(BlueprintCallable)

@@ -2,6 +2,8 @@
 
 
 #include "RPG_Systems/InteractiveObjects/RPG_InteractComponent.h"
+
+#include "BetterUtilitiesBPLibrary.h"
 #include "RPG_Systems/General_Interfaces/RPG_Interact_Interface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/PlayerCameraManager.h"
@@ -10,6 +12,7 @@
 #include "RPG_Systems/InventorySystem/RPG_MasterItem.h"
 #include "RPG_Systems/Character/RPG_BaseCharacter.h"
 #include "RPG_Systems/Character/RPG_PlayerCharacter.h"
+#include "RPG_Systems/InventorySystem/RPG_ItemData.h"
 #include "RPG_Systems/InventorySystem/RPG_MasterItem.h"
 #include "RPG_Systems/PlayerController/RPG_PlayerController.h"
 
@@ -164,7 +167,8 @@ void URPG_InteractComponent::TryPickupItemOnServer_Implementation(ARPG_MasterIte
 			FSTR_RPG_ItemSlot RemainingItem;
 
 			if (!InventoryComponent->TryAddItem(ItemActor->Item.Item,ItemActor->Item.Count, RemainingItem))return;
-
+ 
+			if (ItemActor->bInfinityItem)return;
 			if (RemainingItem.Count>0)
 			{
 				ItemActor->Item = RemainingItem;

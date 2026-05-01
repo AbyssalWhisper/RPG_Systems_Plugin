@@ -82,6 +82,8 @@ void FBetterUtilitiesModule::OnLevelActorAdded(AActor* Actor)
 		return;
 	}
 
+	if (IsRunningCookCommandlet())return;
+
 	UWorld* World = Actor->GetWorld();
 	if (!World)
 	{

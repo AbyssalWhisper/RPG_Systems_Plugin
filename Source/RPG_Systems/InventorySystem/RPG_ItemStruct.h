@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "ItemTypes/RPG_BaseItemType.h"
 #include "ModifierOp/RPG_ItemModifierOp.h"
+#include "Net/Serialization/FastArraySerializer.h"
 #include "RPG_ItemStruct.generated.h"
 
 class UGameplayAbility;
@@ -80,7 +81,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct  FSTR_RPG_ItemSlot : public FTableRowBase
+struct  FSTR_RPG_ItemSlot : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
@@ -91,17 +92,25 @@ public:
 		int Count = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DecayTime = 0;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int Charges = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Durability = 0;
+	
 	FSTR_RPG_ItemSlot() {
 		Item = nullptr;
 		Count = 0;
 		DecayTime = 0;
+		Charges = 0;
+		Durability = 0;
 	}
 
-	FSTR_RPG_ItemSlot(URPG_ItemData* Item_, int Count_, float DecayTime_) {
+	FSTR_RPG_ItemSlot(URPG_ItemData* Item_, int Count_, float DecayTime_, int Charges_ = 0,float Durability_ = 0) {
 		Item = Item_;
 		Count = Count_;
 		DecayTime = DecayTime_;
+		Charges = Charges_;
+		Durability = Durability_;
 	}
 };
 

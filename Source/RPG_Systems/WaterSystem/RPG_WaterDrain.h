@@ -52,10 +52,7 @@ public:
 	/** Determines which PhysicsVolume takes precedence if they overlap (higher number = higher priority). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CharacterMovement)
 	int32 Priority;
-
-	/** This property controls the amount of friction applied by the volume as pawns using CharacterMovement move through it. The higher this value, the harder it will feel to move through */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CharacterMovement)
-	float FluidFriction  =0.3f;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TArray<FSTR_MoveActorsWaterSystem> Actors;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -64,20 +61,27 @@ public:
 		UBoxComponent* BoxComponent;
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	UPostProcessComponent* PostProcess;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* WaterMesh;
+	UPROPERTY()
+	FTimerHandle TimeHandle; 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Meta = (ExposeOnSpawn = true), NonPIEDuplicateTransient, NonTransactional)
+	FGuid ActorWorldGuid;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 		float MaxWater = 100;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_CurrentWater)
 		float CurrentWater = 100;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_CurrentWater)
 		float WaterHeight;
+	/** This property controls the amount of friction applied by the volume as pawns using CharacterMovement move through it. The higher this value, the harder it will feel to move through */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CharacterMovement)
+	float FluidFriction  =0.3f;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 		bool WaterValueCanChange = true;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool UpdateWaterByTime = false;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* WaterMesh;
-	UPROPERTY()
-		FTimerHandle TimeHandle; 
+	
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TEnumAsByte<ECollisionChannel> WaterCollisionChannel;
 protected:
@@ -93,8 +97,7 @@ public:
 		virtual	void UpdateWater();
 	UFUNCTION(BlueprintPure)
 		FGuid GetGuid();
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Meta = (ExposeOnSpawn = true), NonPIEDuplicateTransient, NonTransactional)
-		FGuid ActorWorldGuid;
+
 	UFUNCTION(BlueprintCallable)
 		virtual void InitGuid();
 	UFUNCTION(BlueprintPure)

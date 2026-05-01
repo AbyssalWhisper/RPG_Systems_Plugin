@@ -149,8 +149,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void ChaosDrawDebugBoxRay(FVector Start, FVector End, FVector const& Extent, FRotator const& Rotation, FLinearColor DrawColor = FLinearColor::Red, bool bPersistentLines = false, float DrawTime = 1.0f, uint8 DepthPriority = 0, float Thickness = 1.0f);
 
-	UFUNCTION(BlueprintCallable)
-	static void ChaosDrawDebugLine(FVector Start, FVector End, float DrawTime = 1, FLinearColor DrawColor = FLinearColor::Red, bool bPersistentLines = false, uint8 DepthPriority = 0, float Thickness = 1.f) ;
+	UFUNCTION(BlueprintCallable,meta=(WorldContext="WorldContextObject"))
+	static void ChaosDrawDebugLine(UObject* WorldContextObject, FVector Start, FVector End, float DrawTime = 1, FLinearColor DrawColor = FLinearColor::Red, bool bPersistentLines = false, uint8 DepthPriority = 0, float Thickness = 1.f) ;
 	UFUNCTION(BlueprintCallable)
 	static void ChaosDrawDebugSphere(FVector const& Center, float Radius = 50, int32 Segments = 12, FLinearColor DrawColor = FLinearColor::Red, bool bPersistentLines = false, float DrawTime = 1, uint8 DepthPriority = 0, float Thickness = 1.f);
 	UFUNCTION(BlueprintCallable)

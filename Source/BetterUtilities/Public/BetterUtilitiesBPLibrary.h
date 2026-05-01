@@ -106,7 +106,7 @@ enum class ETrueFalse : uint8
 };
 
 UENUM(BlueprintType)
-enum class ERotationDirection : uint8
+enum class ELookDirection : uint8
 {
     Left, 
     Center,
@@ -130,7 +130,7 @@ public:
     static EPlatform GetPlatformEnum();
 
     UFUNCTION(BlueprintCallable,BlueprintPure)
-    static ERotationDirection YawRotationDirection(FRotator BaseRotation, FRotator TargetRotation, float Angle);
+    static ELookDirection YawRotationDirection(FRotator BaseRotation, FRotator TargetRotation, float Angle);
 
     
     UFUNCTION(BlueprintCallable,meta = (ExpandEnumAsExecs = "TrueFalse"))
@@ -416,7 +416,7 @@ public:
     static FVector GetRandomPointInSphereCollision(class USphereComponent* SphereCollision);
     
     UFUNCTION(BlueprintCallable)
-    static void DebugLog(FString LogMessage, EEasylog LogVerbosity = EEasylog::Log, bool PrintScreen = false);
+    static void DebugLog(FString LogMessage, EEasylog LogVerbosity = EEasylog::Log, bool PrintScreen = true);
 
     UFUNCTION(BlueprintCallable, BlueprintPure)
     static float GetDeltaSecondsFromStepMs(const float& StepMs);

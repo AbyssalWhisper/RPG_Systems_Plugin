@@ -76,18 +76,18 @@ EPlatform UBetterUtilities::GetPlatformEnum()
     }
 }
 
-ERotationDirection UBetterUtilities::YawRotationDirection(FRotator BaseRotation, FRotator TargetRotation, float Angle)
+ELookDirection UBetterUtilities::YawRotationDirection(FRotator BaseRotation, FRotator TargetRotation, float Angle)
 {
     FRotator rotation = UKismetMathLibrary::NormalizedDeltaRotator(BaseRotation, TargetRotation);
     if (rotation.Yaw > Angle)
     {
-        return ERotationDirection::Left;
+        return ELookDirection::Left;
     }
     if (rotation.Yaw < -Angle)
     {
-        return ERotationDirection::Right;
+        return ELookDirection::Right;
     }
-    return ERotationDirection::Center;
+    return ELookDirection::Center;
 }
 
 

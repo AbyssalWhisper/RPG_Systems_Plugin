@@ -1,5 +1,6 @@
 #include "AsyncTickFunctions.h"
 
+#include "DrawDebugHelpers.h"
 #include "Chaos/Capsule.h"
 #include "Chaos/ImplicitObjectScaled.h"
 #include "Components/PrimitiveComponent.h"
@@ -347,7 +348,7 @@ void UAsyncTickFunctions::DebugDrawParticleGeometry(UPrimitiveComponent* Compone
 			return;
 		}
 	}
-
+	
 	// Fallback: desenhar uma esfera
 	DrawDebugSphere(World, GeometryCenter, 10.0f, 12, FColor::Red, false, Duration, 0, Thickness);
 	//UE_LOG(LogTemp, Warning, TEXT("Debug Draw: Geometria desconhecida - desenhando esfera"));

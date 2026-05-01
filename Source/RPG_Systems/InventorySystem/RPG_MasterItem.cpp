@@ -4,6 +4,7 @@
 #include "RPG_Systems/InventorySystem/RPG_MasterItem.h"
 
 #include "RPG_ItemData.h"
+#include "Components/StaticMeshComponent.h"
 #include "RPG_Systems/General_Interfaces/RPG_PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -49,6 +50,7 @@ void ARPG_MasterItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 void ARPG_MasterItem::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+	Mesh->SetSimulatePhysics(bSimulatePhysics);
 	if (Item.Item)
 	{
 		auto ItemMesh = Item.Item->DropMesh.LoadSynchronous();

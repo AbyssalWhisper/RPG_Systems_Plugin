@@ -20,6 +20,10 @@ public:
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Replicated)
 	FSTR_RPG_ItemSlot Item;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bSimulatePhysics = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bInfinityItem = false;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

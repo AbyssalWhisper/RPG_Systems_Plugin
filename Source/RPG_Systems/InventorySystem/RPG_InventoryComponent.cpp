@@ -4,6 +4,7 @@
 #include "RPG_Systems/InventorySystem/RPG_InventoryComponent.h"
 
 #include "BetterUtilitiesBPLibrary.h"
+#include "TimerManager.h"
 #include "RPG_Systems/PlayerController/RPG_PlayerController.h"
 #include "RPG_Systems/InteractiveObjects/RPG_InteractComponent.h"
 #include "RPG_Systems/Character/RPG_BaseCharacter.h"
@@ -12,6 +13,89 @@
 #include "RPG_Systems/InventorySystem/ItemUseCondition/RPG_UseItemConditionComponent.h"
 #include "RPG_Systems/InventorySystem/ItemExecuteCode/RPG_ExecuteItemCodeComponent.h"
 #include "RPG_Systems/InventorySystem/ItemExecuteCode/RPG_AddedOrRemovedItemCodeComponent.h"
+#include "Net/UnrealNetwork.h"
+
+void FSTR_RPG_InventoryList::SetNum(int32 NewNum)
+{
+	const int32 OldNum = Slots.Num();
+	Slots.SetNum(NewNum);
+
+	if (OldNum != NewNum)
+	{
+		MarkArrayDirty();
+	}
+}
+
+int32 FSTR_RPG_InventoryList::Num() const
+{
+	return Slots.Num();
+}
+
+bool FSTR_RPG_InventoryList::IsValidIndex(int32 Index) const
+{
+	return Slots.IsValidIndex(Index);
+}
+
+FSTR_RPG_ItemSlot& FSTR_RPG_InventoryList::operator[](int32 Index)
+{
+	return Slots[Index];
+}
+
+
+void FSTR_RPG_InventoryList::operator=(TArray<FSTR_RPG_ItemSlot> Items)
+{
+	Slots = Items;
+}
+
+void FSTR_RPG_InventoryList::MarkSlotDirty(int32 SlotIndex)
+{
+	if (Slots.IsValidIndex(SlotIndex))
+	{
+		MarkItemDirty(Slots[SlotIndex]);
+	}
+}
+
+void FSTR_RPG_InventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+{
+	if (URPG_InventoryComponent* InventoryComponent = Cast<URPG_InventoryComponent>(OwnerComponent))
+	{
+		for (int32 RemovedIndex : RemovedIndices)
+		{
+			if (Slots.IsValidIndex(RemovedIndex))
+			{
+				InventoryComponent->HandleReplicatedSlotChange(RemovedIndex);
+			}
+		}
+	}
+}
+
+void FSTR_RPG_InventoryList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	if (URPG_InventoryComponent* InventoryComponent = Cast<URPG_InventoryComponent>(OwnerComponent))
+	{
+		for (int32 AddedIndex : AddedIndices)
+		{
+			if (Slots.IsValidIndex(AddedIndex))
+			{
+				InventoryComponent->HandleReplicatedSlotChange(AddedIndex);
+			}
+		}
+	}
+}
+
+void FSTR_RPG_InventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+	if (URPG_InventoryComponent* InventoryComponent = Cast<URPG_InventoryComponent>(OwnerComponent))
+	{
+		for (int32 ChangedIndex : ChangedIndices)
+		{
+			if (Slots.IsValidIndex(ChangedIndex))
+			{
+				InventoryComponent->HandleReplicatedSlotChange(ChangedIndex);
+			}
+		}
+	}
+}
 
 
 
@@ -21,6 +105,8 @@ URPG_InventoryComponent::URPG_InventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
+	Items.SetOwnerComponent(this);
 	
 	/*
 	static ConstructorHelpers::FObjectFinder<UDataTable> DatatableRef(TEXT("DataTable'/Game/Blueprints/InventorySystem/DT_Items__.DT_Items__'"));
@@ -35,6 +121,7 @@ URPG_InventoryComponent::URPG_InventoryComponent()
 void URPG_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	Items.SetOwnerComponent(this);
 
 	InitContainer();
 	
@@ -62,6 +149,7 @@ void URPG_InventoryComponent::BeginPlay()
 				{
 					FSTR_RPG_ItemSlot& InventorySlot = Items[i];
 					InventorySlot.DecayTime -= DecayTime;
+					
 					if (InventorySlot.DecayTime <= 0)
 					{
 						bool Sucess = false;
@@ -77,7 +165,7 @@ void URPG_InventoryComponent::BeginPlay()
 							RemoveItemFromIndex(i, 1, Sucess);
 						}
 					}
-
+					Items.MarkSlotDirty(i);
 					//UBetterUtilities::DebugLog(FString::SanitizeFloat(InventorySlot.DecayTime));
 				}
 			}
@@ -94,6 +182,12 @@ void URPG_InventoryComponent::BeginDestroy()
 	Super::BeginDestroy();
 }
 
+void URPG_InventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, Items);
+}
+
 
 // Called every frame
 void URPG_InventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -105,7 +199,11 @@ void URPG_InventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void URPG_InventoryComponent::InitContainer()
 {
-	if(Items.Num() != Slots) Items.SetNum(Slots);
+	if (GetOwner() && GetOwner()->HasAuthority())
+	{
+		if(Items.Num() != Slots) Items.SetNum(Slots);
+		Items.MarkArrayDirty();
+	}
 }
 
 void URPG_InventoryComponent::Client_InitContainer_Implementation()
@@ -164,7 +262,7 @@ void URPG_InventoryComponent::RemoveItem(URPG_ItemData* Item_, int Count)
 	
 }
 
-void URPG_InventoryComponent::RemoveItemFromIndex(int SlotIndex, int Count, bool& Sucess)
+void URPG_InventoryComponent::RemoveItemFromIndex(int32 SlotIndex, int32 Count, bool& Sucess)
 {
 	Sucess = false;
 	if (Items.IsValidIndex(SlotIndex) && Items[SlotIndex].Count > 0)
@@ -267,7 +365,7 @@ void URPG_InventoryComponent::SearchEmptySlots(FSTR_RPG_ItemSlot Item,FSTR_RPG_I
 	}
 }
 
-void URPG_InventoryComponent::AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotIndex, FSTR_RPG_ItemSlot& RemainingItems)
+void URPG_InventoryComponent::AddItemAtIndex(FSTR_RPG_ItemSlot Item, int32 SlotIndex, FSTR_RPG_ItemSlot& RemainingItems)
 {
 	if (!Item.Item && Item.Count <= 0)return;
 
@@ -320,8 +418,12 @@ void URPG_InventoryComponent::AddItemAtIndex(FSTR_RPG_ItemSlot Item, int SlotInd
 	}
 }
 
-void URPG_InventoryComponent::UpdatePlayersSlot(int SlotIndex)
+void URPG_InventoryComponent::UpdatePlayersSlot(int32 SlotIndex)
 {
+	if (GetNetMode() != NM_Standalone)
+	{
+		Items.MarkSlotDirty(SlotIndex);
+	}
 	
 	int Size = Players.Num();
 	for (int i = 0; i < Size; i++)
@@ -338,10 +440,10 @@ void URPG_InventoryComponent::UpdatePlayersSlot(int SlotIndex)
 		}
 	}
 	
-	OnInventorySlotChange.Broadcast(Items[SlotIndex], SlotIndex);		
+	OnInventorySlotChange.Broadcast(Items.Slots[SlotIndex], SlotIndex);		
 }
 
-void URPG_InventoryComponent::SetItemSlot(FSTR_RPG_ItemSlot Item, int SlotIndex)
+void URPG_InventoryComponent::SetItemSlot(FSTR_RPG_ItemSlot Item, int32 SlotIndex)
 {
  
 	Items[SlotIndex] = Item;
@@ -349,10 +451,10 @@ void URPG_InventoryComponent::SetItemSlot(FSTR_RPG_ItemSlot Item, int SlotIndex)
  
 }
 
-void URPG_InventoryComponent::SetItemSlotOnClient(FSTR_RPG_ItemSlot Item, int SlotIndex)
+void URPG_InventoryComponent::SetItemSlotOnClient(FSTR_RPG_ItemSlot Item, int32 SlotIndex)
 {
 	Items[SlotIndex] = Item;
-	OnInventorySlotChange.Broadcast(Items[SlotIndex], SlotIndex);	
+	OnInventorySlotChange.Broadcast(Items.Slots[SlotIndex],SlotIndex);	
 }
 
 void URPG_InventoryComponent::AddPlayer(APlayerController* PlayerController)
@@ -391,7 +493,7 @@ bool URPG_InventoryComponent::HasItem(URPG_ItemData* Item){
 	return false;
 }
 
-bool URPG_InventoryComponent::HasItemCount(URPG_ItemData* Item, int Count)
+bool URPG_InventoryComponent::HasItemCount(URPG_ItemData* Item, int32 Count)
 {
 	const int InventorySize = GetInventorySize();
 	Count = Count < 1 ? 1 : Count;
@@ -437,15 +539,13 @@ int URPG_InventoryComponent::GetItemCount(URPG_ItemData* Item)
 }
 
 
-void URPG_InventoryComponent::TransferItem(int SlotIndex, URPG_InventoryComponent* Container1,int Amount, int TargetSlotIndex, URPG_InventoryComponent* Container2)
+void URPG_InventoryComponent::TransferItem(int32 SlotIndex, URPG_InventoryComponent* Container1,int32 Amount, int32 TargetSlotIndex, URPG_InventoryComponent* Container2)
 {
 	FSTR_RPG_ItemSlot  Item1;
 	FSTR_RPG_ItemSlot  Item2;
 	Amount = FMath::Max(Amount, 1);
 	if (Container1 && Container2)
 	{
-		if (!Item_DT.DataTable)return;
-		 
 		Item1 = Container1->Items[SlotIndex];
 		Item2 = Container2->Items[TargetSlotIndex];
 		//FSTR_RPG_ItemData* Item1Data = Item_DT.DataTable->FindRow<FSTR_RPG_ItemData>(Container1->Items[SlotIndex].Item, "", true);
@@ -524,12 +624,12 @@ void URPG_InventoryComponent::TransferItem(int SlotIndex, URPG_InventoryComponen
 	}	
 }
 
-void URPG_InventoryComponent::TryUseItem(int SlotIndex)
+void URPG_InventoryComponent::TryUseItem(int32 SlotIndex)
 {
 	if (OwnerCharacter)
 	{
 		URPG_ItemData* ItemData = Items[FMath::Min(SlotIndex, Items.Num() - 1)].Item;
-		if (!ItemData || !ItemData->ItemType)return;
+		if (!ItemData)return;
 		if (Items[SlotIndex].Count > 0)
 		{
 			if (!CanUseItem(SlotIndex))return;
@@ -551,17 +651,17 @@ void URPG_InventoryComponent::TryUseItem(int SlotIndex)
 	}
 }
 
-void URPG_InventoryComponent::TryUseItem_Server_Implementation(int SlotIndex)
+void URPG_InventoryComponent::TryUseItem_Server_Implementation(int32 SlotIndex)
 {
 	TryUseItem(SlotIndex);
 			
 }
 
-void URPG_InventoryComponent::TryUseItem_Client_Implementation(int SlotIndex)
+void URPG_InventoryComponent::TryUseItem_Client_Implementation(int32 SlotIndex)
 {
 }
 
-URPG_ItemData* URPG_InventoryComponent::GetItemDataFromSlot(int SlotIndex)
+URPG_ItemData* URPG_InventoryComponent::GetItemDataFromSlot(int32 SlotIndex)
 {
 	return Items[SlotIndex].Item;
 }
@@ -588,7 +688,7 @@ void URPG_InventoryComponent::UpdateAllInventory(APlayerController* PlayerContro
 	}
 }
 
-bool URPG_InventoryComponent::CanUseItem(int SlotIndex)
+bool URPG_InventoryComponent::CanUseItem(int32 SlotIndex)
 {
 	if (Items[SlotIndex].Item)
 	{
@@ -633,5 +733,14 @@ void URPG_InventoryComponent::OnItemRemoved(URPG_ItemData* Item_, int Count_)
 		}
 	}
 }
+
+void URPG_InventoryComponent::HandleReplicatedSlotChange(int32 SlotIndex)
+{
+	if (Items.IsValidIndex(SlotIndex))
+	{
+		OnInventorySlotChange.Broadcast(Items.Slots[SlotIndex], SlotIndex);
+	}
+}
+
 
 

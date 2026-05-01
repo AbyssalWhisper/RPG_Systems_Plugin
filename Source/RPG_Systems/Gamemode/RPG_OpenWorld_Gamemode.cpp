@@ -7,6 +7,8 @@
 #include "RPG_Systems/InteractiveObjects/RPG_Base_Containers.h"
 #include "RPG_Systems/InventorySystem/RPG_InventoryComponent.h"
 #include "Containers/Map.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
 #include "Misc/Guid.h"
  
 
@@ -104,7 +106,7 @@ void ARPG_OpenWorld_Gamemode::SaveGame()
 		{
 			if (Container)
 			{
-				MapDataSaveGame->PlayersChests.Add(Container->ActorWorldGuid, FRPG_ChestData(Container->GetActorLocation(), Container->GetActorRotation(), Container->ContainerInventory->Items,0, Container->GetClass()));
+				MapDataSaveGame->PlayersChests.Add(Container->ActorWorldGuid, FRPG_ChestData(Container->GetActorLocation(), Container->GetActorRotation(), Container->ContainerInventory->Items.Slots,0, Container->GetClass()));
 				
 			}
 		}
@@ -112,7 +114,7 @@ void ARPG_OpenWorld_Gamemode::SaveGame()
 		{
 			if (Container)
 			{
-				MapDataSaveGame->WorldChests.Add(Container->GetGuid(), FRPG_ChestData(Container->GetActorLocation(), Container->GetActorRotation(), Container->ContainerInventory->Items, 0, Container->GetClass()));
+				MapDataSaveGame->WorldChests.Add(Container->GetGuid(), FRPG_ChestData(Container->GetActorLocation(), Container->GetActorRotation(), Container->ContainerInventory->Items.Slots, 0, Container->GetClass()));
 				
 			}
 		}

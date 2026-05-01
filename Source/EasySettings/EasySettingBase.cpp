@@ -4,6 +4,10 @@
 #include "EasySettingBase.h"
 
 
+void UEasySettingBase::OnDependentChanged_Implementation()
+{
+}
+
 FText UEasySettingBase::GetCurrentOptionName()
 {
 	return FText::GetEmpty();

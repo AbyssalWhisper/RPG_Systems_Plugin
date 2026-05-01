@@ -32,8 +32,6 @@ class RPG_SYSTEMS_API UANS_TraceHit : public UAnimNotifyState
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace")
 	FName SocketName = "";
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace")
-	TEnumAsByte<EANSTraceType> TraceType = EANSTraceType::SphereTrace;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace", meta=(EditCondition="TraceType==EANSTraceType::SphereTrace",EditConditionHides))
 	float Radius = 5.0f;
@@ -41,9 +39,7 @@ class RPG_SYSTEMS_API UANS_TraceHit : public UAnimNotifyState
 	FVector BoxExtend = FVector(10.0f, 10.0f, 10.0f);
 	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
 	FVector OffSetLocation = FVector(0.0f, 0.0f, 0.0f);
-	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
-	bool bTraceComplex = false;
-
+	
 	
 	UPROPERTY()
 	TArray<AActor*> HitActors;
@@ -56,6 +52,11 @@ class RPG_SYSTEMS_API UANS_TraceHit : public UAnimNotifyState
 	TEnumAsByte<ETraceTypeQuery> TraceChannel;
 	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugTrace = EDrawDebugTrace::ForOneFrame;
+	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
+	bool bTraceComplex = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Trace")
+	TEnumAsByte<EANSTraceType> TraceType = EANSTraceType::SphereTrace;
+	
 	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")
 	float TraceDuration = 0.2f;
 	UPROPERTY(blueprintReadWrite, EditAnywhere,Category="Trace")

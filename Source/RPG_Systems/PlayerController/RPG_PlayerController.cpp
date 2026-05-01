@@ -5,6 +5,7 @@
 #include "RPG_Systems/General_Interfaces/RPG_Interact_Interface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Camera/PlayerCameraManager.h"
+#include "Components/InputComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RPG_Systems/InteractiveObjects/RPG_InteractComponent.h"
 #include "Net/UnrealNetwork.h" 
@@ -63,7 +64,7 @@ void ARPG_PlayerController::Server_OpenContainer_Implementation(URPG_InventoryCo
 {
 	if (Container)
 	{
-		InteractionManager->Client_UpdateAllSlotsContainer(Container, Container->Items);
+		InteractionManager->Client_UpdateAllSlotsContainer(Container, Container->Items.Slots);
 		Client_OpenContainer(Container);
 		InteractionManager->SetContainer(Container);
 	}

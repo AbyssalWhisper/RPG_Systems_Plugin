@@ -50,7 +50,11 @@ public:
 	virtual void OnDependentConfigurationChanged_Internal(UEasySettingBase* Setting)
 	{
 		OnDependentConfigurationChanged.Broadcast(Setting);
+		OnDependentChanged();
 	}
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category="Easy Settings")
+	void OnDependentChanged();
+	virtual void OnDependentChanged_Implementation();
 	
 	UFUNCTION(BlueprintCallable, Category="Easy Settings")
 	virtual FText GetCurrentOptionName();

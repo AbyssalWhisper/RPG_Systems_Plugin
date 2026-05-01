@@ -18,6 +18,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "RPG|Mover|ChaosCharacterMovementMode", meta = (WorldContext = "MovementMode", DefaultToSelf = "MovementMode"))
 	static float GetTargetHeight(const UChaosCharacterMovementMode* MovementMode);
 
+	UFUNCTION(BlueprintCallable, Category = "RPG|Mover|ChaosCharacterMovementMode", meta = (WorldContext = "MovementMode", DefaultToSelf = "MovementMode"))
+	static void SetTargetHeight(UChaosCharacterMovementMode* MovementMode, float Value);
+
+	UFUNCTION(BlueprintCallable, Category = "RPG|Mover|ChaosCharacterMovementMode", meta = (WorldContext = "MovementMode", DefaultToSelf = "MovementMode"))
+	static void ClearTargetHeight(UChaosCharacterMovementMode* MovementMode);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "RPG|Mover|ChaosCharacterMovementMode", meta = (WorldContext = "MovementMode", DefaultToSelf = "MovementMode"))
 	static float GetGroundQueryRadius(const UChaosCharacterMovementMode* MovementMode);
 

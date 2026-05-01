@@ -5,6 +5,7 @@
 #include "MoveLibrary/MovementUtils.h"
 #include <BetterUtilitiesBPLibrary.h>
 
+#include "DrawDebugHelpers.h"
 #include "Chaos/PhysicsObject.h"
 
 #include "Chaos/DebugDrawQueue.h"
@@ -60,7 +61,7 @@ void UMoverFunctionLibrary::SetTransforms_WorldSpace(FMoverTickEndData& OutputSt
 void UMoverFunctionLibrary::ChaosDrawDebugCapsuleRay(FVector Start, FVector End, float HalfHeight, float Radius, FRotator Rotation, FLinearColor DrawColor, bool bPersistentLines, float DrawTime, uint8 DepthPriority, float Thickness)
 {
 	UMoverFunctionLibrary::ChaosDrawDebugCapsule(Start, HalfHeight, Radius, Rotation, DrawColor.ToFColor(true),bPersistentLines, DrawTime,DepthPriority,Thickness);
-	UMoverFunctionLibrary::ChaosDrawDebugLine(Start, End,DrawTime, DrawColor.ToFColor(true), bPersistentLines, DepthPriority,Thickness);
+	UMoverFunctionLibrary::ChaosDrawDebugLine(GEngine->GetCurrentPlayWorld(),Start, End,DrawTime, DrawColor.ToFColor(true), bPersistentLines, DepthPriority,Thickness);
 	UMoverFunctionLibrary::ChaosDrawDebugCapsule(End, HalfHeight, Radius, Rotation, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
 
 }
@@ -68,7 +69,7 @@ void UMoverFunctionLibrary::ChaosDrawDebugCapsuleRay(FVector Start, FVector End,
 void UMoverFunctionLibrary::ChaosDrawDebugSphereRay(FVector Start, FVector End, float Radius, int32 Segments, FLinearColor DrawColor, bool bPersistentLines, float DrawTime, uint8 DepthPriority, float Thickness)
 {
 	UMoverFunctionLibrary::ChaosDrawDebugSphere(Start, Radius, Segments, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
-	UMoverFunctionLibrary::ChaosDrawDebugLine(Start, End, DrawTime, DrawColor.ToFColor(true), bPersistentLines, DepthPriority, Thickness);
+	UMoverFunctionLibrary::ChaosDrawDebugLine(GEngine->GetCurrentPlayWorld(),Start, End, DrawTime, DrawColor.ToFColor(true), bPersistentLines, DepthPriority, Thickness);
 	UMoverFunctionLibrary::ChaosDrawDebugSphere(End, Radius, Segments, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
 
 }
@@ -76,17 +77,16 @@ void UMoverFunctionLibrary::ChaosDrawDebugSphereRay(FVector Start, FVector End, 
 void UMoverFunctionLibrary::ChaosDrawDebugBoxRay(FVector Start, FVector End, FVector const& Extent, FRotator const& Rotation, FLinearColor DrawColor, bool bPersistentLines, float DrawTime, uint8 DepthPriority, float Thickness)
 {
 	UMoverFunctionLibrary::ChaosDrawDebugBox(Start, Extent, Rotation, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
-	UMoverFunctionLibrary::ChaosDrawDebugLine(Start, End, DrawTime, DrawColor.ToFColor(true), bPersistentLines, DepthPriority, Thickness);
+	UMoverFunctionLibrary::ChaosDrawDebugLine(GEngine->GetCurrentPlayWorld(),Start, End, DrawTime, DrawColor.ToFColor(true), bPersistentLines, DepthPriority, Thickness);
     UMoverFunctionLibrary::ChaosDrawDebugBox(End, Extent, Rotation, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
 
 }
  
 
-void UMoverFunctionLibrary::ChaosDrawDebugLine(FVector Start, FVector End, float DrawTime, FLinearColor DrawColor, bool bPersistentLines, uint8 DepthPriority, float Thickness)
+void UMoverFunctionLibrary::ChaosDrawDebugLine(UObject* WorldContextObject, FVector Start, FVector End, float DrawTime, FLinearColor DrawColor, bool bPersistentLines, uint8 DepthPriority, float Thickness)
 {
 #if WITH_EDITOR
-	Chaos::FDebugDrawQueue::GetInstance().DrawDebugLine(Start, End, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
-
+	Chaos::FDebugDrawQueue::GetInstance().DrawDebugLine( Start, End, DrawColor.ToFColor(true), bPersistentLines, DrawTime, DepthPriority, Thickness);
 #endif
 
 	
