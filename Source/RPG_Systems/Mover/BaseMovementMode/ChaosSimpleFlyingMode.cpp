@@ -92,7 +92,7 @@ void UChaosSimpleFlyingMode::GenerateMove_Implementation(const FMoverSimContext&
 	OutProposedMove.AngularVelocityDegrees = DeltaSeconds > 0.0f
 		? FMath::RadiansToDegrees(ToFacing.ToRotationVector() / DeltaSeconds)
 		: FVector::ZeroVector;
-
+	OutProposedMove.MixMode = EMoveMixMode::OverrideAll;
 	// --- Clear floor data ---
 	if (UMoverBlackboard* SimBlackboard = Simulation->GetBlackboard_Mutable())
 	{

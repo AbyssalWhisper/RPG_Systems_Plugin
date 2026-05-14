@@ -209,6 +209,24 @@ void UAsyncTickFunctions::ATP_SetWorldLocation(USceneComponent* Component, FVect
 	}
 }
 
+FVector UAsyncTickFunctions::ATP_GetWorldLocation(USceneComponent* Component)
+{
+	if (!Component)
+	{
+		return FVector::ZeroVector;
+	}
+
+	if (UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(Component))
+	{
+		if (const Chaos::FRigidBodyHandle_Internal* RigidHandle = GetInternalHandle(PrimitiveComponent))
+		{
+			return RigidHandle->X() + RigidHandle->R().RotateVector(RigidHandle->CenterOfMass());
+		}
+	}
+
+	return Component->GetComponentLocation();
+}
+
 void UAsyncTickFunctions::ATP_SetWorldRotation(UPrimitiveComponent* Component, FRotator Rotation)
 {
 	if (Chaos::FRigidBodyHandle_Internal* RigidHandle = GetInternalHandle(Component))

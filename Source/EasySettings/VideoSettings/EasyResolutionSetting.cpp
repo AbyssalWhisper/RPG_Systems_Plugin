@@ -92,10 +92,6 @@ void UEasyResolutionSetting::RefreshResolutions()
 	// Add supported resolutions to our arrays
 	for (auto Resolution : AvailableResolutions)
 	{
-		AvailableResolutions.Add(Resolution);
-				
-		
-				
 		Options.Add(FText::FromString(Resolution.ToString()));
 	}
 	

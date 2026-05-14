@@ -63,6 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ATP - AsyncTickPhysics")
 	static void ATP_SetWorldLocation(USceneComponent* Component, FVector Location);
 	UFUNCTION(BlueprintCallable, Category = "ATP - AsyncTickPhysics")
+	static FVector ATP_GetWorldLocation(USceneComponent* Component);
+	UFUNCTION(BlueprintCallable, Category = "ATP - AsyncTickPhysics")
 	static void ATP_SetWorldRotation(UPrimitiveComponent* Component, FRotator Rotation);
 	UFUNCTION(BlueprintCallable, Category = "ATP - AsyncTickPhysics")
 	static void ATP_SetWorldLocationAndRotation(UPrimitiveComponent* Component, FVector Location, FRotator Rotation);
