@@ -1,11 +1,25 @@
 ﻿#include "RPG_ClimbMode.h"
 
+#include "Chaos/Character/CharacterGroundConstraintSettings.h"
 #include "BetterUtilitiesBPLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "ChaosMover/ChaosMoverSimulation.h"
 #include "Components/CapsuleComponent.h"
 #include "RPG_Systems/Mover/MoverFunctionLibrary.h"
 #include "RPG_Systems/Mover/Transitions/RPG_BaseMovementModeTransition.h"
+
+bool URPG_ClimbMode::ShouldEnableConstraint() const
+{
+	return false;
+}
+
+void URPG_ClimbMode::UpdateConstraintSettings(Chaos::FCharacterGroundConstraintSettings& ConstraintSettings) const
+{
+	Super::UpdateConstraintSettings(ConstraintSettings);
+	ConstraintSettings.RadialForceLimit = 0.0f;
+	ConstraintSettings.TwistTorqueLimit = 0.0f;
+	ConstraintSettings.SwingTorqueLimit = 0.0f;
+}
 
 void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
 { 

@@ -28,6 +28,8 @@ public:
 	FVector InputDirection = FVector::ZeroVector;
 	virtual void
 	SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState) override;
+	virtual bool ShouldEnableConstraint() const override;
+	virtual void UpdateConstraintSettings(Chaos::FCharacterGroundConstraintSettings& ConstraintSettings) const override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TEnumAsByte<ETraceTypeQuery> TraceChannel;
