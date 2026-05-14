@@ -50,7 +50,7 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 	float Radius = Capsule ? Capsule->GetScaledCapsuleRadius() : 50.0f;
 	float Height = Capsule ? Capsule->GetScaledCapsuleHalfHeight() : 100.0f;
 	
-	float WallTraceDistance = WallOfSet + 20;
+	float WallTraceDistance = WallOfSet + TraceDistance;
 	
 	
 	FHitResult HitResult;

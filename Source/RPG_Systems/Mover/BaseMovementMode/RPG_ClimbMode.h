@@ -19,6 +19,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float WallOfSet = 50;	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float TraceDistance = 50;	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float MaxClimbAngle = 65;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FVector NormalResult = FVector::ZeroVector;

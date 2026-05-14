@@ -86,9 +86,9 @@ void UChaosSimpleFlyingMode::GenerateMove_Implementation(const FMoverSimContext&
 		OutProposedMove.LinearVelocity);
 
 	// --- Convert facing direction → angular velocity ---
-	const FVector SafeFacingDir = FacingDirection.GetSafeNormal(UE_KINDA_SMALL_NUMBER, CurrentFacing.GetForwardVector());
-	const FQuat TargetFacing = FQuat::FindBetween(FVector::ForwardVector, SafeFacingDir);
-	const FQuat ToFacing = CurrentFacing.Inverse() * TargetFacing;
+	const FVector CurrentForward = CurrentFacing.GetForwardVector();
+	const FVector SafeFacingDir = FacingDirection.GetSafeNormal(UE_KINDA_SMALL_NUMBER, CurrentForward);
+	const FQuat ToFacing = FQuat::FindBetweenNormals(CurrentForward, SafeFacingDir);
 	OutProposedMove.AngularVelocityDegrees = DeltaSeconds > 0.0f
 		? FMath::RadiansToDegrees(ToFacing.ToRotationVector() / DeltaSeconds)
 		: FVector::ZeroVector;
