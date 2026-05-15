@@ -73,7 +73,7 @@ void UChaosSimpleFlyingMode::GenerateMove_Implementation(const FMoverSimContext&
 
 	// --- Hook ---
 	const FQuat CurrentFacing = StartingSyncState->GetOrientation_WorldSpace().Quaternion();
-	FVector FacingDirection = CurrentFacing.GetForwardVector(); // default: keep current facing
+	FRotator FacingRotation = CurrentFacing.Rotator(); // default: keep current rotation (all axes)
 	OutProposedMove.LinearVelocity = StartingSyncState->GetVelocity_WorldSpace();
 
 	UChaosSimpleFlyingMode* MutableThis = const_cast<UChaosSimpleFlyingMode*>(this);
@@ -82,13 +82,18 @@ void UChaosSimpleFlyingMode::GenerateMove_Implementation(const FMoverSimContext&
 		DeltaSeconds,
 		DesiredVelocity,
 		CurrentFacing,
-		FacingDirection,
+		FacingRotation,
 		OutProposedMove.LinearVelocity);
 
-	// --- Convert facing direction → angular velocity ---
-	const FVector CurrentForward = CurrentFacing.GetForwardVector();
-	const FVector SafeFacingDir = FacingDirection.GetSafeNormal(UE_KINDA_SMALL_NUMBER, CurrentForward);
-	const FQuat ToFacing = FQuat::FindBetweenNormals(CurrentForward, SafeFacingDir);
+	// --- Convert target rotator → angular velocity (world-space, full 3-axis) ---
+	const FQuat TargetFacing = FacingRotation.Quaternion();
+	FQuat ToFacing = TargetFacing * CurrentFacing.Inverse();
+	ToFacing.Normalize();
+	// Garante o caminho curto (<180°): W negativo = rotação pelo lado longo → flip
+	if (ToFacing.W < 0.0f)
+	{
+		ToFacing = FQuat(-ToFacing.X, -ToFacing.Y, -ToFacing.Z, -ToFacing.W);
+	}
 	OutProposedMove.AngularVelocityDegrees = DeltaSeconds > 0.0f
 		? FMath::RadiansToDegrees(ToFacing.ToRotationVector() / DeltaSeconds)
 		: FVector::ZeroVector;
@@ -104,8 +109,8 @@ void UChaosSimpleFlyingMode::GenerateMove_Implementation(const FMoverSimContext&
 
 void UChaosSimpleFlyingMode::GenerateFlyingMove_Implementation(FMoverTickStartData& StartState, float DeltaSeconds,
 	const FVector& DesiredVelocity, const FQuat& CurrentFacing,
-	FVector& InOutFacingDirection, FVector& InOutVelocity)
+	FRotator& InOutFacingRotation, FVector& InOutVelocity)
 {
 	InOutVelocity = DesiredVelocity;
-	// InOutFacingDirection default = CurrentFacing.GetForwardVector() → sem rotação
+	// InOutFacingRotation default = CurrentFacing.Rotator() → sem rotação (mantém orientação atual)
 }

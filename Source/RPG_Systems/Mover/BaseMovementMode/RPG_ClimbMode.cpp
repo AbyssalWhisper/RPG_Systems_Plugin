@@ -15,10 +15,7 @@ bool URPG_ClimbMode::ShouldEnableConstraint() const
 
 void URPG_ClimbMode::UpdateConstraintSettings(Chaos::FCharacterGroundConstraintSettings& ConstraintSettings) const
 {
-	Super::UpdateConstraintSettings(ConstraintSettings);
-	ConstraintSettings.RadialForceLimit = 0.0f;
-	ConstraintSettings.TwistTorqueLimit = 0.0f;
-	ConstraintSettings.SwingTorqueLimit = 0.0f;
+	Super::UpdateConstraintSettings(ConstraintSettings); 
 }
 
 void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& Params, FMoverTickEndData& OutputState)
@@ -27,21 +24,21 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 	
 	if (!Simulation)
 	{
-			UBetterUtilities::DebugLog("No Simulation set on UChaosFlyingMode. Check you have a Chaos Backend");
+		if (bEnableLogs) UBetterUtilities::DebugLog("No Simulation set on UChaosFlyingMode. Check you have a Chaos Backend");
 		return;
 	}
 
 	const FChaosMoverSimulationDefaultInputs* DefaultSimInputs = Simulation->GetLocalSimInput().FindDataByType<FChaosMoverSimulationDefaultInputs>();
 	if (!DefaultSimInputs)
 	{
-			UBetterUtilities::DebugLog("ChaosFlyingMode requires FChaosMoverSimulationDefaultInputs");
+		if (bEnableLogs) UBetterUtilities::DebugLog("ChaosFlyingMode requires FChaosMoverSimulationDefaultInputs");
 		return;
 	}
 
 	const FMoverDefaultSyncState* StartingSyncState = Params.StartState.SyncState.SyncStateCollection.FindDataByType<FMoverDefaultSyncState>();
 	if (!StartingSyncState)
 	{
-		UBetterUtilities::DebugLog("RPG_ClimbMode requires FMoverDefaultSyncState");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode requires FMoverDefaultSyncState");
 		return;
 	}
 
@@ -79,15 +76,18 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 		HitResult,
 		true);
 	
-	DrawDebugSphere(GetWorld(), ActorLocation + ActorForward * WallTraceDistance, Radius, 12, FColor::Blue, false, 1.0f);
-	DrawDebugLine(GetWorld(), ActorLocation, ActorLocation + ActorForward * WallTraceDistance, FColor::Blue, false, 1.0f);
-	DrawDebugSphere(GetWorld(), ActorLocation, Radius, 12, FColor::Blue, false, 1.0f);
+	if (bEnableLogs)
+	{
+		DrawDebugSphere(GetWorld(), ActorLocation + ActorForward * WallTraceDistance, Radius, 12, FColor::Blue, false, 1.0f);
+		DrawDebugLine(GetWorld(), ActorLocation, ActorLocation + ActorForward * WallTraceDistance, FColor::Blue, false, 1.0f);
+		DrawDebugSphere(GetWorld(), ActorLocation, Radius, 12, FColor::Blue, false, 1.0f);
+	}
 	
 	if (HitResult.bBlockingHit)
 	{
 		FinalNormal = HitResult.Normal;
-		UBetterUtilities::DebugLog("RPG_ClimbMode: wall detected. Normal: " + FinalNormal.ToString());
-		
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: wall detected. Normal: " + FinalNormal.ToString());
+
 		FHitResult HitResult2;
 		URPG_BaseMovementModeTransition::CapsuleTraceSingle(
 			GetMoverComponent()->GetOwner(),
@@ -105,18 +105,18 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 		{
 			FinalNormal += HitResult2.Normal;
 			FinalNormal.Normalize();
-			UBetterUtilities::DebugLog("RPG_ClimbMode: blended wall normal: " + FinalNormal.ToString());
+			if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: blended wall normal: " + FinalNormal.ToString());
 		}
 		/*
 		GetMoverComponent()->SetPlanarConstraint(FPlanarConstraint(
 			true,
 			HitResult.Location + FinalNormal * 5,
 			FinalNormal));*/
-		UBetterUtilities::DebugLog("RPG_ClimbMode: planar constraint updated.");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: planar constraint updated.");
 	}
 	else
 	{
-		UBetterUtilities::DebugLog("RPG_ClimbMode: no wall found ahead. Switching to Falling.");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: no wall found ahead. Switching to Falling.");
 		SwitchToState(FName("Falling"), Params, OutputState);
 		return;
 	}
@@ -136,31 +136,32 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 	if (HitResult.bBlockingHit)
 	{
 		ProjectionPoint = HitResult.Location + (FinalNormal * WallOfSet);
-		UBetterUtilities::DebugLog("RPG_ClimbMode: wall anchor point: " + ProjectionPoint.ToString());
-	}else
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: wall anchor point: " + ProjectionPoint.ToString());
+	}
+	else
 	{
-		UBetterUtilities::DebugLog("RPG_ClimbMode: climb projection trace missed. Switching to Falling.");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: climb projection trace missed. Switching to Falling.");
 		SwitchToState(FName("Falling"), Params, OutputState);
 		return;
-	} 
-	
+	}
+
 	float WallAngle = UKismetMathLibrary::Conv_VectorToRotator(-FinalNormal).Pitch;
-	UBetterUtilities::DebugLog("RPG_ClimbMode: wall angle: " + FString::SanitizeFloat(WallAngle));
+	if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: wall angle: " + FString::SanitizeFloat(WallAngle));
 	if (WallAngle >= MaxClimbAngle)
 	{
-		UBetterUtilities::DebugLog("RPG_ClimbMode: wall angle above limit. Switching to Falling.");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: wall angle above limit. Switching to Falling.");
 		SwitchToState(FName("Falling"), Params, OutputState);
 		return;
 	}
 	if (WallAngle <= -MaxClimbAngle)
 	{
-		UBetterUtilities::DebugLog("RPG_ClimbMode: wall angle below limit. Switching to Falling.");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: wall angle below limit. Switching to Falling.");
 		SwitchToState(FName("Falling"), Params, OutputState);
 		return;
 	}
 	if (GetCurrentFloor().bWalkableFloor)
 	{
-		UBetterUtilities::DebugLog("RPG_ClimbMode: walkable floor detected. Switching to Falling.");
+		if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: walkable floor detected. Switching to Falling.");
 		SwitchToState(FName("Falling"), Params, OutputState);
 		return;
 	}
@@ -183,11 +184,14 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 		: FVector::ZeroVector;
 	FVector TargetVel = BaseTargetVel + CorrectionVelocity;
 	FVector TargetPos = StartingSyncState->GetLocation_WorldSpace() + TargetVel * DeltaSeconds;
-	DrawDebugSphere(GetWorld(), TargetPos, 10.0f, 12, FColor::Red, false, 1.0f);
-	UBetterUtilities::DebugLog("RPG_ClimbMode: base target vel: " + BaseTargetVel.ToString());
-	UBetterUtilities::DebugLog("RPG_ClimbMode: projected target pos: " + ProjectedTargetPos.ToString());
-	UBetterUtilities::DebugLog("RPG_ClimbMode: correction vel: " + CorrectionVelocity.ToString());
-	UBetterUtilities::DebugLog("RPG_ClimbMode: final target vel: " + TargetVel.ToString());
+	if (bEnableLogs)
+	{
+		DrawDebugSphere(GetWorld(), TargetPos, 10.0f, 12, FColor::Red, false, 1.0f);
+		UBetterUtilities::DebugLog("RPG_ClimbMode: base target vel: " + BaseTargetVel.ToString());
+		UBetterUtilities::DebugLog("RPG_ClimbMode: projected target pos: " + ProjectedTargetPos.ToString());
+		UBetterUtilities::DebugLog("RPG_ClimbMode: correction vel: " + CorrectionVelocity.ToString());
+		UBetterUtilities::DebugLog("RPG_ClimbMode: final target vel: " + TargetVel.ToString());
+	}
 
 	OutputState.MovementEndState.RemainingMs = 0.0f;
 	OutputState.MovementEndState.NextModeName = Params.StartState.SyncState.MovementMode;
@@ -199,6 +203,6 @@ void URPG_ClimbMode::SimulationTick_Implementation(const FSimulationTickParams& 
 		ProposedMove.AngularVelocityDegrees);
 
 	NormalResult = FinalNormal;
-	UBetterUtilities::DebugLog("RPG_ClimbMode: tick finished. NormalResult: " + NormalResult.ToString());
+	if (bEnableLogs) UBetterUtilities::DebugLog("RPG_ClimbMode: tick finished. NormalResult: " + NormalResult.ToString());
 
 }

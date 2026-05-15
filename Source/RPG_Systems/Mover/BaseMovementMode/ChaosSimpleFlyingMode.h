@@ -25,21 +25,20 @@ public:
 	/**
 	 * Override to implement custom flying movement.
 	 *
-	 * @param StartState           Full tick start data (inputs, sync state, etc.)
-	 * @param DeltaSeconds         Frame delta time in seconds
-	 * @param DesiredVelocity      Velocity from input, already scaled to MaxSpeed
-	 * @param CurrentFacing        Character's current facing quaternion
-	 * @param InOutFacingDirection World-space direction the capsule should face.
-	 *                             Default: current forward vector (no rotation).
-	 *                             Set to any direction to rotate the capsule:
-	 *                               FVector::UpVector       → face up
-	 *                               -FVector::ForwardVector → face backward
-	 * @param InOutVelocity        Linear velocity to apply
+	 * @param StartState            Full tick start data (inputs, sync state, etc.)
+	 * @param DeltaSeconds          Frame delta time in seconds
+	 * @param DesiredVelocity       Velocity from input, already scaled to MaxSpeed
+	 * @param CurrentFacing         Character's current facing quaternion
+	 * @param InOutFacingRotation   Full world-space rotation the capsule should adopt.
+	 *                              Default: current rotation (no change).
+	 *                              All three axes (Pitch, Yaw, Roll) are respected,
+	 *                              so the Up vector is preserved exactly as specified.
+	 * @param InOutVelocity         Linear velocity to apply
 	 */
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Generate Simple Flying Move"))
 	void GenerateFlyingMove(UPARAM(ref) FMoverTickStartData& StartState, float DeltaSeconds,
 		const FVector& DesiredVelocity, const FQuat& CurrentFacing,
-		UPARAM(ref) FVector& InOutFacingDirection, UPARAM(ref) FVector& InOutVelocity);
+		UPARAM(ref) FRotator& InOutFacingRotation, UPARAM(ref) FVector& InOutVelocity);
 
 	/** If >= 0, overrides the max speed from SharedChaosCharacterMovementSettings. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mover|Flying Settings", meta = (ForceUnits = "cm/s"))

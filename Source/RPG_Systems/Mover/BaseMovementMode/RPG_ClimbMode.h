@@ -33,4 +33,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TEnumAsByte<ETraceTypeQuery> TraceChannel;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Debug")
+	bool bEnableLogs = false;
 };
