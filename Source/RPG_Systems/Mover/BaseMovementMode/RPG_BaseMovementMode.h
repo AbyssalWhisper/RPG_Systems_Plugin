@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "ChaosSimpleFlyingMode.h"
 
-#include "PhysicsMover/PhysicsMoverSimulationTypes.h"
-
 #include "MovementMode.h"
 #include "ChaosMover/ChaosMovementMode.h" 
 #include "ChaosMover/Character/Modes/ChaosFlyingMode.h"

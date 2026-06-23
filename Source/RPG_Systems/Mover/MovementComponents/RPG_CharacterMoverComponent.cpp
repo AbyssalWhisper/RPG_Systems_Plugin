@@ -3,9 +3,6 @@
 #include "RPG_Systems/Mover/MovementComponents/RPG_CharacterMoverComponent.h"
 
 #include "BetterUtilitiesBPLibrary.h"
-#include "PhysicsMover/Modes/PhysicsDrivenWalkingMode.h"
-#include "PhysicsMover/Modes/PhysicsDrivenSwimmingMode.h"
-#include "Backends/MoverNetworkPhysicsLiaison.h"
 #include "ChaosMover/Character/Modes/ChaosSwimmingMode.h"
 #include "Components/CapsuleComponent.h"
 #include "DefaultMovementSet/InstantMovementEffects/BasicInstantMovementEffects.h"
@@ -29,8 +26,6 @@ void URPG_CharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep
 
 URPG_CharacterMoverComponent::URPG_CharacterMoverComponent()
 {
-	BackendClass = UMoverNetworkPhysicsLiaisonComponent::StaticClass();
-
 	MovementModes.Add(DefaultModeNames::Swimming, CreateDefaultSubobject<UChaosSwimmingMode>(TEXT("DefaultSwimmingMode")));
 	//MovementModes.Add(RPG_MovementModes::Climbing, CreateDefaultSubobject<UPhysicsDrivenClimbMode>(TEXT("PhysicsDrivenClimbingMode")));
 	//MovementModes.Find(DefaultModeNames::Walking)->Get()->Transitions.Add(CreateDefaultSubobject<UPhysicsJumpCheck>(TEXT("PhysicsJumpCheck")));

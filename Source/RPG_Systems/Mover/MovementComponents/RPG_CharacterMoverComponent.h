@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ChaosMover/ChaosMoverSimulationTypes.h"
+#include "ChaosMover/Character/Modes/ChaosCharacterMovementMode.h"
 #include "ChaosMover/Character/ChaosCharacterMoverComponent.h"
-#include "CharacterVariants/MoverExamplesPhysicsCharacterMoverComponent.h"
 #include "DefaultMovementSet/CharacterMoverComponent.h"
+#include "RPG_Systems/Mover/ChaosCharacterMovementModeBP_Library.h"
 #include "RPG_Systems/Mover/RPG_BaseMoverCharacter.h"
-#include "Mover/Public/PhysicsMover/PhysicsCharacterMoverComponent.h"
 #include "RPG_Systems/Mover/BaseMovementMode/RPG_BaseMovementMode.h"
 
 #include "RPG_CharacterMoverComponent.generated.h"
 
 
-class UPhysicsCharacterMovementModeInterface;
 /**
  * 
  */
@@ -117,27 +117,15 @@ protected:
 	
 	void UpdateTargetHeight(UMoverComponent* MoverComp, float OriginalHalfHeight, float CrouchedHalfHeight, bool bCrouching)
 	{
-		//update the target height of all MovementModes
-		for (auto Element : MoverComp->MovementModes)
+		for (const auto& Element : MoverComp->MovementModes)
 		{	
-			if (auto MovementMode = Element.Value)
+			if (UChaosCharacterMovementMode* MovementMode = Cast<UChaosCharacterMovementMode>(Element.Value))
 			{
-				if (MovementMode->GetClass()->ImplementsInterface(UPhysicsCharacterMovementModeInterface::StaticClass()))
-				{
-					// cast to uphysics character movement mode interface
-					
-					IPhysicsCharacterMovementModeInterface* Interactable = Cast<IPhysicsCharacterMovementModeInterface>(MovementMode);
-					if (Interactable)
-					{
-						const float OriginalTargetHeight = Interactable->GetTargetHeight();
-						const float Offset = OriginalTargetHeight - OriginalHalfHeight;
-					
-						Interactable->SetTargetHeightOverride(Offset + (bCrouching ? CrouchedHalfHeight : OriginalHalfHeight));
-						
-					}
-
-					
-				}
+				const float OriginalTargetHeight = MovementMode->GetTargetHeight();
+				const float Offset = OriginalTargetHeight - OriginalHalfHeight;
+				UChaosCharacterMovementModeBP_Library::SetTargetHeight(
+					MovementMode,
+					Offset + (bCrouching ? CrouchedHalfHeight : OriginalHalfHeight));
 			}
 		}
 	}

@@ -14,7 +14,6 @@
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "MoveLibrary/AirMovementUtils.h"
-#include "PhysicsMover/PhysicsMoverSimulationTypes.h" 
 #include "HAL/IConsoleManager.h"
 #include "Math/UnitConversion.h"
 #include "MoveLibrary/MovementUtils.h"
@@ -24,7 +23,7 @@
 #endif // WITH_EDITOR
 
 
-#if PHYSICSDRIVENMOTION_DEBUG_DRAW
+#if defined(PHYSICSDRIVENMOTION_DEBUG_DRAW) && PHYSICSDRIVENMOTION_DEBUG_DRAW
 #endif
 
 
